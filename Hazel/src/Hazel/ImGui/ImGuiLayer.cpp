@@ -4,6 +4,7 @@
 #include "Platform/OpenGL/ImGuiOpenGLRenderer.h"
 
 #include "Hazel/Application.h"
+#include "Hazel/KeyCodes.h"
 
 // temporary
 #include <GLFW/glfw3.h>
@@ -29,14 +30,13 @@ namespace Hazel {
 		io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 		io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
 
-		// TEMPORARY: should eventually use Hazel key codes
-		io.KeyMap[ImGuiKey_Tab] = GLFW_KEY_TAB;
-		io.KeyMap[ImGuiKey_LeftArrow] = GLFW_KEY_LEFT;
-		io.KeyMap[ImGuiKey_RightArrow] = GLFW_KEY_RIGHT;
-		io.KeyMap[ImGuiKey_UpArrow] = GLFW_KEY_UP;
-		io.KeyMap[ImGuiKey_DownArrow] = GLFW_KEY_DOWN;
-		io.KeyMap[ImGuiKey_Enter] = GLFW_KEY_ENTER;
-		io.KeyMap[ImGuiKey_Backspace] = GLFW_KEY_BACKSPACE;
+		io.KeyMap[ImGuiKey_Tab] = HZ_KEY_TAB;
+		io.KeyMap[ImGuiKey_LeftArrow] = HZ_KEY_LEFT;
+		io.KeyMap[ImGuiKey_RightArrow] = HZ_KEY_RIGHT;
+		io.KeyMap[ImGuiKey_UpArrow] = HZ_KEY_UP;
+		io.KeyMap[ImGuiKey_DownArrow] = HZ_KEY_DOWN;
+		io.KeyMap[ImGuiKey_Enter] = HZ_KEY_ENTER;
+		io.KeyMap[ImGuiKey_Backspace] = HZ_KEY_BACKSPACE;
 
 		ImGui_ImplOpenGL3_Init("#version 410");
 	}
@@ -112,10 +112,10 @@ namespace Hazel {
 		ImGuiIO& io = ImGui::GetIO();
 		io.KeysDown[e.GetKeyCode()] = true;
 
-		io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
-		io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
-		io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
-		io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
+		io.KeyCtrl = io.KeysDown[HZ_KEY_LEFT_CONTROL] || io.KeysDown[HZ_KEY_RIGHT_CONTROL];
+		io.KeyShift = io.KeysDown[HZ_KEY_LEFT_SHIFT] || io.KeysDown[HZ_KEY_RIGHT_SHIFT];
+		io.KeyAlt = io.KeysDown[HZ_KEY_LEFT_ALT] || io.KeysDown[HZ_KEY_RIGHT_ALT];
+		io.KeySuper = io.KeysDown[HZ_KEY_LEFT_SUPER] || io.KeysDown[HZ_KEY_RIGHT_SUPER];
 		return false;
 	}
 
