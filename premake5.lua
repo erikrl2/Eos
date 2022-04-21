@@ -57,8 +57,7 @@ project "Hazel"
 	{
 		"GLFW",
 		"Glad",
-		"Imgui",
-		"opengl32.lib"
+		"Imgui"
 	}
 		
 	filter "system:windows"
@@ -111,6 +110,7 @@ project "Sandbox"
 	{
 		"Hazel/vendor/spdlog/include",
 		"Hazel/src",
+		"Hazel/vendor",
 		"%{IncludeDir.glm}"
 	}
 
