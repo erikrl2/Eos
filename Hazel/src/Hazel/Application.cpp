@@ -3,6 +3,8 @@
 
 #include "Hazel/Log.h"
 
+#include "Hazel/Renderer/Renderer.h"
+
 #include "Input.h"
 
 #include <GLFW/glfw3.h>
@@ -18,7 +20,8 @@ namespace Hazel {
 
 		m_Window = std::unique_ptr<Window>(Window::Create());
 		m_Window->SetEventCallback(HZ_BIND_EVENT_FN(Application::OnEvent));
-		m_Window->SetVSync(true);
+
+		Renderer::Init();
 
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
