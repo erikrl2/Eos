@@ -11,7 +11,7 @@ class ExampleLayer : public Hazel::Layer
 {
 public:
 	ExampleLayer()
-		: Layer("Example"), m_CameraController(16.0f / 9.0f)
+		: Layer("Example"), m_CameraController(16.0f / 9.0f, true)
 	{
 		m_VertexArray = Hazel::VertexArray::Create();
 		float vertices[3 * 7] = {
