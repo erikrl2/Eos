@@ -39,7 +39,7 @@ namespace Hazel {
 		{
 			if (Input::IsKeyPressed(HZ_KEY_Q))
 				m_CameraRotation += m_CameraRotationSpeed * ts;
-			if (Input::IsKeyPressed(HZ_KEY_E))
+			else if (Input::IsKeyPressed(HZ_KEY_E))
 				m_CameraRotation -= m_CameraRotationSpeed * ts;
 
 			if (m_CameraRotation > 180.0f)
