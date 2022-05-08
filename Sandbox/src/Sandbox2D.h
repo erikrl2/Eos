@@ -18,13 +18,5 @@ private:
 
 	Hazel::Ref<Hazel::Texture2D> m_CheckerboardTexture;
 
-	struct ProfileResult
-	{
-		const char* Name;
-		float Time;
-	};
-
-	std::vector<ProfileResult> m_ProfileResults;
-
 	glm::vec4 m_BgTint = { 0.8f, 0.6f, 0.7f, 0.7f };
 };
