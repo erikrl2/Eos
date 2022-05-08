@@ -67,16 +67,26 @@ namespace Hazel {
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
 	{
-		DrawQuad({ position.x, position.y, 0.0f }, size, color);
+		DrawQuad({ position.x, position.y, 0.0f }, 0.0f, size, color);
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
 	{
+		DrawQuad({ position.x, position.y, 0.0f }, 0.0f, size, color);
+	}
+
+	void Renderer2D::DrawQuad(const glm::vec2& position, const float rotation, const glm::vec2& size, const glm::vec4& color)
+	{
+		DrawQuad({ position.x, position.y, 0.0f }, rotation, size, color);
+	}
+
+	void Renderer2D::DrawQuad(const glm::vec3& position, const float rotation, const glm::vec2& size, const glm::vec4& color)
+	{
 		s_Data->TextureShader->SetFloat4("u_Color", color);
 		s_Data->WhiteTexture->Bind();
 
-		glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), { 0.0f, 0.0f, 1.0f });
-		glm::mat4 transform = glm::translate(glm::mat4(1), position) * rotation * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+		glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation), { 0.0f, 0.0f, 1.0f });
+		glm::mat4 transform = glm::translate(glm::mat4(1), position) * rotationMatrix * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 		s_Data->TextureShader->SetMat4("u_Transform", transform);
 
 		s_Data->QuadVertexArray->Bind();
@@ -85,26 +95,46 @@ namespace Hazel {
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D>& texture)
 	{
-		DrawQuad({ position.x, position.y, 0.0f }, size, texture, glm::vec4(1.0f));
+		DrawQuad({ position.x, position.y, 0.0f }, 0.0f, size, texture, glm::vec4(1.0f));
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture)
 	{
-		DrawQuad(position, size, texture, glm::vec4(1.0f));
+		DrawQuad(position, 0.0f, size, texture, glm::vec4(1.0f));
+	}
+
+	void Renderer2D::DrawQuad(const glm::vec2& position, const float rotation, const glm::vec2& size, const Ref<Texture2D>& texture)
+	{
+		DrawQuad({ position.x, position.y, 0.0f }, rotation, size, texture, glm::vec4(1.0f));
+	}
+
+	void Renderer2D::DrawQuad(const glm::vec3& position, const float rotation, const glm::vec2& size, const Ref<Texture2D>& texture)
+	{
+		DrawQuad(position, rotation, size, texture, glm::vec4(1.0f));
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D>& texture, const glm::vec4& tintColor)
 	{
-		DrawQuad({ position.x, position.y, 0.0f }, size, texture, tintColor);
+		DrawQuad({ position.x, position.y, 0.0f }, 0.0f, size, texture, tintColor);
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture, const glm::vec4& tintColor)
 	{
+		DrawQuad(position, 0.0f, size, texture, tintColor);
+	}
+
+	void Renderer2D::DrawQuad(const glm::vec2& position, const float rotation, const glm::vec2& size, const Ref<Texture2D>& texture, const glm::vec4& tintColor)
+	{
+		DrawQuad({ position.x, position.y, 0.0f }, rotation, size, texture, tintColor);
+	}
+
+	void Renderer2D::DrawQuad(const glm::vec3& position, const float rotation, const glm::vec2& size, const Ref<Texture2D>& texture, const glm::vec4& tintColor)
+	{
 		s_Data->TextureShader->SetFloat4("u_Color", tintColor);
 		texture->Bind();
 
-		glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), { 0.0f, 0.0f, 1.0f });
-		glm::mat4 transform = glm::translate(glm::mat4(1), position) * rotation * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+		glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation), { 0.0f, 0.0f, 1.0f });
+		glm::mat4 transform = glm::translate(glm::mat4(1), position) * rotationMatrix * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 		s_Data->TextureShader->SetMat4("u_Transform", transform);
 
 		s_Data->QuadVertexArray->Bind();
