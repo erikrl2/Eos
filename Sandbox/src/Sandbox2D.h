@@ -17,6 +17,4 @@ private:
 	Hazel::OrthographicCameraController m_CameraController;
 
 	Hazel::Ref<Hazel::Texture2D> m_CheckerboardTexture;
-
-	glm::vec4 m_BgTint = { 0.8f, 0.6f, 0.7f, 0.7f };
 };
