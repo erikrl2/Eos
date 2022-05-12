@@ -16,10 +16,7 @@ public:
 private:
 	Hazel::OrthographicCameraController m_CameraController;
 
-	Hazel::Ref<Hazel::Texture2D> m_CheckerboardTexture;
-	Hazel::Ref<Hazel::Texture2D> m_SpriteSheet;
-	Hazel::Ref<Hazel::SubTexture2D> m_TextureGrass, m_TextureTree;
+	Hazel::Ref<Hazel::Framebuffer> m_Framebuffer;
 
-	uint32_t m_MapWidth, m_MapHeight;
-	std::unordered_map<char, Hazel::Ref<Hazel::SubTexture2D>> s_TextureMap;
+	Hazel::Ref<Hazel::Texture2D> m_CheckerboardTexture;
 };
