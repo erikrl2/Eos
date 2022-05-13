@@ -9,6 +9,7 @@ namespace Hazel {
 	OrthographicCameraController::OrthographicCameraController(float aspectRatio, bool rotation)
 		: m_AspectRatio(aspectRatio), m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel), m_Rotation(rotation)
 	{
+		m_Bounds = { -m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel };
 	}
 
 	void OrthographicCameraController::OnUpdate(Timestep ts)
@@ -66,6 +67,12 @@ namespace Hazel {
 		dispatcher.Dispatch<WindowResizeEvent>(HZ_BIND_EVENT_FN(OrthographicCameraController::OnWindowResized));
 	}
 
+	void OrthographicCameraController::Resize(float width, float height)
+	{
+		m_AspectRatio = width / height;
+		CalculateView();
+	}
+
 	void OrthographicCameraController::CalculateView()
 	{
 		m_Bounds = { -m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel };
@@ -86,8 +93,7 @@ namespace Hazel {
 	{
 		HZ_PROFILE_FUNCTION();
 
-		m_AspectRatio = (float)e.GetWidth() / (float)e.GetHeight();
-		CalculateView();
+		Resize((float)e.GetWidth(), (float)e.GetHeight());
 		return false;
 	}
 
