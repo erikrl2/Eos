@@ -16,8 +16,6 @@ namespace Hazel {
 	{
 		HZ_PROFILE_FUNCTION();
 
-		m_CheckerboardTexture = Texture2D::Create("assets/textures/Checkerboard.png");
-
 		FramebufferSpecification fbSpec;
 		fbSpec.Width = 1280;
 		fbSpec.Height = 720;
@@ -25,11 +23,9 @@ namespace Hazel {
 
 		m_ActiveScene = CreateRef<Scene>();
 
-		auto square = m_ActiveScene->CreateEntity();
-		m_ActiveScene->Reg().emplace<TransformComponent>(square);
-		m_ActiveScene->Reg().emplace<SpriteRendererComponent>(square, glm::vec4{ 0.1, 1.0f, 0.0f, 1.0f });
-
-		m_SquareEntity = square;
+		// Entity
+		m_SquareEntity = m_ActiveScene->CreateEntity("Green Square");
+		m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.1, 1.0f, 0.0f, 1.0f });
 	}
 
 	void EditorLayer::OnDetach()
@@ -140,8 +136,15 @@ namespace Hazel {
 		ImGui::Text("Quads: %d", stats.QuadCount);
 		ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
 		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
-		ImGui::Separator();
-		ImGui::ColorEdit4("Square Color", glm::value_ptr(m_ActiveScene->Reg().get<SpriteRendererComponent>(m_SquareEntity).Color));
+		if (m_SquareEntity)
+		{
+			ImGui::Separator();
+			std::string& name = m_SquareEntity.GetComponent<TagComponent>().Tag;
+			glm::vec4& color = m_SquareEntity.GetComponent<SpriteRendererComponent>().Color;
+			ImGui::Text(name.c_str());
+			ImGui::ColorEdit4("Square Color", glm::value_ptr(color));
+			ImGui::Separator();
+		}
 		ImGui::End();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
