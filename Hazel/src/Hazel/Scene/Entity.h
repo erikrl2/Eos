@@ -10,9 +10,9 @@ namespace Hazel {
 	{
 	public:
 		Entity() = default;
+		Entity(const Entity&) = default;
 		Entity(entt::entity handle, Scene* scene)
 			: m_EntityHandle(handle), m_Scene(scene) {}
-		Entity(const Entity&) = default;
 
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args)
