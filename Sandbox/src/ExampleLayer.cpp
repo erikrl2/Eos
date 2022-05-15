@@ -87,7 +87,7 @@ void ExampleLayer::OnUpdate(Hazel::Timestep ts)
 	Hazel::Renderer2D::DrawQuad({ -1.0f, 0.5f }, { 1.0f, 2.0f }, m_TextureTree);
 	Hazel::Renderer2D::DrawQuad({ 1.0f, 0.0f }, glm::vec2(1.0f), m_TextureGrass);
 
-	if (Hazel::Input::IsMouseButtonPressed(HZ_MOUSE_BUTTON_0))
+	if (Hazel::Input::IsMouseButtonPressed(Hazel::Mouse::Button0))
 	{
 		static float rotation = 0.0f;
 		rotation += 360.0f * ts;
