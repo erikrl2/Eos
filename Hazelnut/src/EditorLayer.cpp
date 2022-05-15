@@ -28,10 +28,13 @@ namespace Hazel {
 		square.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.1, 1.0f, 0.0f, 1.0f });
 		m_SquareEntity = square;
 
-		m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
+		auto redSquare = m_ActiveScene->CreateEntity("Red Square");
+		redSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 1.0, 0.0f, 0.0f, 1.0f });
+
+		m_CameraEntity = m_ActiveScene->CreateEntity("Camera 1");
 		m_CameraEntity.AddComponent<CameraComponent>();
 
-		m_SecondCamera = m_ActiveScene->CreateEntity("Clip-Space Entity");
+		m_SecondCamera = m_ActiveScene->CreateEntity("Camera 2");
 		auto& cc2 = m_SecondCamera.AddComponent<CameraComponent>();
 		//cc2.FixedAspectRatio = true;
 		cc2.Primary = false;
@@ -39,11 +42,11 @@ namespace Hazel {
 		class CameraController : public ScriptableEntity
 		{
 		public:
-			void OnCreate()
+			virtual void OnCreate() override
 			{
 			}
 
-			void OnUpdate(Timestep ts)
+			virtual void OnUpdate(Timestep ts) override
 			{
 				auto& transform = GetComponent<TransformComponent>().Transform;
 				float speed = 5.0f;
@@ -182,7 +185,7 @@ namespace Hazel {
 			ImGui::Separator();
 		}
 		ImGui::DragFloat3("Camera Transform", glm::value_ptr(m_CameraEntity.GetComponent<TransformComponent>().Transform[3]));
-		if (ImGui::Checkbox("Camera A", &m_PrimaryCamera))
+		if (ImGui::Checkbox("Camera 1", &m_PrimaryCamera))
 			m_SecondCamera.GetComponent<CameraComponent>().Primary = !m_PrimaryCamera;
 		{
 			auto& camera = m_SecondCamera.GetComponent<CameraComponent>().Camera;
