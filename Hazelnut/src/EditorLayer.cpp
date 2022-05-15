@@ -24,20 +24,17 @@ namespace Hazel {
 		m_ActiveScene = CreateRef<Scene>();
 
 		// Entity
-		auto square = m_ActiveScene->CreateEntity("Green Square");
-		square.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.1, 1.0f, 0.0f, 1.0f });
-		m_SquareEntity = square;
+		auto greenSquare = m_ActiveScene->CreateEntity("Green Square");
+		greenSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.1, 1.0f, 0.0f, 1.0f });
 
 		auto redSquare = m_ActiveScene->CreateEntity("Red Square");
 		redSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 1.0, 0.0f, 0.0f, 1.0f });
 
-		m_CameraEntity = m_ActiveScene->CreateEntity("Camera 1");
-		m_CameraEntity.AddComponent<CameraComponent>();
+		auto& perpectiveCamera = m_ActiveScene->CreateEntity("Camera (perspective)");
+		perpectiveCamera.AddComponent<CameraComponent>().Camera.SetProjectionType(SceneCamera::ProjectionType::Perspective);
 
-		m_SecondCamera = m_ActiveScene->CreateEntity("Camera 2");
-		auto& cc2 = m_SecondCamera.AddComponent<CameraComponent>();
-		//cc2.FixedAspectRatio = true;
-		cc2.Primary = false;
+		auto& orthoCamera = m_ActiveScene->CreateEntity("Camera (orthographic)");
+		orthoCamera.AddComponent<CameraComponent>().Primary = true;
 
 		class CameraController : public ScriptableEntity
 		{
@@ -48,21 +45,21 @@ namespace Hazel {
 
 			virtual void OnUpdate(Timestep ts) override
 			{
-				auto& transform = GetComponent<TransformComponent>().Transform;
+				auto& translation = GetComponent<TransformComponent>().Translation;
 				float speed = 5.0f;
 
 				if (Input::IsKeyPressed(Key::A))
-					transform[3][0] -= speed * ts;
+					translation.x -= speed * ts;
 				if (Input::IsKeyPressed(Key::D))
-					transform[3][0] += speed * ts;
+					translation.x += speed * ts;
 				if (Input::IsKeyPressed(Key::W))
-					transform[3][1] += speed * ts;
+					translation.y += speed * ts;
 				if (Input::IsKeyPressed(Key::S))
-					transform[3][1] -= speed * ts;
+					translation.y -= speed * ts;
 			}
 		};
-		m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-		m_SecondCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+		perpectiveCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+		orthoCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 	}
@@ -83,14 +80,14 @@ namespace Hazel {
 			(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
 		{
 			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y); // ?
+			m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y); // TODO: ?
 
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
 
 		// Update
 		if (m_ViewportFocused)
-			m_CameraController.OnUpdate(ts);
+			m_CameraController.OnUpdate(ts); // TODO: ?
 
 		// Render
 		Renderer2D::ResetStats();
@@ -168,31 +165,13 @@ namespace Hazel {
 
 		m_SceneHierarchyPanel.OnImGuiRender();
 
-		ImGui::Begin("Settings");
+		ImGui::Begin("Stats");
 		auto stats = Renderer2D::GetStats();
 		ImGui::Text("Renderer2D Stats:");
 		ImGui::Text("Draw Calls: %d", stats.DrawCalls);
 		ImGui::Text("Quads: %d", stats.QuadCount);
 		ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
 		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
-		if (m_SquareEntity)
-		{
-			ImGui::Separator();
-			std::string& name = m_SquareEntity.GetComponent<TagComponent>().Tag;
-			glm::vec4& color = m_SquareEntity.GetComponent<SpriteRendererComponent>().Color;
-			ImGui::Text(name.c_str());
-			ImGui::ColorEdit4("Square Color", glm::value_ptr(color));
-			ImGui::Separator();
-		}
-		ImGui::DragFloat3("Camera Transform", glm::value_ptr(m_CameraEntity.GetComponent<TransformComponent>().Transform[3]));
-		if (ImGui::Checkbox("Camera 1", &m_PrimaryCamera))
-			m_SecondCamera.GetComponent<CameraComponent>().Primary = !m_PrimaryCamera;
-		{
-			auto& camera = m_SecondCamera.GetComponent<CameraComponent>().Camera;
-			float orthoSize = camera.GetOrthographicSize();
-			if (ImGui::DragFloat("Second Camera Ortho Size", &orthoSize))
-				camera.SetOrthographicSize(orthoSize);
-		}
 		ImGui::End();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });

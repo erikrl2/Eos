@@ -39,7 +39,7 @@ void ExampleLayer::OnAttach()
 	m_TextureTree = Hazel::SubTexture2D::CreateFromCoords(m_SpriteSheet, { 4, 1 }, { 128, 128 }, { 1, 2 });
 
 	m_MapWidth = s_MapWidth;
-	m_MapHeight = strlen(s_MapTiles) / s_MapWidth;
+	m_MapHeight = (uint32_t)strlen(s_MapTiles) / s_MapWidth;
 
 	s_TextureMap['W'] = Hazel::SubTexture2D::CreateFromCoords(m_SpriteSheet, { 11, 11 }, { 128, 128 });
 	s_TextureMap['D'] = Hazel::SubTexture2D::CreateFromCoords(m_SpriteSheet, { 6, 11 }, { 128, 128 });
