@@ -22,8 +22,8 @@ namespace Hazel {
 	{
 		Entity entity = { m_Registry.create(), this };
 		entity.AddComponent<TransformComponent>();
-		auto& tag = entity.AddComponent<TagComponent>();
-		tag.Tag = name.empty() ? "Entity" : name;
+		auto& tc = entity.AddComponent<TagComponent>();
+		tc.Tag = name.empty() ? "Entity" : name;
 		return entity;
 	}
 
@@ -33,13 +33,14 @@ namespace Hazel {
 		{
 			m_Registry.view<NativeScriptComponent>().each([=](entt::entity entity, NativeScriptComponent& nsc)
 			{
+				// TODO: Move to Scene::OnScenePlay
 				if (!nsc.Instance)
 				{
-					nsc.InstantiateFunction();
+					nsc.Instance = nsc.InstantiateScript();
 					nsc.Instance->m_Entity = Entity{ entity, this };
-					nsc.OnCreateFunction(nsc.Instance);
+					nsc.Instance->OnCreate();
 				}
-				nsc.OnUpdateFunction(nsc.Instance, ts);
+				nsc.Instance->OnUpdate(ts);
 			});
 		}
 
@@ -50,7 +51,7 @@ namespace Hazel {
 			auto view = m_Registry.view<TransformComponent, CameraComponent>();
 			for (auto entity : view)
 			{
-				auto& [transformComponent, cameraComponent] = view.get<TransformComponent, CameraComponent>(entity);
+				auto [transformComponent, cameraComponent] = view.get<TransformComponent, CameraComponent>(entity);
 
 				if (cameraComponent.Primary)
 				{
@@ -68,7 +69,7 @@ namespace Hazel {
 			auto view = m_Registry.view<TransformComponent, SpriteRendererComponent>();
 			for (auto entity : view)
 			{
-				auto& [transformComponent, spriteComponent] = view.get<TransformComponent, SpriteRendererComponent>(entity);
+				auto [transformComponent, spriteComponent] = view.get<TransformComponent, SpriteRendererComponent>(entity);
 
 				Renderer2D::DrawQuad(transformComponent, spriteComponent.Color);
 			}
