@@ -30,7 +30,8 @@ namespace Hazel {
 
 	void SceneCamera::SetViewportSize(uint32_t width, uint32_t height)
 	{
-		m_AspectRatio = (float)width / (float)height;
+		if (height) // to prevent deviding by 0
+			m_AspectRatio = (float)width / (float)height;
 		RecalculateProjection();
 	}
 
