@@ -22,8 +22,8 @@ namespace Hazel {
 	Entity Scene::CreateEntity(const std::string& name)
 	{
 		Entity entity = { m_Registry.create(), this };
-		auto& tc = entity.AddComponent<TagComponent>();
 		entity.AddComponent<TransformComponent>();
+		auto& tc = entity.AddComponent<TagComponent>();
 		tc.Tag = name.empty() ? "Entity" : name;
 		return entity;
 	}
