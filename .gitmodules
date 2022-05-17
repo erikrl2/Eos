@@ -14,3 +14,7 @@
 	path = Hazel/vendor/imgui
 	url = https://github.com/erikrl2/imgui
 	branch = docking
+[submodule "Hazel/vendor/yaml-cpp"]
+	path = Hazel/vendor/yaml-cpp
+	url = https://github.com/erikrl2/yaml-cpp
+	branch = master

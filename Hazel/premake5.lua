@@ -35,14 +35,16 @@ project "Hazel"
 		"%{IncludeDir.Imgui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.yaml_cpp}"
 	}
 
 	links
 	{
 		"GLFW",
 		"Glad",
-		"Imgui"
+		"Imgui",
+		"yaml-cpp"
 	}
 		
 	filter "system:windows"
