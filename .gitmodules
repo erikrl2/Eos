@@ -18,3 +18,7 @@
 	path = Hazel/vendor/yaml-cpp
 	url = https://github.com/erikrl2/yaml-cpp
 	branch = master
+[submodule "Hazel/vendor/ImGuizmo"]
+	path = Hazel/vendor/ImGuizmo
+	url = https://github.com/erikrl2/ImGuizmo
+	branch = master
