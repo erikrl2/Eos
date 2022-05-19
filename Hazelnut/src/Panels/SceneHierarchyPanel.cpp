@@ -6,7 +6,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Hazel/Scene/Components.h"
-#include <cstring>
 
 namespace Hazel {
 
