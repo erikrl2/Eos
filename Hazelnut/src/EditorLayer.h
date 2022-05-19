@@ -3,6 +3,8 @@
 #include <Hazel.h>
 #include "Panels/SceneHierarchyPanel.h"
 
+#include "Hazel/Renderer/EditorCamera.h"
+
 namespace Hazel {
 
 	class EditorLayer : public Layer
@@ -24,7 +26,7 @@ namespace Hazel {
 		void OpenScene();
 		void SaveSceneAs();
 	private:
-		OrthographicCameraController m_CameraController; // TODO: ?
+		EditorCamera m_EditorCamera;
 
 		Ref<Framebuffer> m_Framebuffer;
 

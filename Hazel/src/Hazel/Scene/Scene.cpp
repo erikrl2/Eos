@@ -32,13 +32,12 @@ namespace Hazel {
 		m_Registry.destroy(entity);
 	}
 
-	void Scene::OnUpdate(Timestep ts)
+	void Scene::OnUpdateRuntime(Timestep ts)
 	{
 		// Update scripts
 		{
 			m_Registry.view<NativeScriptComponent>().each([=](entt::entity entity, NativeScriptComponent& nsc)
 			{
-				// TODO: Move to Scene::OnScenePlay
 				if (!nsc.Instance)
 				{
 					nsc.Instance = nsc.InstantiateScript();
@@ -81,6 +80,21 @@ namespace Hazel {
 
 			Renderer2D::EndScene();
 		}
+	}
+
+	void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera)
+	{
+		Renderer2D::BeginScene(camera);
+
+		auto view = m_Registry.view<TransformComponent, SpriteRendererComponent>();
+		for (auto entity : view)
+		{
+			auto [transformComponent, spriteComponent] = view.get<TransformComponent, SpriteRendererComponent>(entity);
+
+			Renderer2D::DrawQuad(transformComponent.GetTransform(), spriteComponent.Color);
+		}
+
+		Renderer2D::EndScene();
 	}
 
 	void Scene::OnViewportResize(uint32_t width, uint32_t height)
