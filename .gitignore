@@ -1,6 +1,5 @@
 # Binaries
 **/bin/
-!vendor/premake/bin/
 bin-int/
 
 # Hazel files
@@ -9,9 +8,9 @@ bin-int/
 # Visual Studio files and folder
 .vs/
 **.sln
-**.vcxproj
-**.vcxproj.filters
-**.vcxproj.user
+**.vcxproj*
 
-# Other files
-Sandbox/imgui.ini
+# Directories
+Hazel/vendor/VulkanSDK
+Hazelnut/assets/cache
+scripts/__pycache__

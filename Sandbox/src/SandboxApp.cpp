@@ -1,7 +1,6 @@
 #include <Hazel.h>
 #include <Hazel/Core/EntryPoint.h>
 
-#include "ExampleLayer.h"
 #include "Sandbox2D.h"
 
 class Sandbox : public Hazel::Application
@@ -9,7 +8,6 @@ class Sandbox : public Hazel::Application
 public:
 	Sandbox()
 	{
-		//PushLayer(new ExampleLayer());
 		PushLayer(new Sandbox2D());
 	}
  ~Sandbox()
@@ -17,7 +15,7 @@ public:
 	}
 };
 
-Hazel::Application* Hazel::CreateApplication()
+Hazel::Application* Hazel::CreateApplication(ApplicationCommandLineArgs args)
 {
 	return new Sandbox();
 }
