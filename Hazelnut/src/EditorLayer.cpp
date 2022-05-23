@@ -85,6 +85,7 @@ namespace Hazel {
 		#endif
 
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		//m_ContentBrowserPanel.
 	}
 
 	void EditorLayer::OnDetach()
@@ -191,15 +192,14 @@ namespace Hazel {
 		}
 
 		m_SceneHierarchyPanel.OnImGuiRender();
+		m_ContentBrowserPanel.OnImGuiRender();
 
 		ImGui::Begin("Stats");
-		auto stats = Renderer2D::GetStats();
-		ImGui::Text("Renderer2D Stats:");
-
 		const char* entityTag = "None";
 		if (m_HoveredEntity) entityTag = m_HoveredEntity.GetComponent<TagComponent>().Tag.c_str();
 		ImGui::Text("Hovered Entity: %s", entityTag);
 
+		auto stats = Renderer2D::GetStats();
 		ImGui::Text("Draw Calls: %d", stats.DrawCalls);
 		ImGui::Text("Quads: %d", stats.QuadCount);
 		ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
