@@ -22,6 +22,9 @@ namespace Hazel {
 	private:
 		bool OnKeyPressed(KeyPressedEvent& e);
 		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
+		bool OnMouseButtonReleased(MouseButtonReleasedEvent& e);
+
+		bool CanSelectEntity();
 
 		void NewScene();
 		void OpenScene();
@@ -39,6 +42,7 @@ namespace Hazel {
 		glm::vec2 m_ViewportBounds[2];
 
 		int m_GizmoType = -1;
+		bool m_GizmoEnabled = true;
 
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;

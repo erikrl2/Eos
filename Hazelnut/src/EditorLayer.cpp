@@ -280,6 +280,7 @@ namespace Hazel {
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<KeyPressedEvent>(HZ_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
 		dispatcher.Dispatch<MouseButtonPressedEvent>(HZ_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
+		dispatcher.Dispatch<MouseButtonReleasedEvent>(HZ_BIND_EVENT_FN(EditorLayer::OnMouseButtonReleased));
 	}
 
 	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
@@ -335,8 +336,35 @@ namespace Hazel {
 	{
 		if (e.GetMouseButton() == Mouse::Button0)
 		{
-			if (m_ViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt)) // Mouse picking condition
+			if (CanSelectEntity())
 				m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
+		}
+		return false;
+	}
+
+	bool EditorLayer::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
+	{
+		if (e.GetMouseButton() == Mouse::Button0)
+		{
+			if (!m_GizmoEnabled)
+			{
+				ImGuizmo::Enable(true);
+				m_GizmoEnabled = true;
+			}
+		}
+		return false;
+	}
+
+	bool EditorLayer::CanSelectEntity()
+	{
+		if (m_ViewportHovered && !Input::IsKeyPressed(Key::LeftAlt) && !ImGuizmo::IsOver())
+		{
+			if (m_HoveredEntity != m_SceneHierarchyPanel.GetSelectedEntity())
+			{
+				ImGuizmo::Enable(false);
+				m_GizmoEnabled = false;
+			}
+			return true;
 		}
 		return false;
 	}
