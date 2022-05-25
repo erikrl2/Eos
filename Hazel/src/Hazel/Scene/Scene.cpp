@@ -75,7 +75,7 @@ namespace Hazel {
 			{
 				auto [transformComponent, spriteComponent] = view.get<TransformComponent, SpriteRendererComponent>(entity);
 
-				Renderer2D::DrawQuad(transformComponent.GetTransform(), spriteComponent.Color);
+				Renderer2D::DrawSprite(transformComponent.GetTransform(), spriteComponent, (int)entity);
 			}
 
 			Renderer2D::EndScene();
