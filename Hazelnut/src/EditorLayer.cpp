@@ -176,12 +176,12 @@ namespace Hazel {
 		ImGui::PopStyleVar(2);
 
 		ImGuiStyle& style = ImGui::GetStyle();
-		float minWinSize = style.WindowMinSize.x;
-		style.WindowMinSize.x = 350.0f;
+		ImVec2 minWinSize = style.WindowMinSize;
+		style.WindowMinSize = { 350.0f, 50.0f };
 
 		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
 		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-		style.WindowMinSize.x = minWinSize;
+		style.WindowMinSize = minWinSize;
 
 		if (ImGui::BeginMenuBar())
 		{
@@ -307,9 +307,9 @@ namespace Hazel {
 		const auto& buttonActive = colors[ImGuiCol_ButtonActive];
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(buttonActive.x, buttonActive.y, buttonActive.z, 0.5f));
 
-		ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+		ImGui::Begin("Toolbar", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
-		float size = ImGui::GetWindowHeight() - 4.0f;
+		float size = ImGui::GetContentRegionAvail().y - 4.0f; // TODO: min window height
 		Ref<Texture2D> icon = m_SceneState == SceneState::Edit ? m_IconPlay : m_IconStop;
 		ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
 		if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0))
@@ -447,12 +447,20 @@ namespace Hazel {
 
 	void EditorLayer::OpenScene(const std::filesystem::path& path)
 	{
-		m_ActiveScene = CreateRef<Scene>();
-		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		if (path.extension().string() != ".hazel")
+		{
+			HZ_WARN("Could not load {0} - not a scene file", path.filename().string());
+			return;
+		}
 
-		SceneSerializer serializer(m_ActiveScene);
-		serializer.Deserialize(path.string());
+		Ref<Scene> newScene = CreateRef<Scene>();
+		SceneSerializer serializer(newScene);
+		if (serializer.Deserialize(path.string()))
+		{
+			m_ActiveScene = newScene;
+			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		}
 	}
 
 	void EditorLayer::SaveSceneAs()
