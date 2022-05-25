@@ -33,6 +33,7 @@ project "Hazel"
 	{
 		"src",
 		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.Box2D}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.Imgui}",
@@ -46,6 +47,7 @@ project "Hazel"
 
 	links
 	{
+		"Box2D",
 		"GLFW",
 		"Glad",
 		"Imgui",

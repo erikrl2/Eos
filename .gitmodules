@@ -22,3 +22,7 @@
 	path = Hazel/vendor/ImGuizmo
 	url = https://github.com/erikrl2/ImGuizmo
 	branch = master
+[submodule "Hazel/vendor/Box2D"]
+	path = Hazel/vendor/Box2D
+	url = https://github.com/erikrl2/box2d
+	branch = main
