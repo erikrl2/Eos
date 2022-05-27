@@ -1,5 +1,7 @@
 #pragma once
 
+#include <xhash>
+
 namespace Hazel {
 
 	class UUID
@@ -12,6 +14,19 @@ namespace Hazel {
 		operator uint64_t() const { return m_UUID; }
 	private:
 		uint64_t m_UUID;
+	};
+
+}
+
+namespace std {
+
+	template<>
+	struct hash<Hazel::UUID>
+	{
+		uint64_t operator()(const Hazel::UUID& uuid) const
+		{
+			return hash<uint64_t>()((uint64_t)uuid);
+		}
 	};
 
 }
