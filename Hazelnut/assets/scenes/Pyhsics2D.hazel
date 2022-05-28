@@ -9,6 +9,8 @@ Entities:
       Scale: [0.639999926, 0.639999926, 0.639999986]
     SpriteRendererComponent:
       Color: [0.931019008, 0.894055665, 0.95161289, 1]
+      TexturePath: assets\textures\Checkerboard.png
+      TilingFactor: 1
     Rigidbody2DComponent:
       BodyType: Dynamic
       FixedRotation: false
@@ -28,6 +30,8 @@ Entities:
       Scale: [0.640000045, 0.640000045, 0.639999986]
     SpriteRendererComponent:
       Color: [0.818548381, 0.514041543, 0.13202396, 1]
+      TexturePath: assets\textures\ChernoLogo.png
+      TilingFactor: 1
     Rigidbody2DComponent:
       BodyType: Dynamic
       FixedRotation: false
@@ -47,6 +51,8 @@ Entities:
       Scale: [0.639999986, 0.639999986, 0.639999986]
     SpriteRendererComponent:
       Color: [0.330645204, 1, 0, 1]
+      TexturePath: assets\textures\Checkerboard.png
+      TilingFactor: 1
     Rigidbody2DComponent:
       BodyType: Dynamic
       FixedRotation: false
@@ -65,7 +71,9 @@ Entities:
       Rotation: [0, 0, 0.253072739]
       Scale: [0.639999986, 0.639999986, 0.639999986]
     SpriteRendererComponent:
-      Color: [0.741935611, 1, 0, 1]
+      Color: [0.357700288, 0.438817531, 0.887096763, 1]
+      TexturePath: assets\textures\Checkerboard.png
+      TilingFactor: 2.20000005
     Rigidbody2DComponent:
       BodyType: Dynamic
       FixedRotation: false
@@ -104,6 +112,8 @@ Entities:
       Scale: [0.639999926, 0.639999926, 0.639999986]
     SpriteRendererComponent:
       Color: [1, 0.044354856, 0.807329535, 1]
+      TexturePath: assets\textures\Checkerboard.png
+      TilingFactor: 0.400000006
     Rigidbody2DComponent:
       BodyType: Dynamic
       FixedRotation: false

@@ -101,7 +101,7 @@ namespace Hazel {
 		entity.AddComponent<IDComponent>(uuid);
 		entity.AddComponent<TransformComponent>();
 		auto& tc = entity.AddComponent<TagComponent>();
-		tc.Tag = name.empty() ? "Entity" : name;
+		tc.Tag = name.empty() ? "Empty Entity" : name;
 		return entity;
 	}
 
