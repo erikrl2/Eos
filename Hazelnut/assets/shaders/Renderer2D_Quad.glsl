@@ -1,3 +1,5 @@
+// Renderer2D Quad Shader
+
 #type vertex
 #version 450 core
 
@@ -38,8 +40,8 @@ void main()
 #type fragment
 #version 450 core
 
-layout(location = 0) out vec4 color;
-layout(location = 1) out int color2;
+layout(location = 0) out vec4 o_Color;
+layout(location = 1) out int o_EntityID;
 
 struct VertexOutput
 {
@@ -58,6 +60,6 @@ void main()
 {
 	vec4 texColor = Input.Color * texture(u_Textures[int(v_TexIndex)], Input.TexCoord * Input.TilingFactor);
 
-	color = texColor;
-	color2 = v_EntityID;
+	o_Color = texColor;
+	o_EntityID = v_EntityID;
 }

@@ -36,7 +36,8 @@ namespace Hazel {
 		fbSpec.Height = 720;
 		m_Framebuffer = Framebuffer::Create(fbSpec);
 
-		m_ActiveScene = CreateRef<Scene>();
+		m_EditorScene = CreateRef<Scene>();
+		m_ActiveScene = m_EditorScene;
 
 		auto commandLineArgs = Application::Get().GetCommandLineArgs();
 		if (commandLineArgs.Count > 1)
@@ -88,7 +89,7 @@ namespace Hazel {
 		orthoCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 		#endif
 
-		//m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 	}
 
 	void EditorLayer::OnDetach()
@@ -124,7 +125,7 @@ namespace Hazel {
 		{
 			case SceneState::Edit:
 			{
-				if (m_ViewportFocused || m_ViewportHovered)
+				if (m_ViewportHovered) // m_ViewportFocused || m_ViewportHovered
 					m_EditorCamera.OnUpdate(ts);
 
 				m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
@@ -148,6 +149,7 @@ namespace Hazel {
 			int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
 			m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
 		}
+		else m_HoveredEntity = Entity();
 
 		m_Framebuffer->Unbind();
 	}
@@ -222,7 +224,7 @@ namespace Hazel {
 
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
-		Application::Get().GetImGuiLayer()->BlockEvents(!(m_ViewportFocused || m_ViewportHovered));
+		Application::Get().GetImGuiLayer()->BlockEvents(!(m_ViewportHovered)); // m_ViewportFocused || m_ViewportHovered
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
@@ -256,7 +258,7 @@ namespace Hazel {
 				//Runtime Camera
 				auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
 				const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
-				cameraProjection = camera.GetProjection(); // TODO: prevent copying!
+				cameraProjection = camera.GetProjection(); // TODO: prevent copying
 				cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
 			}
 			else

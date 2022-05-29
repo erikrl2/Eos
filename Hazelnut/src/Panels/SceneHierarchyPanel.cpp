@@ -236,6 +236,15 @@ namespace Hazel {
 				}
 			}
 
+			if (!m_SelectionContext.HasComponent<CircleRendererComponent>())
+			{
+				if (ImGui::MenuItem("Circle Renderer"))
+				{
+					m_SelectionContext.AddComponent<CircleRendererComponent>();
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
 			if (!m_SelectionContext.HasComponent<Rigidbody2DComponent>())
 			{
 				if (ImGui::MenuItem("Rigidbody 2D"))
@@ -330,7 +339,7 @@ namespace Hazel {
 		{
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
 
-			ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
+			ImGui::Button("Texture", ImVec2(100.0f, 0.0f)); // TODO: ImageButton with selected texture
 			if (ImGui::BeginDragDropTarget())
 			{
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
@@ -345,8 +354,23 @@ namespace Hazel {
 				}
 				ImGui::EndDragDropTarget();
 			}
+			if (component.Texture)
+			{
+				ImGui::SameLine();
+				ImGui::Image((ImTextureID)component.Texture->GetRendererID(), ImVec2(50.0f, 23.0f));
+				ImGui::SameLine();
+				if (ImGui::Button("del", ImVec2(0.0f, 0.0f))) // TODO: replace with popup menu
+					component.Texture = {};
+			}
 
 			ImGui::DragFloat("Tiling Factor", &component.TilingFactor, 0.1f, 0.0f, 100.0f);
+		});
+
+		DrawComponent<CircleRendererComponent>("Circle Renderer", entity, [](auto& component)
+		{
+			ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+			ImGui::DragFloat("Thickness", &component.Thickness, 0.025f, 0.0f, 1.0f);
+			ImGui::DragFloat("Fade", &component.Fade, 0.00025f, 0.0f, 1.0f);
 		});
 
 		DrawComponent<Rigidbody2DComponent>("Rigidbody 2D", entity, [](auto& component)
