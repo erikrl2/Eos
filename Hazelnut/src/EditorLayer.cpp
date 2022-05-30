@@ -194,11 +194,11 @@ namespace Hazel {
 				if (ImGui::MenuItem("Open...", "Ctrl+O"))
 					OpenScene();
 
-				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
-					SaveSceneAs();
-
 				if (ImGui::MenuItem("Save", "Ctrl+S"))
 					SaveScene();
+
+				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
+					SaveSceneAs();
 
 				ImGui::Separator();
 
@@ -224,7 +224,7 @@ namespace Hazel {
 
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
-		Application::Get().GetImGuiLayer()->BlockEvents(!(m_ViewportHovered)); // m_ViewportFocused || m_ViewportHovered
+		//Application::Get().GetImGuiLayer()->BlockEvents(!(m_ViewportHovered)); // dangerous because every event will be blocked
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
@@ -264,8 +264,8 @@ namespace Hazel {
 			else
 			{
 				// Editor Camera
-				cameraProjection = m_EditorCamera.GetProjection(); // TODO: prevent copying!
-				cameraView = m_EditorCamera.GetViewMatrix(); // TODO: prevent copying!
+				cameraProjection = m_EditorCamera.GetProjection(); // TODO: prevent copying
+				cameraView = m_EditorCamera.GetViewMatrix(); // TODO: prevent copying
 			}
 
 			// Entity Transform
@@ -313,7 +313,7 @@ namespace Hazel {
 
 		ImGui::Begin("Toolbar", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
-		float size = ImGui::GetContentRegionAvail().y - 4.0f; // TODO: min window height
+		float size = ImGui::GetContentRegionAvail().y - 4.0f;
 		Ref<Texture2D> icon = m_SceneState == SceneState::Edit ? m_IconPlay : m_IconStop;
 		ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
 		if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0))
@@ -325,6 +325,13 @@ namespace Hazel {
 		}
 		ImGui::PopStyleVar(2);
 		ImGui::PopStyleColor(3);
+
+		// TODO: maybe display active scene in window bar
+		ImGui::SameLine();
+		const std::string sceneName = m_EditorScenePath.has_filename() ? m_EditorScenePath.filename().string() : "unsaved Scene";
+		ImGui::SetCursorPosX(5.0f);
+		ImGui::Text(m_SceneState == SceneState::Play ? "Playing: %s" : "Editing: %s", sceneName.c_str());
+
 		ImGui::End();
 	}
 
@@ -458,10 +465,11 @@ namespace Hazel {
 
 	void EditorLayer::NewScene()
 	{
-		m_ActiveScene = CreateRef<Scene>();
-		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		m_EditorScene = CreateRef<Scene>();
+		m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_SceneHierarchyPanel.SetContext(m_EditorScene);
 
+		m_ActiveScene = m_EditorScene;
 		m_EditorScenePath = std::filesystem::path();
 	}
 
@@ -499,7 +507,7 @@ namespace Hazel {
 	void EditorLayer::SaveScene()
 	{
 		if (!m_EditorScenePath.empty())
-			SerializeScene(m_ActiveScene, m_EditorScenePath);
+			SerializeScene(m_EditorScene, m_EditorScenePath);
 		else
 			SaveSceneAs();
 	}
@@ -509,7 +517,7 @@ namespace Hazel {
 		std::string filepath = FileDialogs::SaveFile("Hazel Scene (*.hazel)\0*.hazel\0");
 		if (!filepath.empty())
 		{
-			SerializeScene(m_ActiveScene, filepath);
+			SerializeScene(m_EditorScene, filepath);
 			m_EditorScenePath = filepath;
 		}
 	}
@@ -517,7 +525,7 @@ namespace Hazel {
 	void EditorLayer::SerializeScene(Ref<Scene> scene, const std::filesystem::path& path)
 	{
 		SceneSerializer serializer(scene);
-		serializer.Serialize(path.string());
+		serializer.Serialize(path);
 	}
 
 	void EditorLayer::OnScenePlay()

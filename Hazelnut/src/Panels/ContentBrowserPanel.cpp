@@ -5,7 +5,7 @@
 
 namespace Hazel {
 
-	// Once we have projects, change this
+	// TODO: Once we have projects, change this to the projects assets directory
 	extern const std::filesystem::path g_AssetPath = "assets";
 
 	ContentBrowserPanel::ContentBrowserPanel()
