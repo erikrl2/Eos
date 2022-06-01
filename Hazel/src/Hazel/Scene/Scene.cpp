@@ -139,7 +139,8 @@ namespace Hazel {
 				auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
 
 				b2PolygonShape boxShape;
-				boxShape.SetAsBox(bc2d.Size.x * transform.Scale.x, bc2d.Size.y * transform.Scale.y);
+				boxShape.SetAsBox(bc2d.Size.x * transform.Scale.x, bc2d.Size.y * transform.Scale.y,
+					b2Vec2(bc2d.Offset.x, bc2d.Offset.y), bc2d.Rotation);
 
 				b2FixtureDef fixtureDef;
 				fixtureDef.shape = &boxShape;
@@ -156,7 +157,7 @@ namespace Hazel {
 
 				b2CircleShape circleShape;
 				circleShape.m_p.Set(cc2d.Offset.x, cc2d.Offset.y);
-				circleShape.m_radius = cc2d.Radius * ((transform.Scale.x + transform.Scale.y) * 0.5f); // TODO: maybe change
+				circleShape.m_radius = transform.Scale.x * cc2d.Radius; // TODO: Fix collider scale
 
 				b2FixtureDef fixtureDef;
 				fixtureDef.shape = &circleShape;

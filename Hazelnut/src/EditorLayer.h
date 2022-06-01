@@ -26,6 +26,9 @@ namespace Hazel {
 		bool OnMouseButtonReleased(MouseButtonReleasedEvent& e);
 
 		bool CanSelectEntity();
+		bool IsViewportHovered() const { return m_ViewportHovered; }
+
+		void OnOverlayRender();
 
 		void NewScene();
 		void OpenScene();
@@ -59,6 +62,8 @@ namespace Hazel {
 
 		int m_GizmoType = -1;
 		bool m_GizmoEnabled = true;
+
+		bool m_ShowPhysicsColliders = false;
 
 		enum class SceneState
 		{

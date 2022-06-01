@@ -80,9 +80,11 @@ namespace Hazel {
 
 	void EditorCamera::OnEvent(Event& e)
 	{
-		EventDispatcher dispatcher(e);
-		// TODO: Only dispatch when viewport is hovered
-		dispatcher.Dispatch<MouseScrolledEvent>(HZ_BIND_EVENT_FN(EditorCamera::OnMouseScroll));
+		if (!m_EventsBlocked)
+		{
+			EventDispatcher dispatcher(e);
+			dispatcher.Dispatch<MouseScrolledEvent>(HZ_BIND_EVENT_FN(EditorCamera::OnMouseScroll));
+		}
 	}
 
 	bool EditorCamera::OnMouseScroll(MouseScrolledEvent& e)

@@ -113,6 +113,7 @@ namespace Hazel {
 	{
 		glm::vec2 Offset = { 0.0f, 0.0f };
 		glm::vec2 Size = { 0.5f, 0.5f };
+		float Rotation = 0.0f;
 
 		// TODO: move into physics material in the future
 		float Density = 1.0f;
