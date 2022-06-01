@@ -6,11 +6,14 @@
 
 #include <entt.hpp>
 
+#include <string_view>
+
 class b2World;
 
 namespace Hazel {
 
 	class Entity;
+	struct CameraComponent;
 
 	class Scene
 	{
@@ -20,9 +23,10 @@ namespace Hazel {
 
 		static Ref<Scene> Copy(Ref<Scene> other);
 
-		Entity CreateEntity(const std::string& name = std::string());
-		Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
+		Entity CreateEntity(const std::string_view name = {});
+		Entity CreateEntityWithUUID(UUID uuid, const std::string_view name = {});
 		void DestroyEntity(Entity entity);
+		void DestroyAllEntities();
 
 		void OnRuntimeStart();
 		void OnRuntimeStop();
@@ -39,7 +43,10 @@ namespace Hazel {
 		auto GetAllEntitiesWith() { return m_Registry.view<Components...>(); }
 	private:
 		template<typename T>
-		void OnComponentAdded(Entity entity, T& component);
+		void OnComponentAdded(Entity entity, T& component) {}
+
+		template<>
+		void OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component);
 	private:
 		entt::registry m_Registry;
 		uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;

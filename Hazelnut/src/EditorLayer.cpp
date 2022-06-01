@@ -47,6 +47,8 @@ namespace Hazel {
 			serializer.Deserialize(sceneFilePath);
 		}
 
+		Application::Get().GetImGuiLayer()->BlockEvents(false);
+
 		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1, 1000.0f);
 
 		#if 0
@@ -152,7 +154,7 @@ namespace Hazel {
 		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)m_ViewportSize.x && mouseY < (int)m_ViewportSize.y)
 		{
 			int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
-			m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
+			m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, *m_ActiveScene);
 		}
 		else m_HoveredEntity = Entity();
 
@@ -233,7 +235,6 @@ namespace Hazel {
 
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
-		Application::Get().GetImGuiLayer()->BlockEvents(false);
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
@@ -445,6 +446,7 @@ namespace Hazel {
 					m_GizmoType = ImGuizmo::OPERATION::SCALE;
 				break;
 		}
+		return false;
 	}
 
 	bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)

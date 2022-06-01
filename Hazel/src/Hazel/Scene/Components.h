@@ -4,11 +4,17 @@
 #include "Hazel/Core/UUID.h"
 #include "Hazel/Renderer/Texture.h"
 
+#include "Hazel/Scene/NativeScript.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
+
+#include <functional> // TODO: Remove
+#include <memory>
+#include <unordered_map>
 
 namespace Hazel {
 
@@ -55,8 +61,8 @@ namespace Hazel {
 
 		SpriteRendererComponent() = default;
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;
-		SpriteRendererComponent(const glm::vec4& color)
-			: Color(color) {}
+		SpriteRendererComponent(const glm::vec4& color) : Color(color) {}
+		SpriteRendererComponent(const Ref<Texture2D>& texture) : Texture(texture) {}
 	};
 
 	struct CircleRendererComponent
@@ -79,20 +85,41 @@ namespace Hazel {
 		CameraComponent(const CameraComponent&) = default;
 	};
 
-	class ScriptableEntity;
-
 	struct NativeScriptComponent
 	{
-		ScriptableEntity* Instance = nullptr;
+		std::unordered_map<entt::id_type, std::function<std::shared_ptr<NativeScript>(Entity entity)>> InstantiateScripts;
+		std::unordered_map<entt::id_type, std::shared_ptr<NativeScript>> Instances;
 
-		ScriptableEntity*(*InstantiateScript)();
-		void(*DestroyScript)(NativeScriptComponent*);
+		template<typename T, typename... Args>
+		NativeScriptComponent& Bind(Args... args)
+		{
+			InstantiateScripts.try_emplace(entt::type_id<T>().seq(), [args...](Entity entity)->std::shared_ptr<NativeScript> { return std::make_shared<T>(entity, args...); });
+			return *this;
+		}
+
+		NativeScriptComponent& Instantiate(Entity entity)
+		{
+			// note: no guarantee on order that the scripts are instantiated
+			for (const auto& [id, instantiateScript] : InstantiateScripts)
+			{
+				Instances.try_emplace(id, instantiateScript(entity));
+			}
+			return *this;
+		}
 
 		template<typename T>
-		void Bind()
+		T* GetInstance()
 		{
-			InstantiateScript = []() { return static_cast<ScriptableEntity*>(new T()); };
-			DestroyScript = [](NativeScriptComponent* nsc) { delete nsc->Instance; nsc->Instance = nullptr; };
+			return Instances.at[entt::type_hash<T>];
+		}
+
+		void OnUpdate(Timestep ts)
+		{
+			// note: no guarantee on order that the instances are updated
+			for (auto& [id, instance] : Instances)
+			{
+				instance->OnUpdate(ts);
+			}
 		}
 	};
 

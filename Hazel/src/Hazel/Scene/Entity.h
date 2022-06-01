@@ -2,7 +2,6 @@
 
 #include "Hazel/Core/UUID.h"
 #include "Hazel/Scene/Scene.h"
-#include "Hazel/Scene/Components.h"
 
 #include <entt.hpp>
 
@@ -12,16 +11,18 @@ namespace Hazel {
 	{
 	public:
 		Entity() = default;
+		Entity(entt::entity handle, Scene& scene);
 		Entity(const Entity&) = default;
-		Entity(entt::entity handle, Scene* scene);
+
+		Scene& GetScene() { return *m_Scene; }
 
 		template<typename T, typename... Args>
-		T& AddComponent(Args&&... args)
+		Entity& AddComponent(Args&&... args)
 		{
 			HZ_CORE_ASSERT(!HasComponent<T>(), "Entity already has component");
 			T& component = m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
 			m_Scene->OnComponentAdded<T>(*this, component);
-			return component;
+			return *this;
 		}
 
 		template<typename T, typename... Args>
@@ -46,21 +47,33 @@ namespace Hazel {
 		}
 
 		template<typename T>
-		void RemoveComponent()
+		Entity& RemoveComponent()
 		{
 			HZ_CORE_ASSERT(HasComponent<T>(), "Entity does not have component");
 			m_Scene->m_Registry.remove<T>(m_EntityHandle);
+			return *this;
+		}
+
+		Entity CreateEntity(const std::string_view name = {})
+		{
+			return m_Scene->CreateEntity(name);
+		}
+
+		void DestroyAllEntities()
+		{
+			m_Scene->DestroyAllEntities();
+		}
+
+		void DestroyEntity(Entity entity)
+		{
+			m_Scene->DestroyEntity(entity);
 		}
 
 		operator bool() const { return m_EntityHandle != entt::null; }
-		operator entt::entity() const { return m_EntityHandle; }
-		operator uint32_t() const { return (uint32_t)m_EntityHandle; }
-
-		const std::string& GetName() { return GetComponent<TagComponent>().Tag; }
-		UUID GetUUID() { return GetComponent<IDComponent>().ID; }
-
 		bool operator==(const Entity& other) const { return m_EntityHandle == other.m_EntityHandle && m_Scene == other.m_Scene; }
 		bool operator!=(const Entity& other) const { return !(*this == other); }
+		operator entt::entity() const { return m_EntityHandle; }
+		operator uint32_t() const { return (uint32_t)m_EntityHandle; }
 	private:
 		entt::entity m_EntityHandle{ entt::null };
 		Scene* m_Scene = nullptr;

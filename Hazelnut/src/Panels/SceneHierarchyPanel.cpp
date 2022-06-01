@@ -1,11 +1,11 @@
 #include "SceneHierarchyPanel.h"
 
+#include "Hazel/Scene/Components.h"
+
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 
 #include <glm/gtc/type_ptr.hpp>
-
-#include "Hazel/Scene/Components.h"
 
 namespace Hazel {
 
@@ -30,7 +30,7 @@ namespace Hazel {
 		{
 			m_Context->m_Registry.each([&](entt::entity entityID)
 				{
-					Entity entity{ entityID, m_Context.get() };
+					Entity entity{ entityID, *m_Context };
 					DrawEntityNode(entity);
 				});
 			if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())

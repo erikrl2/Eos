@@ -20,6 +20,8 @@ namespace Hazel {
 
 	Application* CreateApplication(ApplicationCommandLineArgs args)
 	{
+		//args.Args[1] = "assets/scenes/Test.hazel";
+		//args.Count++;
 		return new Hazelnut(args);
 	}
 

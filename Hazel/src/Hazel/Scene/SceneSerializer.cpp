@@ -1,7 +1,7 @@
 #include "hzpch.h"
 #include "Hazel/Scene/SceneSerializer.h"
 
-#include "Hazel/Scene/Entity.h"
+//#include "Hazel/Scene/Entity.h"
 #include "Hazel/Scene/Components.h"
 
 #include <fstream>
@@ -142,7 +142,7 @@ namespace Hazel {
 		HZ_CORE_ASSERT(entity.HasComponent<IDComponent>());
 
 		out << YAML::BeginMap;
-		out << YAML::Key << "Entity" << YAML::Value << entity.GetUUID();
+		out << YAML::Key << "Entity" << YAML::Value << entity.GetComponent<IDComponent>().ID;
 
 		if (entity.HasComponent<TagComponent>())
 		{
@@ -280,7 +280,7 @@ namespace Hazel {
 		auto idView = m_Scene->m_Registry.view<IDComponent>();
 		for (auto it = idView.rbegin(); it != idView.rend(); it++)
 		{
-			Entity entity = { *it, m_Scene.get() };
+			Entity entity = { *it, *m_Scene };
 			if (!entity)
 				return;
 
@@ -345,7 +345,7 @@ namespace Hazel {
 				auto cameraComponent = entity["CameraComponent"];
 				if (cameraComponent)
 				{
-					auto& cc = deserializedEntity.AddComponent<CameraComponent>();
+					auto& cc = deserializedEntity.AddComponent<CameraComponent>().GetComponent<CameraComponent>();
 					
 					auto cameraProps = cameraComponent["Camera"];
 					cc.Camera.SetProjectionType((SceneCamera::ProjectionType)cameraProps["ProjectionType"].as<int>());
@@ -364,7 +364,7 @@ namespace Hazel {
 				auto spriteRendererComponent = entity["SpriteRendererComponent"];
 				if (spriteRendererComponent)
 				{
-					auto& src = deserializedEntity.AddComponent<SpriteRendererComponent>();
+					auto& src = deserializedEntity.AddComponent<SpriteRendererComponent>().GetComponent<SpriteRendererComponent>();
 					src.Color = spriteRendererComponent["Color"].as<glm::vec4>();
 					if (auto texture = spriteRendererComponent["TexturePath"])
 					{
@@ -380,7 +380,7 @@ namespace Hazel {
 				auto circleRendererComponent = entity["CircleRendererComponent"];
 				if (circleRendererComponent)
 				{
-					auto& crc = deserializedEntity.AddComponent<CircleRendererComponent>();
+					auto& crc = deserializedEntity.AddComponent<CircleRendererComponent>().GetComponent<CircleRendererComponent>();
 					crc.Color = circleRendererComponent["Color"].as<glm::vec4>();
 					crc.Thickness = circleRendererComponent["Thickness"].as<float>();
 					crc.Fade = circleRendererComponent["Fade"].as<float>();
@@ -389,7 +389,7 @@ namespace Hazel {
 				auto rigidbody2DComponent = entity["Rigidbody2DComponent"];
 				if (rigidbody2DComponent)
 				{
-					auto& rb2d = deserializedEntity.AddComponent<Rigidbody2DComponent>();
+					auto& rb2d = deserializedEntity.AddComponent<Rigidbody2DComponent>().GetComponent<Rigidbody2DComponent>();
 					rb2d.Type = RigidBody2DBodyTypeFromString(rigidbody2DComponent["BodyType"].as<std::string>());
 					rb2d.FixedRotation = rigidbody2DComponent["FixedRotation"].as<bool>();
 				}
@@ -397,7 +397,7 @@ namespace Hazel {
 				auto boxCollider2DComponent = entity["BoxCollider2DComponent"];
 				if (boxCollider2DComponent)
 				{
-					auto& bc2d = deserializedEntity.AddComponent<BoxCollider2DComponent>();
+					auto& bc2d = deserializedEntity.AddComponent<BoxCollider2DComponent>().GetComponent<BoxCollider2DComponent>();
 					bc2d.Offset = boxCollider2DComponent["Offset"].as<glm::vec2>();
 					bc2d.Size = boxCollider2DComponent["Size"].as<glm::vec2>();
 					bc2d.Rotation = boxCollider2DComponent["Rotation"].as<float>();
@@ -410,7 +410,7 @@ namespace Hazel {
 				auto circleCollider2DComponent = entity["CircleCollider2DComponent"];
 				if (circleCollider2DComponent)
 				{
-					auto& cc2d = deserializedEntity.AddComponent<CircleCollider2DComponent>();
+					auto& cc2d = deserializedEntity.AddComponent<CircleCollider2DComponent>().GetComponent<CircleCollider2DComponent>();
 					cc2d.Offset = circleCollider2DComponent["Offset"].as<glm::vec2>();
 					cc2d.Radius = circleCollider2DComponent["Radius"].as<float>();
 					cc2d.Density = circleCollider2DComponent["Density"].as<float>();
