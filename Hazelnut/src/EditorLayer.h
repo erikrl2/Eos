@@ -26,7 +26,6 @@ namespace Hazel {
 		bool OnMouseButtonReleased(MouseButtonReleasedEvent& e);
 
 		bool CanSelectEntity();
-		bool IsViewportHovered() const { return m_ViewportHovered; }
 
 		void OnOverlayRender();
 
@@ -45,6 +44,7 @@ namespace Hazel {
 
 		// UI Panels
 		void UI_Toolbar();
+		void UI_Settings();
 		void UI_RendererStats();
 	private:
 		EditorCamera m_EditorCamera;
@@ -61,7 +61,6 @@ namespace Hazel {
 		glm::vec2 m_ViewportBounds[2];
 
 		int m_GizmoType = -1;
-		bool m_GizmoEnabled = true;
 
 		bool m_ShowPhysicsColliders = false;
 

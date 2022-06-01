@@ -125,12 +125,13 @@ namespace Hazel {
 		{
 			case SceneState::Edit:
 			{
-				if (m_ViewportHovered) // m_ViewportFocused || m_ViewportHovered
+				if (m_ViewportHovered)
 				{
 					m_EditorCamera.OnUpdate(ts);
 					m_EditorCamera.BlockEvents(false);
 				}
-				else m_EditorCamera.BlockEvents(true);
+				else
+					m_EditorCamera.BlockEvents(true);
 
 				m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 				break;
@@ -164,8 +165,7 @@ namespace Hazel {
 	{
 		HZ_PROFILE_FUNCTION();
 
-		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-
+		// Dockspace
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
 		const ImGuiViewport* viewport = ImGui::GetMainViewport();
 		ImGui::SetNextWindowPos(viewport->WorkPos);
@@ -187,7 +187,7 @@ namespace Hazel {
 		style.WindowMinSize = { 350.0f, 50.0f };
 
 		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 		style.WindowMinSize = minWinSize;
 
 		if (ImGui::BeginMenuBar())
@@ -214,16 +214,15 @@ namespace Hazel {
 			ImGui::EndMenuBar();
 		}
 
+		// UI Panels
 		m_SceneHierarchyPanel.OnImGuiRender();
 		m_ContentBrowserPanel.OnImGuiRender();
 
 		UI_Toolbar();
+		UI_Settings();
 		UI_RendererStats();
 
-		ImGui::Begin("Settings");
-		ImGui::Checkbox("Show physics colliders", &m_ShowPhysicsColliders);
-		ImGui::End();
-
+		// Viewport
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
 		ImGui::Begin("Viewport");
 		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
@@ -234,7 +233,7 @@ namespace Hazel {
 
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
-		Application::Get().GetImGuiLayer()->BlockEvents(false); // !(m_ViewportHovered)
+		Application::Get().GetImGuiLayer()->BlockEvents(false);
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
@@ -260,22 +259,23 @@ namespace Hazel {
 
 			ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
 
-			glm::mat4 cameraProjection;
-			glm::mat4 cameraView;
+			const glm::mat4* cameraProjection;
+			const glm::mat4* cameraView;
 
 			if (m_SceneState == SceneState::Play)
 			{
 				//Runtime Camera
 				auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
 				const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
-				cameraProjection = camera.GetProjection(); // TODO: prevent copying
-				cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+				cameraProjection = &camera.GetProjection();
+				glm::mat4 viewMatrix = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+				cameraView = &viewMatrix;
 			}
 			else
 			{
 				// Editor Camera
-				cameraProjection = m_EditorCamera.GetProjection(); // TODO: prevent copying
-				cameraView = m_EditorCamera.GetViewMatrix(); // TODO: prevent copying
+				cameraProjection = &m_EditorCamera.GetProjection();
+				cameraView = &m_EditorCamera.GetViewMatrix();
 			}
 
 			// Entity Transform
@@ -290,7 +290,7 @@ namespace Hazel {
 
 			float snapValues[3] = { snapValue, snapValue, snapValue };
 
-			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::MODE::LOCAL, glm::value_ptr(transform), nullptr, snap ? snapValues : nullptr);
+			ImGuizmo::Manipulate(glm::value_ptr(*cameraView), glm::value_ptr(*cameraProjection), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::MODE::LOCAL, glm::value_ptr(transform), nullptr, snap ? snapValues : nullptr);
 
 			if (ImGuizmo::IsUsing())
 			{
@@ -342,6 +342,13 @@ namespace Hazel {
 		ImGui::SetCursorPosX(5.0f);
 		ImGui::Text(m_SceneState == SceneState::Play ? "Playing: %s" : "Editing: %s", sceneName.c_str());
 
+		ImGui::End();
+	}
+
+	void EditorLayer::UI_Settings()
+	{
+		ImGui::Begin("Settings");
+		ImGui::Checkbox("Show physics colliders", &m_ShowPhysicsColliders);
 		ImGui::End();
 	}
 
@@ -447,9 +454,7 @@ namespace Hazel {
 			if (CanSelectEntity())
 			{
 				m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
-
 				ImGuizmo::Enable(false);
-				m_GizmoEnabled = false;
 			}
 		}
 		return false;
@@ -459,11 +464,7 @@ namespace Hazel {
 	{
 		if (e.GetMouseButton() == Mouse::Button0)
 		{
-			if (!m_GizmoEnabled)
-			{
-				ImGuizmo::Enable(true);
-				m_GizmoEnabled = true;
-			}
+			ImGuizmo::Enable(true);
 		}
 		return false;
 	}
@@ -477,8 +478,10 @@ namespace Hazel {
 	{
 		if (m_SceneState == SceneState::Play)
 		{
-			Entity camera = m_ActiveScene->GetPrimaryCameraEntity();
-			Renderer2D::BeginScene(camera.GetComponent<CameraComponent>().Camera, camera.GetComponent<TransformComponent>().GetTransform());
+			if (Entity camera = m_ActiveScene->GetPrimaryCameraEntity())
+				Renderer2D::BeginScene(camera.GetComponent<CameraComponent>().Camera, camera.GetComponent<TransformComponent>().GetTransform());
+			else
+				return;
 		}
 		else
 		{
