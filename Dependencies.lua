@@ -1,28 +1,28 @@
 
--- Hazel Dependencies
+-- Eos Dependencies
 
 VULKAN_SDK = os.getenv("VULKAN_SDK")
 
 IncludeDir = {}
-IncludeDir["spdlog"] = "%{wks.location}/Hazel/vendor/spdlog/include"
-IncludeDir["stb_image"] = "%{wks.location}/Hazel/vendor/stb_image"
-IncludeDir["yaml_cpp"] = "%{wks.location}/Hazel/vendor/yaml-cpp/include"
-IncludeDir["Box2D"] = "%{wks.location}/Hazel/vendor/Box2D/include"
-IncludeDir["GLFW"] = "%{wks.location}/Hazel/vendor/GLFW/include"
-IncludeDir["Glad"] = "%{wks.location}/Hazel/vendor/Glad/include"
-IncludeDir["Imgui"] = "%{wks.location}/Hazel/vendor/imgui"
-IncludeDir["ImGuizmo"] = "%{wks.location}/Hazel/vendor/ImGuizmo"
-IncludeDir["glm"] = "%{wks.location}/Hazel/vendor/glm"
-IncludeDir["entt"] = "%{wks.location}/Hazel/vendor/entt/include"
-IncludeDir["shaderc"] = "%{wks.location}/Hazel/vendor/shaderc/include"
-IncludeDir["SPIRV_Cross"] = "%{wks.location}/Hazel/vendor/SPIRV-Cross"
+IncludeDir["spdlog"] = "%{wks.location}/Eos/vendor/spdlog/include"
+IncludeDir["stb_image"] = "%{wks.location}/Eos/vendor/stb_image"
+IncludeDir["yaml_cpp"] = "%{wks.location}/Eos/vendor/yaml-cpp/include"
+IncludeDir["Box2D"] = "%{wks.location}/Eos/vendor/Box2D/include"
+IncludeDir["GLFW"] = "%{wks.location}/Eos/vendor/GLFW/include"
+IncludeDir["Glad"] = "%{wks.location}/Eos/vendor/Glad/include"
+IncludeDir["Imgui"] = "%{wks.location}/Eos/vendor/imgui"
+IncludeDir["ImGuizmo"] = "%{wks.location}/Eos/vendor/ImGuizmo"
+IncludeDir["glm"] = "%{wks.location}/Eos/vendor/glm"
+IncludeDir["entt"] = "%{wks.location}/Eos/vendor/entt/include"
+IncludeDir["shaderc"] = "%{wks.location}/Eos/vendor/shaderc/include"
+IncludeDir["SPIRV_Cross"] = "%{wks.location}/Eos/vendor/SPIRV-Cross"
 IncludeDir["VulkanSDK"] = "%{VULKAN_SDK}/Include"
 
 LibraryDir = {}
 
 LibraryDir["VulkanSDK"] = "%{VULKAN_SDK}/Lib"
-LibraryDir["VulkanSDK_Debug"] = "%{wks.location}/Hazel/vendor/VulkanSDK/Lib"
-LibraryDir["VulkanSDK_DebugDLL"] = "%{wks.location}/Hazel/vendor/VulkanSDK/Bin"
+LibraryDir["VulkanSDK_Debug"] = "%{wks.location}/Eos/vendor/VulkanSDK/Lib"
+LibraryDir["VulkanSDK_DebugDLL"] = "%{wks.location}/Eos/vendor/VulkanSDK/Bin"
 
 Library = {}
 Library["Vulkan"] = "%{LibraryDir.VulkanSDK}/vulkan-1.lib"

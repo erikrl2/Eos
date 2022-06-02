@@ -15,23 +15,23 @@ project "Sandbox"
 
 	includedirs
 	{
-		"%{wks.location}/Hazel/vendor/spdlog/include",
-		"%{wks.location}/Hazel/src",
-		"%{wks.location}/Hazel/vendor",
+		"%{wks.location}/Eos/vendor/spdlog/include",
+		"%{wks.location}/Eos/src",
+		"%{wks.location}/Eos/vendor",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.entt}"
 	}
 
 	links
 	{
-		"Hazel"
+		"Eos"
 	}
 		
 	filter "system:windows"
 		systemversion "latest"
 
 	filter "configurations:Debug"
-		defines "HZ_DEBUG"
+		defines "EOS_DEBUG"
 		runtime "Debug"
 		symbols "on"
 
@@ -41,11 +41,11 @@ project "Sandbox"
 		}
 
 	filter "configurations:Release"
-		defines "HZ_RELEASE"
+		defines "EOS_RELEASE"
 		runtime "Release"
 		optimize "on"
 
 	filter "configurations:Dist"
-		defines "HZ_DIST"
+		defines "EOS_DIST"
 		runtime "Release"
 		optimize "on"

@@ -1,9 +1,9 @@
 include "./vendor/premake/premake_customization/solution_items.lua"
 include "Dependencies.lua"
 
-workspace "Hazel"
+workspace "Eos"
 	architecture "x86_64"
-	startproject "Hazelnut"
+	startproject "EosEditor"
 
 	configurations
 	{
@@ -26,13 +26,13 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 group "Dependencies"
 	include "vendor/premake"
-	include "Hazel/vendor/Box2D"
-	include "Hazel/vendor/GLFW"
-	include "Hazel/vendor/Glad"
-	include "Hazel/vendor/imgui"
-	include "Hazel/vendor/yaml-cpp"
+	include "Eos/vendor/Box2D"
+	include "Eos/vendor/GLFW"
+	include "Eos/vendor/Glad"
+	include "Eos/vendor/imgui"
+	include "Eos/vendor/yaml-cpp"
 group ""
 
-include "Hazel"
+include "Eos"
 include "Sandbox"
-include "Hazelnut"
+include "EosEditor"
