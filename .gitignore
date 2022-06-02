@@ -11,6 +11,6 @@ bin-int/
 **.vcxproj*
 
 # Directories
-Hazel/vendor/VulkanSDK
-Hazelnut/assets/cache
+Eos/vendor/VulkanSDK
+EosEditor/assets/cache
 scripts/__pycache__

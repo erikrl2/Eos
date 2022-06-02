@@ -1,9 +1,9 @@
-#include <Hazel.h>
-#include <Hazel/Core/EntryPoint.h>
+#include <Eos.h>
+#include <Eos/Core/EntryPoint.h>
 
 #include "Sandbox2D.h"
 
-class Sandbox : public Hazel::Application
+class Sandbox : public Eos::Application
 {
 public:
 	Sandbox()
@@ -15,7 +15,7 @@ public:
 	}
 };
 
-Hazel::Application* Hazel::CreateApplication(ApplicationCommandLineArgs args)
+Eos::Application* Eos::CreateApplication(ApplicationCommandLineArgs args)
 {
 	return new Sandbox();
 }

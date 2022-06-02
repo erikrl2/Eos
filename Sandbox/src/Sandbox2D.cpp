@@ -18,7 +18,7 @@ void Sandbox2D::OnDetach()
 {
 }
 
-void Sandbox2D::OnUpdate(Hazel::Timestep ts)
+void Sandbox2D::OnUpdate(Eos::Timestep ts)
 {
 }
 
@@ -26,6 +26,6 @@ void Sandbox2D::OnImGuiRender()
 {
 }
 
-void Sandbox2D::OnEvent(Hazel::Event& e)
+void Sandbox2D::OnEvent(Eos::Event& e)
 {
 }

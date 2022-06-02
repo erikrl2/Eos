@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Hazel.h>
+#include <Eos.h>
 
-class Sandbox2D : public Hazel::Layer
+class Sandbox2D : public Eos::Layer
 {
 public:
 	Sandbox2D();
@@ -10,8 +10,8 @@ public:
 
 	virtual void OnAttach() override;
 	virtual void OnDetach() override;
-	virtual void OnUpdate(Hazel::Timestep ts) override;
+	virtual void OnUpdate(Eos::Timestep ts) override;
 	virtual void OnImGuiRender() override;
-	virtual void OnEvent(Hazel::Event& e) override;
+	virtual void OnEvent(Eos::Event& e) override;
 private:
 };
