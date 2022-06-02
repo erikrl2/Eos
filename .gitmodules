@@ -1,28 +1,28 @@
-[submodule "Hazel/vendor/spdlog"]
+[submodule "Eos/vendor/spdlog"]
 	path = Eos/vendor/spdlog
 	url = https://github.com/gabime/spdlog
 	branch = v1.x
-[submodule "Hazel/vendor/glm"]
+[submodule "Eos/vendor/glm"]
 	path = Eos/vendor/glm
 	url = https://github.com/g-truc/glm
 	branch = master
-[submodule "Hazel/vendor/GLFW"]
+[submodule "Eos/vendor/GLFW"]
 	path = Eos/vendor/GLFW
 	url = https://github.com/erikrl2/glfw
 	branch = master
-[submodule "Hazel/vendor/imgui"]
+[submodule "Eos/vendor/imgui"]
 	path = Eos/vendor/imgui
 	url = https://github.com/erikrl2/imgui
 	branch = docking
-[submodule "Hazel/vendor/yaml-cpp"]
+[submodule "Eos/vendor/yaml-cpp"]
 	path = Eos/vendor/yaml-cpp
 	url = https://github.com/erikrl2/yaml-cpp
 	branch = master
-[submodule "Hazel/vendor/ImGuizmo"]
+[submodule "Eos/vendor/ImGuizmo"]
 	path = Eos/vendor/ImGuizmo
 	url = https://github.com/erikrl2/ImGuizmo
 	branch = master
-[submodule "Hazel/vendor/Box2D"]
+[submodule "Eos/vendor/Box2D"]
 	path = Eos/vendor/Box2D
 	url = https://github.com/erikrl2/box2d
 	branch = main
