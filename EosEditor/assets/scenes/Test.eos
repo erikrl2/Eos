@@ -1,4 +1,4 @@
-Scene: Test.hazel
+Scene: Test
 Entities:
   - Entity: 3236264385195193517
     TagComponent:
@@ -26,7 +26,7 @@ Entities:
       Rotation: [0, 0, 0]
       Scale: [6.5, 0.5, 1]
     SpriteRendererComponent:
-      Color: [0.879032254, 0.41470477, 0.41470477, 1]
+      Color: [0.4911246, 0.786290288, 0.291688323, 1]
     Rigidbody2DComponent:
       BodyType: Static
       FixedRotation: false

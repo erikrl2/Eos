@@ -24,6 +24,8 @@ namespace Eos {
 		void SetVSync(bool enabled) override;
 		bool IsVSync() const override;
 
+		void SetTitle(const std::string& title) override;
+
 		virtual void* GetNativeWindow() const { return m_Window; }
 	private:
 		virtual void Init(const WindowProps& props);

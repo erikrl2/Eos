@@ -80,11 +80,8 @@ namespace Eos {
 
 	void EditorCamera::OnEvent(Event& e)
 	{
-		if (!m_EventsBlocked)
-		{
-			EventDispatcher dispatcher(e);
-			dispatcher.Dispatch<MouseScrolledEvent>(EOS_BIND_EVENT_FN(EditorCamera::OnMouseScroll));
-		}
+		EventDispatcher dispatcher(e);
+		dispatcher.Dispatch<MouseScrolledEvent>(EOS_BIND_EVENT_FN(EditorCamera::OnMouseScroll));
 	}
 
 	bool EditorCamera::OnMouseScroll(MouseScrolledEvent& e)

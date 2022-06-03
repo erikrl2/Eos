@@ -36,62 +36,18 @@ namespace Eos {
 		fbSpec.Height = 720;
 		m_Framebuffer = Framebuffer::Create(fbSpec);
 
-		m_EditorScene = CreateRef<Scene>();
-		m_ActiveScene = m_EditorScene;
+		Application::Get().GetImGuiLayer()->BlockEvents(false);
+
+		bool sceneLoaded = false;
 
 		auto commandLineArgs = Application::Get().GetCommandLineArgs();
 		if (commandLineArgs.Count > 1)
-		{
-			auto sceneFilePath = commandLineArgs[1];
-			SceneSerializer serializer(m_ActiveScene);
-			serializer.Deserialize(sceneFilePath);
-		}
+			sceneLoaded = OpenScene(commandLineArgs[1]);
 
-		Application::Get().GetImGuiLayer()->BlockEvents(false);
+		if (!sceneLoaded)
+			NewScene();
 
 		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1, 1000.0f);
-
-		#if 0
-		// Entity
-		auto greenSquare = m_ActiveScene->CreateEntity("Green Square");
-		greenSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.1, 1.0f, 0.0f, 1.0f });
-
-		auto redSquare = m_ActiveScene->CreateEntity("Red Square");
-		redSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 1.0, 0.0f, 0.0f, 1.0f });
-
-		auto& perpectiveCamera = m_ActiveScene->CreateEntity("Camera (perspective)");
-		perpectiveCamera.AddComponent<CameraComponent>().Camera.SetProjectionType(SceneCamera::ProjectionType::Perspective);
-
-		auto& orthoCamera = m_ActiveScene->CreateEntity("Camera (orthographic)");
-		orthoCamera.AddComponent<CameraComponent>().Primary = true;
-
-		class CameraController : public ScriptableEntity
-		{
-		public:
-			virtual void OnCreate() override
-			{
-			}
-
-			virtual void OnUpdate(Timestep ts) override
-			{
-				auto& translation = GetComponent<TransformComponent>().Translation;
-				float speed = 5.0f;
-
-				if (Input::IsKeyPressed(Key::A))
-					translation.x -= speed * ts;
-				if (Input::IsKeyPressed(Key::D))
-					translation.x += speed * ts;
-				if (Input::IsKeyPressed(Key::W))
-					translation.y += speed * ts;
-				if (Input::IsKeyPressed(Key::S))
-					translation.y -= speed * ts;
-			}
-		};
-		perpectiveCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-		orthoCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-		#endif
-
-		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 	}
 
 	void EditorLayer::OnDetach()
@@ -128,12 +84,7 @@ namespace Eos {
 			case SceneState::Edit:
 			{
 				if (m_ViewportHovered)
-				{
 					m_EditorCamera.OnUpdate(ts);
-					m_EditorCamera.BlockEvents(false);
-				}
-				else
-					m_EditorCamera.BlockEvents(true);
 
 				m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 				break;
@@ -192,6 +143,18 @@ namespace Eos {
 		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 		style.WindowMinSize = minWinSize;
 
+		UI_MenuBar();
+		UI_Viewport();
+		UI_Toolbar();
+		UI_ChildPanels();
+		UI_Settings();
+		UI_RendererStats();
+
+		ImGui::End();
+	}
+
+	void EditorLayer::UI_MenuBar()
+	{
 		if (ImGui::BeginMenuBar())
 		{
 			if (ImGui::BeginMenu("File"))
@@ -215,16 +178,10 @@ namespace Eos {
 			}
 			ImGui::EndMenuBar();
 		}
+	}
 
-		// UI Panels
-		m_SceneHierarchyPanel.OnImGuiRender();
-		m_ContentBrowserPanel.OnImGuiRender();
-
-		UI_Toolbar();
-		UI_Settings();
-		UI_RendererStats();
-
-		// Viewport
+	void EditorLayer::UI_Viewport()
+	{
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
 		ImGui::Begin("Viewport");
 		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
@@ -246,12 +203,34 @@ namespace Eos {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
 			{
 				const wchar_t* path = (const wchar_t*)payload->Data;
-				OpenScene(std::filesystem::path(g_AssetPath) / path);
+				std::filesystem::path parentPath = std::filesystem::path(path).parent_path();
+
+				if (parentPath == "scenes")	// Load scene
+					OpenScene(std::filesystem::path(g_AssetPath) / path);
+				else if (parentPath == "textures") // Load texture
+				{
+					if (m_HoveredEntity && m_HoveredEntity.HasComponent<SpriteRendererComponent>())
+					{
+						std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
+						Ref<Texture2D> texture = Texture2D::Create(texturePath.string());
+						if (texture->IsLoaded())
+							m_HoveredEntity.GetComponent<SpriteRendererComponent>().Texture = texture;
+						else
+							EOS_WARN("Could not load texture {0}", texturePath.filename().string());
+					}
+				}
 			}
 			ImGui::EndDragDropTarget();
 		}
 
-		// Gizmos
+		UI_Gizmos();
+
+		ImGui::End();
+		ImGui::PopStyleVar();
+	}
+
+	void EditorLayer::UI_Gizmos()
+	{
 		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 		if (selectedEntity && m_GizmoType != -1 && m_SceneState == SceneState::Edit)
 		{
@@ -289,11 +268,6 @@ namespace Eos {
 				tc.Scale = scale;
 			}
 		}
-
-		ImGui::End();
-		ImGui::PopStyleVar();
-
-		ImGui::End();
 	}
 
 	void EditorLayer::UI_Toolbar()
@@ -322,13 +296,13 @@ namespace Eos {
 		ImGui::PopStyleVar(2);
 		ImGui::PopStyleColor(3);
 
-		// TODO: maybe display active scene in window bar
-		ImGui::SameLine();
-		const std::string sceneName = m_EditorScenePath.has_filename() ? m_EditorScenePath.filename().string() : "unsaved Scene";
-		ImGui::SetCursorPosX(5.0f);
-		ImGui::Text(m_SceneState == SceneState::Play ? "Playing: %s" : "Editing: %s", sceneName.c_str());
-
 		ImGui::End();
+	}
+
+	void EditorLayer::UI_ChildPanels()
+	{
+		m_SceneHierarchyPanel.OnImGuiRender();
+		m_ContentBrowserPanel.OnImGuiRender();
 	}
 
 	void EditorLayer::UI_Settings()
@@ -355,7 +329,8 @@ namespace Eos {
 
 	void EditorLayer::OnEvent(Event& e)
 	{
-		m_EditorCamera.OnEvent(e);
+		if (m_SceneState == SceneState::Edit && m_ViewportHovered)
+			m_EditorCamera.OnEvent(e);
 
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<KeyPressedEvent>(EOS_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
@@ -398,14 +373,6 @@ namespace Eos {
 			}
 
 			// Scene Commands
-			case Key::Space:
-			{
-				if (m_SceneState == SceneState::Edit)
-					OnScenePlay();
-				else
-					OnSceneStop();
-				break;
-			}
 			case Key::D:
 			{
 				if (control)
@@ -480,6 +447,12 @@ namespace Eos {
 			// Box Colliders
 			{
 				auto view = m_ActiveScene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
+
+				// Calculate z index for translation
+				float zIndex = 0.001f;
+				glm::vec3 cameraForwardDirection = m_EditorCamera.GetForwardDirection();
+				glm::vec3 projectionCollider = cameraForwardDirection * glm::vec3(zIndex);
+
 				for (auto entity : view)
 				{
 					auto [tc, bc2d] = view.get<TransformComponent, BoxCollider2DComponent>(entity);
@@ -488,7 +461,7 @@ namespace Eos {
 
 					glm::mat4 transform = glm::translate(glm::mat4(1.0f), tc.Translation)
 						* glm::rotate(glm::mat4(1.0f), tc.Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f))
-						* glm::translate(glm::mat4(1.0f), glm::vec3(bc2d.Offset, 0.001f))
+						* glm::translate(glm::mat4(1.0f), glm::vec3(bc2d.Offset, -projectionCollider.z))
 						* glm::rotate(glm::mat4(1.0f), bc2d.Rotation, glm::vec3(0.0f, 0.0f, 1.0f))
 						* glm::scale(glm::mat4(1.0f), scale);
 
@@ -499,6 +472,12 @@ namespace Eos {
 			// Circle Colliders
 			{
 				auto view = m_ActiveScene->GetAllEntitiesWith<TransformComponent, CircleCollider2DComponent>();
+
+				// Calculate z index for translation
+				float zIndex = 0.001f;
+				glm::vec3 cameraForwardDirection = m_EditorCamera.GetForwardDirection();
+				glm::vec3 projectionCollider = cameraForwardDirection * glm::vec3(zIndex);
+
 				for (auto entity : view)
 				{
 					auto [tc, cc2d] = view.get<TransformComponent, CircleCollider2DComponent>(entity);
@@ -507,7 +486,7 @@ namespace Eos {
 
 					glm::mat4 transform = glm::translate(glm::mat4(1.0f), tc.Translation)
 						* glm::rotate(glm::mat4(1.0f), tc.Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f))
-						* glm::translate(glm::mat4(1.0f), glm::vec3(cc2d.Offset, 0.001f))
+						* glm::translate(glm::mat4(1.0f), glm::vec3(cc2d.Offset, -projectionCollider.z))
 						* glm::scale(glm::mat4(1.0f), scale);
 
 					Renderer2D::DrawCircle(transform, glm::vec4(0, 1, 0, 1), 0.02f);
@@ -520,11 +499,11 @@ namespace Eos {
 
 	void EditorLayer::NewScene()
 	{
-		m_EditorScene = CreateRef<Scene>();
-		m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-		m_SceneHierarchyPanel.SetContext(m_EditorScene);
+		if (m_SceneState != SceneState::Edit)
+			return;
 
-		m_ActiveScene = m_EditorScene;
+		Ref<Scene> newScene = CreateRef<Scene>();
+		SetEditorScene(newScene);
 		m_EditorScenePath = std::filesystem::path();
 	}
 
@@ -535,7 +514,7 @@ namespace Eos {
 			OpenScene(filepath);
 	}
 
-	void EditorLayer::OpenScene(const std::filesystem::path& path)
+	bool EditorLayer::OpenScene(const std::filesystem::path& path)
 	{
 		if (m_SceneState != SceneState::Edit)
 			OnSceneStop();
@@ -543,20 +522,17 @@ namespace Eos {
 		if (path.extension().string() != ".eos")
 		{
 			EOS_WARN("Could not load {0} - not a scene file", path.filename().string());
-			return;
+			return false;
 		}
 
 		Ref<Scene> newScene = CreateRef<Scene>();
 		SceneSerializer serializer(newScene);
-		if (serializer.Deserialize(path.string()))
-		{
-			m_EditorScene = newScene;
-			m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			m_SceneHierarchyPanel.SetContext(m_EditorScene);
+		if (!serializer.Deserialize(path.string()))
+			return false;
 
-			m_ActiveScene = m_EditorScene;
-			m_EditorScenePath = path;
-		}
+		SetEditorScene(newScene);
+		m_EditorScenePath = path;
+		return true;
 	}
 
 	void EditorLayer::SaveScene()
@@ -569,11 +545,14 @@ namespace Eos {
 
 	void EditorLayer::SaveSceneAs()
 	{
-		std::string filepath = FileDialogs::SaveFile("Eos Scene (*.eos)\0*.eos\0");
+		std::filesystem::path filepath = FileDialogs::SaveFile("Eos Scene (*.eos)\0*.eos\0");
 		if (!filepath.empty())
 		{
-			SerializeScene(m_EditorScene, filepath);
+			m_EditorScene->SetName(filepath.stem().string());
 			m_EditorScenePath = filepath;
+
+			SerializeScene(m_EditorScene, filepath);
+			SyncWindowTitle();
 		}
 	}
 
@@ -601,6 +580,24 @@ namespace Eos {
 		m_ActiveScene = m_EditorScene;
 
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+	}
+
+	void EditorLayer::SetEditorScene(const Ref<Scene>& scene)
+	{
+		EOS_ASSERT(scene, "EditorLayer ActiveScene cannot be null");
+
+		m_EditorScene = scene;
+		m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_SceneHierarchyPanel.SetContext(m_EditorScene);
+
+		m_ActiveScene = m_EditorScene;
+
+		SyncWindowTitle();
+	}
+
+	void EditorLayer::SyncWindowTitle()
+	{
+		Application::Get().GetWindow().SetTitle("Eos Editor - " + m_EditorScene->GetName());
 	}
 
 	void EditorLayer::DuplicateEntity()

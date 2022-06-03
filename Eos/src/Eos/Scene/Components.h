@@ -121,6 +121,8 @@ namespace Eos {
 				instance->OnUpdate(ts);
 			}
 		}
+
+		// TODO: Test copy/move constructor (with unique_ptr)
 	};
 
 	struct Rigidbody2DComponent

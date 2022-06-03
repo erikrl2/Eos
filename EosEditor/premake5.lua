@@ -45,6 +45,13 @@ project "EosEditor"
 		defines "EOS_RELEASE"
 		runtime "Release"
 		optimize "on"
+		kind "WindowedApp"
+		entrypoint "mainCRTStartup"
+
+		postbuildcommands
+		{
+			"{COPYDIR} \"%{LibraryDir.VulkanSDK_DebugDLL}\" \"%{cfg.targetdir}\""
+		}
 
 	filter "configurations:Dist"
 		defines "EOS_DIST"

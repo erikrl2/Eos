@@ -31,7 +31,7 @@ namespace Eos {
 
 		void NewScene();
 		void OpenScene();
-		void OpenScene(const std::filesystem::path& path);
+		bool OpenScene(const std::filesystem::path& path);
 		void SaveScene();
 		void SaveSceneAs();
 
@@ -40,10 +40,17 @@ namespace Eos {
 		void OnScenePlay();
 		void OnSceneStop();
 
+		void SetEditorScene(const Ref<Scene>& scene);
+		void SyncWindowTitle();
+
 		void DuplicateEntity();
 
 		// UI Panels
+		void UI_MenuBar();
+		void UI_Viewport();
+		void UI_Gizmos();
 		void UI_Toolbar();
+		void UI_ChildPanels();
 		void UI_Settings();
 		void UI_RendererStats();
 	private:

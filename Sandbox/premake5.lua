@@ -44,6 +44,8 @@ project "Sandbox"
 		defines "EOS_RELEASE"
 		runtime "Release"
 		optimize "on"
+		kind "WindowedApp"
+		entrypoint "mainCRTStartup"
 
 	filter "configurations:Dist"
 		defines "EOS_DIST"

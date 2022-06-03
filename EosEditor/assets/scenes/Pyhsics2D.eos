@@ -1,4 +1,4 @@
-Scene: Pyhsics2D.hazel
+Scene: Pyhsics2D
 Entities:
   - Entity: 6200092611552541499
     TagComponent:

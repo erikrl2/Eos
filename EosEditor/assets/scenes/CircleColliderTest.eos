@@ -1,4 +1,4 @@
-Scene: CircleColliderTest.hazel
+Scene: CircleColliderTest
 Entities:
   - Entity: 12835525201541618011
     TagComponent:
