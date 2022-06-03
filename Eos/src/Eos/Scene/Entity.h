@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Eos/Core/UUID.h"
+#include "Eos/Core/UID.h"
 #include "Eos/Scene/Scene.h"
 
 #include <entt.hpp>

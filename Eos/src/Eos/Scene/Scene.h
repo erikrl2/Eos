@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Eos/Core/Timestep.h"
-#include "Eos/Core/UUID.h"
+#include "Eos/Core/UID.h"
 #include "Eos/Renderer/EditorCamera.h"
 
 #include <entt.hpp>
@@ -24,7 +24,7 @@ namespace Eos {
 		static Ref<Scene> Copy(Ref<Scene> other);
 
 		Entity CreateEntity(const std::string_view name = {});
-		Entity CreateEntityWithUUID(UUID uuid, const std::string_view name = {});
+		Entity CreateEntityWithUID(UID uid, const std::string_view name = {});
 		void DestroyEntity(Entity entity);
 		void DestroyAllEntities();
 

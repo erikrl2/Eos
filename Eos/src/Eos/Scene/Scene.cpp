@@ -35,13 +35,13 @@ namespace Eos {
 	}
 
 	template<typename Component>
-	static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap)
+	static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UID, entt::entity>& enttMap)
 	{
 		for (auto e : src.view<Component>())
 		{
-			UUID uuid = src.get<IDComponent>(e).ID;
-			EOS_CORE_ASSERT(enttMap.find(uuid) != enttMap.end());
-			entt::entity dstEnttID = enttMap.at(uuid);
+			UID uid = src.get<IDComponent>(e).ID;
+			EOS_CORE_ASSERT(enttMap.find(uid) != enttMap.end());
+			entt::entity dstEnttID = enttMap.at(uid);
 
 			auto& component = src.get<Component>(e);
 			dst.emplace_or_replace<Component>(dstEnttID, component);
@@ -64,17 +64,17 @@ namespace Eos {
 
 		auto& srcSceneRegistry = other->m_Registry;
 		auto& dstSceneRegistry = newScene->m_Registry;
-		std::unordered_map<UUID, entt::entity> enttMap;
+		std::unordered_map<UID, entt::entity> enttMap;
 
 		// Create entities in new scene
 		auto idView = srcSceneRegistry.view<IDComponent>();
 		for (auto it = idView.rbegin(); it != idView.rend(); it++)
 		{
 			entt::entity e = *it;
-			UUID uuid = srcSceneRegistry.get<IDComponent>(e).ID;
+			UID uid = srcSceneRegistry.get<IDComponent>(e).ID;
 			const auto& name = srcSceneRegistry.get<TagComponent>(e).Tag;
-			Entity newEntity = newScene->CreateEntityWithUUID(uuid, name);
-			enttMap[uuid] = (entt::entity)newEntity;
+			Entity newEntity = newScene->CreateEntityWithUID(uid, name);
+			enttMap[uid] = (entt::entity)newEntity;
 		}
 
 		// Copy components (except IDComponent and TagComponent)
@@ -92,13 +92,13 @@ namespace Eos {
 
 	Entity Scene::CreateEntity(const std::string_view name)
 	{
-		return CreateEntityWithUUID(UUID(), name);
+		return CreateEntityWithUID(UID(), name);
 	}
 
-	Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string_view name)
+	Entity Scene::CreateEntityWithUID(UID uid, const std::string_view name)
 	{
 		Entity entity = { m_Registry.create(), *this };
-		entity.AddComponent<IDComponent>(uuid).AddComponent<TransformComponent>().AddComponent<TagComponent>()
+		entity.AddComponent<IDComponent>(uid).AddComponent<TransformComponent>().AddComponent<TagComponent>()
 			.GetComponent<TagComponent>().Tag = name.empty() ? "Entity" : name;
 		return entity;
 	}

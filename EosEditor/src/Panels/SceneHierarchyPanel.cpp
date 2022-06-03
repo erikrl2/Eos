@@ -160,6 +160,10 @@ namespace Eos {
 		const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
 		if (entity.HasComponent<T>())
 		{
+			static char imguiPopupID[64];
+			sprintf_s(imguiPopupID, 64, "ComponentSettings%s", typeid(T).name());
+			ImGui::PushID(imguiPopupID);
+
 			auto& component = entity.GetComponent<T>();
 			ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
 
@@ -183,6 +187,7 @@ namespace Eos {
 
 				ImGui::EndPopup();
 			}
+			ImGui::PopID();
 
 			if (open)
 			{

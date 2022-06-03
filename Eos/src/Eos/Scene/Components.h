@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Eos/Scene/SceneCamera.h"
-#include "Eos/Core/UUID.h"
+#include "Eos/Core/UID.h"
 #include "Eos/Renderer/Texture.h"
 
 #include "Eos/Scene/NativeScript.h"
@@ -20,7 +20,7 @@ namespace Eos {
 
 	struct IDComponent
 	{
-		UUID ID;
+		UID ID;
 
 		IDComponent() = default;
 		IDComponent(const IDComponent&) = default;
@@ -121,8 +121,6 @@ namespace Eos {
 				instance->OnUpdate(ts);
 			}
 		}
-
-		// TODO: Test copy/move constructor (with unique_ptr)
 	};
 
 	struct Rigidbody2DComponent
