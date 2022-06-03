@@ -28,11 +28,13 @@ namespace Eos {
 
 		if (m_Context)
 		{
-			m_Context->m_Registry.each([&](entt::entity entityID)
-				{
-					Entity entity{ entityID, *m_Context };
-					DrawEntityNode(entity);
-				});
+			auto view = m_Context->m_Registry.view<IDComponent>();
+			for (auto it = view.rbegin(); it != view.rend(); it++)
+			{
+				Entity entity{ *it, *m_Context };
+				DrawEntityNode(entity);
+			}
+
 			if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
 				m_SelectionContext = {};
 
@@ -116,7 +118,7 @@ namespace Eos {
 		ImGui::PopStyleColor(3);
 
 		ImGui::SameLine();
-		ImGui::DragFloat("##X", &values.x, 0.1f, 0.0f, 0.0f, "%.2f");
+		ImGui::DragFloat("##X", &values.x, 0.01f, 0.0f, 0.0f, "%.2f");
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -130,7 +132,7 @@ namespace Eos {
 		ImGui::PopStyleColor(3);
 
 		ImGui::SameLine();
-		ImGui::DragFloat("##Y", &values.y, 0.1f, 0.0f, 0.0f, "%.2f");
+		ImGui::DragFloat("##Y", &values.y, 0.01f, 0.0f, 0.0f, "%.2f");
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -144,7 +146,7 @@ namespace Eos {
 		ImGui::PopStyleColor(3);
 
 		ImGui::SameLine();
-		ImGui::DragFloat("##Z", &values.z, 0.1f, 0.0f, 0.0f, "%.2f");
+		ImGui::DragFloat("##Z", &values.z, 0.01f, 0.0f, 0.0f, "%.2f");
 		ImGui::PopItemWidth();
 
 		ImGui::PopStyleVar();
@@ -330,7 +332,7 @@ namespace Eos {
 						component.Texture = {};
 				}
 
-				ImGui::DragFloat("Tiling Factor", &component.TilingFactor, 0.1f, 0.0f, 100.0f);
+				ImGui::DragFloat("Tiling Factor", &component.TilingFactor, 0.01f, 0.0f, 100.0f);
 			});
 
 		DrawComponent<CircleRendererComponent>("Circle Renderer", entity, [](auto& component)

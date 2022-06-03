@@ -22,7 +22,7 @@ Entities:
     TagComponent:
       Tag: 1
     TransformComponent:
-      Translation: [-2.04294753, -1.02859294, 0]
+      Translation: [-1.94754958, -0.907190204, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     SpriteRendererComponent:
@@ -44,7 +44,7 @@ Entities:
     TagComponent:
       Tag: 3
     TransformComponent:
-      Translation: [-1.08614588, -0.0431950092, -0.300000012]
+      Translation: [-1.1541276, -0.162167788, -0.200000003]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     SpriteRendererComponent:
@@ -55,10 +55,10 @@ Entities:
     TagComponent:
       Tag: 4
     TransformComponent:
-      Translation: [-0.58491528, 0.431138098, -0.400000006]
+      Translation: [-0.803610981, 0.145154029, -0.300000012]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     SpriteRendererComponent:
-      Color: [0, 1, 0, 0.776470602]
+      Color: [0, 1, 0, 0.545098066]
       TexturePath: assets\textures\Checkerboard.png
       TilingFactor: 1

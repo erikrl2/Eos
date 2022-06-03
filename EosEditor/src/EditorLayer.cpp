@@ -206,7 +206,10 @@ namespace Eos {
 				std::filesystem::path parentPath = std::filesystem::path(path).parent_path();
 
 				if (parentPath == "scenes")	// Load scene
+				{
+					m_HoveredEntity = Entity();
 					OpenScene(std::filesystem::path(g_AssetPath) / path);
+				}
 				else if (parentPath == "textures") // Load texture
 				{
 					if (m_HoveredEntity && m_HoveredEntity.HasComponent<SpriteRendererComponent>())
@@ -346,6 +349,7 @@ namespace Eos {
 
 		bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
 		bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
+		bool editing = m_ViewportHovered && m_SceneState == SceneState::Edit;
 		switch (e.GetKeyCode())
 		{
 			case Key::N:
@@ -375,26 +379,26 @@ namespace Eos {
 			// Scene Commands
 			case Key::D:
 			{
-				if (control)
+				if (control && editing)
 					DuplicateEntity();
 				break;
 			}
 
 			// Gizmo
 			case Key::Q:
-				if (!ImGuizmo::IsUsing())
+				if (!ImGuizmo::IsUsing() && editing)
 					m_GizmoType = -1;
 				break;
 			case Key::W:
-				if (!ImGuizmo::IsUsing())
+				if (!ImGuizmo::IsUsing() && editing)
 					m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 				break;
 			case Key::E:
-				if (!ImGuizmo::IsUsing())
+				if (!ImGuizmo::IsUsing() && editing)
 					m_GizmoType = ImGuizmo::OPERATION::ROTATE;
 				break;
 			case Key::R:
-				if (!ImGuizmo::IsUsing())
+				if (!ImGuizmo::IsUsing() && editing)
 					m_GizmoType = ImGuizmo::OPERATION::SCALE;
 				break;
 		}

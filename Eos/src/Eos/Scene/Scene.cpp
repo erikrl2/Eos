@@ -37,13 +37,14 @@ namespace Eos {
 	template<typename Component>
 	static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UID, entt::entity>& enttMap)
 	{
-		for (auto e : src.view<Component>())
+		auto view = src.view<Component>();
+		for (auto it = view.rbegin(); it != view.rend(); it++)
 		{
-			UID uid = src.get<IDComponent>(e).ID;
+			UID uid = src.get<IDComponent>(*it).ID;
 			EOS_CORE_ASSERT(enttMap.find(uid) != enttMap.end());
 			entt::entity dstEnttID = enttMap.at(uid);
 
-			auto& component = src.get<Component>(e);
+			auto& component = src.get<Component>(*it);
 			dst.emplace_or_replace<Component>(dstEnttID, component);
 		}
 	}

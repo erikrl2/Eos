@@ -168,14 +168,6 @@ namespace Eos {
 		s_Data.CircleShader = Shader::Create("assets/shaders/Renderer2D_Circle.glsl");
 		s_Data.LineShader = Shader::Create("assets/shaders/Renderer2D_Line.glsl");
 
-		// TODO: Find out why this works without this
-		//int32_t samplers[Renderer2DData::MaxTextureSlots];
-		//for (uint32_t i = 0; i < Renderer2DData::MaxTextureSlots; i++)
-		//	samplers[i] = i;
-
-		//s_Data.QuadShader->Bind();
-		//s_Data.QuadShader->SetIntArray("u_Textures", samplers, Renderer2DData::MaxTextureSlots); // why does is work without this??
-
 		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
 
 		s_Data.QuadVertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };

@@ -79,7 +79,8 @@ namespace Eos {
 		if (m_ImageIcons.find(filepath) != m_ImageIcons.end())
 			return m_ImageIcons[filepath];
 
-		if (filepath.extension().string() == ".png")
+		std::string extention = filepath.extension().string();
+		if (extention == ".png" || extention == ".jpg")
 		{
 			auto imageIcon = Texture2D::Create(filepath.string());
 			if (imageIcon->IsLoaded())
@@ -87,6 +88,8 @@ namespace Eos {
 				m_ImageIcons[filepath] = imageIcon;
 				return imageIcon;
 			}
+			else
+				EOS_WARN("Could not load texture {0}", filepath.filename().string());
 		}
 		return m_FileIcon;
 	}
