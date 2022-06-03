@@ -43,9 +43,9 @@ namespace Eos {
 			std::string filenameString = path.filename().string();
 
 			ImGui::PushID(filenameString.c_str());
-			Ref<Texture2D> icon = directoryEntry.is_directory() ? m_DirectoryIcon : m_FileIcon;
+			Ref<Texture2D> icon = directoryEntry.is_directory() ? m_DirectoryIcon : GetFileIcon(directoryEntry.path());
 			ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Button, { 0, 0, 0, 0 });
-			ImGui::ImageButton((ImTextureID)icon->GetRendererID(), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
+			ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)icon->GetRendererID()), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
 
 			if (ImGui::BeginDragDropSource())
 			{
@@ -72,6 +72,23 @@ namespace Eos {
 
 		// TODO: status bar
 		ImGui::End();
+	}
+
+	Ref<Texture2D>& ContentBrowserPanel::GetFileIcon(const std::filesystem::path& filepath)
+	{
+		if (m_ImageIcons.find(filepath) != m_ImageIcons.end())
+			return m_ImageIcons[filepath];
+
+		if (filepath.extension().string() == ".png")
+		{
+			auto imageIcon = Texture2D::Create(filepath.string());
+			if (imageIcon->IsLoaded())
+			{
+				m_ImageIcons[filepath] = imageIcon;
+				return imageIcon;
+			}
+		}
+		return m_FileIcon;
 	}
 
 }

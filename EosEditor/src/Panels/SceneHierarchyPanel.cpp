@@ -326,7 +326,7 @@ namespace Eos {
 					ImGui::SameLine();
 					ImGui::Image((ImTextureID)component.Texture->GetRendererID(), ImVec2(50.0f, 23.0f));
 					ImGui::SameLine();
-					if (ImGui::Button("del", ImVec2(0.0f, 0.0f))) // TODO: replace with popup menu
+					if (ImGui::Button("del", ImVec2(0.0f, 0.0f)))
 						component.Texture = {};
 				}
 

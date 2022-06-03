@@ -1,0 +1,64 @@
+Scene: BlendingTest
+Entities:
+  - Entity: 11906070128548954792
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [-1.23726654, -0.302227139, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: 1
+        PerspectiveFOV: 0.785398185
+        PerspectiveNear: 0.00999999978
+        PerspectiveFar: 1000
+        OrthographicSize: 3
+        OrthographicNear: -1
+        OrthographicFar: 1
+      Primary: true
+      FixedAspectRatio: false
+  - Entity: 16647288490764918447
+    TagComponent:
+      Tag: 1
+    TransformComponent:
+      Translation: [-2.04294753, -1.02859294, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [1, 0, 0, 0.65882355]
+      TexturePath: assets\textures\Checkerboard.png
+      TilingFactor: 1
+  - Entity: 15211093096628820252
+    TagComponent:
+      Tag: 2
+    TransformComponent:
+      Translation: [-1.55368507, -0.568237901, -0.100000001]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [1, 1, 0, 0.792156875]
+      TexturePath: assets\textures\Checkerboard.png
+      TilingFactor: 1
+  - Entity: 492802691059157710
+    TagComponent:
+      Tag: 3
+    TransformComponent:
+      Translation: [-1.08614588, -0.0431950092, -0.300000012]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0, 1, 1, 0.470588237]
+      TexturePath: assets\textures\Checkerboard.png
+      TilingFactor: 1
+  - Entity: 2567475563566813778
+    TagComponent:
+      Tag: 4
+    TransformComponent:
+      Translation: [-0.58491528, 0.431138098, -0.400000006]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0, 1, 0, 0.776470602]
+      TexturePath: assets\textures\Checkerboard.png
+      TilingFactor: 1
