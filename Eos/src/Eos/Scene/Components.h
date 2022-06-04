@@ -29,6 +29,7 @@ namespace Eos {
 	struct TagComponent
 	{
 		std::string Tag;
+		bool renaming = false;
 
 		TagComponent() = default;
 		TagComponent(const TagComponent&) = default;
@@ -57,6 +58,8 @@ namespace Eos {
 	{
 		glm::vec4 Color = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
 		Ref<Texture2D> Texture;
+		// TODO: Add subtexture support
+		// glm::vec2 Coords, CellSize, SpriteSize;
 		float TilingFactor = 1.0f;
 
 		SpriteRendererComponent() = default;

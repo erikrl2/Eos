@@ -56,7 +56,7 @@ namespace Eos {
 			}
 
 			ImGui::PopStyleColor();
-			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+			if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) // double or single click?
 				if (directoryEntry.is_directory())
 					m_CurrentDirectory /= path.filename();
 			ImGui::TextWrapped(filenameString.c_str());

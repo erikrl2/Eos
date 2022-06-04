@@ -173,9 +173,20 @@ namespace Eos {
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem("Exit")) Application::Get().Close();
+				if (ImGui::MenuItem("Exit"))
+					Application::Get().Close();
+
 				ImGui::EndMenu();
 			}
+
+			if (ImGui::BeginMenu("Scriping"))
+			{
+				if (ImGui::MenuItem("TODO: Add"))
+				{
+				}
+				ImGui::EndMenu();
+			}
+
 			ImGui::EndMenuBar();
 		}
 	}
@@ -414,6 +425,9 @@ namespace Eos {
 				m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
 				ImGuizmo::Enable(false);
 			}
+
+			if (Input::IsKeyPressed(Key::LeftAlt) && m_ViewportHovered && m_SceneState == SceneState::Edit)
+				ImGuizmo::Enable(false);
 		}
 		return false;
 	}
@@ -446,8 +460,39 @@ namespace Eos {
 			Renderer2D::BeginScene(m_EditorCamera);
 		}
 
+		// Entity outline
+		Entity selection = m_SceneHierarchyPanel.GetSelectedEntity();
+		if (selection)
+		{
+			Renderer2D::SetLineWidth(4.0f);
+
+			if (selection.HasComponent<TransformComponent>())
+			{
+				auto& tc = selection.GetComponent<TransformComponent>();
+
+				if (selection.HasComponent<SpriteRendererComponent>())
+					Renderer2D::DrawRect(tc.GetTransform(), glm::vec4(1, 1, 1, 1));
+
+				if (selection.HasComponent<CircleRendererComponent>())
+				{
+					glm::mat4 transform = glm::translate(glm::mat4(1.0f), tc.Translation)
+						* glm::toMat4(glm::quat(tc.Rotation))
+						* glm::scale(glm::mat4(1.0f), tc.Scale + 0.03f);
+					Renderer2D::DrawCircle(transform, glm::vec4(1, 1, 1, 1), 0.03f);
+				}
+
+				// TODO: Add outline for camera?
+			}
+		}
+
 		if (m_ShowPhysicsColliders)
 		{
+			if (Renderer2D::GetLineWidth() != -2.0f)
+			{
+				Renderer2D::Flush();
+				Renderer2D::SetLineWidth(2.0f);
+			}
+
 			// Box Colliders
 			{
 				auto view = m_ActiveScene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();

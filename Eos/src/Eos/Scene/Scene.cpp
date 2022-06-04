@@ -254,6 +254,8 @@ namespace Eos {
 	{
 		Renderer2D::BeginScene(camera);
 
+		// TODO: Add renderering order list
+
 		// Draw sprites
 		{
 			for (auto&& [entity, transform, sprite] : m_Registry.view<TransformComponent, SpriteRendererComponent>().each())

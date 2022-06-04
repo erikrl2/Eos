@@ -482,7 +482,7 @@ namespace Eos {
 	{
 		EOS_PROFILE_FUNCTION();
 
-		// TODO: implement for circles
+		// TODO: Test this
 		 if (s_Data.CircleIndexCount >= Renderer2DData::MaxIndices)
 			NextBatch();
 
@@ -544,6 +544,7 @@ namespace Eos {
 
 	void Renderer2D::DrawSprite(const glm::mat4& transform, SpriteRendererComponent& src, int entityID)
 	{
+		// TODO: Update for subtextures
 		if (src.Texture)
 			DrawQuad(transform, src.Texture, src.TilingFactor, src.Color, entityID);
 		else

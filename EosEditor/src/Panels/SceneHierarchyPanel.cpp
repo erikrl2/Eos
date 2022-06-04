@@ -28,12 +28,7 @@ namespace Eos {
 
 		if (m_Context)
 		{
-			auto view = m_Context->m_Registry.view<IDComponent>();
-			for (auto it = view.rbegin(); it != view.rend(); it++)
-			{
-				Entity entity{ *it, *m_Context };
-				DrawEntityNode(entity);
-			}
+			m_Context->m_Registry.each([&](const auto e) { DrawEntityNode({ e, *m_Context }); });
 
 			if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
 				m_SelectionContext = {};
@@ -60,7 +55,8 @@ namespace Eos {
 
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	{
-		auto& tag = entity.GetComponent<TagComponent>().Tag;
+		auto& tagComponent = entity.GetComponent<TagComponent>();
+		auto& tag = tagComponent.Tag;
 
 		ImGuiTreeNodeFlags flags = ((m_SelectionContext == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
@@ -71,10 +67,27 @@ namespace Eos {
 		bool entityDeleted = false;
 		if (ImGui::BeginPopupContextItem())
 		{
+			// TODO: Add move up/down MenuItem
+
+			if (ImGui::MenuItem("Rename"))
+				tagComponent.renaming = true;
+
 			if (ImGui::MenuItem("Delete Entity"))
 				entityDeleted = true;
 
 			ImGui::EndPopup();
+		}
+
+		if (tagComponent.renaming)
+		{
+			char buffer[128];
+			memset(buffer, 0, sizeof(buffer));
+			std::strncpy(buffer, tag.c_str(), sizeof(buffer));
+			if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
+				tag = buffer;
+
+			if ((ImGui::IsMouseClicked(0) && ImGui::IsWindowHovered()) || ImGui::IsKeyPressed(ImGuiKey_Enter, false))
+				tagComponent.renaming = false;
 		}
 
 		if (opened)
@@ -331,6 +344,8 @@ namespace Eos {
 					if (ImGui::Button("del", ImVec2(0.0f, 0.0f)))
 						component.Texture = {};
 				}
+
+				// TODO: Collapsed subtexture menu with options: Coords, CellSize, SpriteSize
 
 				ImGui::DragFloat("Tiling Factor", &component.TilingFactor, 0.01f, 0.0f, 100.0f);
 			});
