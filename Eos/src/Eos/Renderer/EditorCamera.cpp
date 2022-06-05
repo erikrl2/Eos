@@ -26,7 +26,8 @@ namespace Eos {
 
 	void EditorCamera::UpdateView()
 	{
-		// m_Yaw = m_Pitch = 0.0f; // Lock the camera's rotation
+		if (s_RotationLocked)
+			 m_Yaw = m_Pitch = 0.0f;
 		m_Position = CalculatePosition();
 
 		glm::quat orientation = GetOrientation();
@@ -36,6 +37,8 @@ namespace Eos {
 
 	std::pair<float, float> EditorCamera::PanSpeed() const
 	{
+		// TODO: Improve formula
+
 		float x = std::min(m_ViewportWidth / 1000.0f, 2.4f);
 		float xFactor = 0.0366f * (x * x) - 0.1778f * x + 0.3021f;
 
@@ -43,6 +46,8 @@ namespace Eos {
 		float yFactor = 0.0366f * (y * y) - 0.1778f * y + 0.3021f;
 
 		return { xFactor, yFactor };
+		//return { xFactor + 0.212f, yFactor + 0.129f };
+
 	}
 
 	float EditorCamera::RotationSpeed() const
@@ -67,10 +72,13 @@ namespace Eos {
 			glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
 			m_InitialMousePosition = mouse;
 
-			if (Input::IsMouseButtonPressed(Mouse::ButtonMiddle))
+			if (Input::IsMouseButtonPressed(Mouse::ButtonLeft))
+				if (EditorCamera::s_RotationLocked)
+					MousePan(delta);
+				else
+					MouseRotate(delta);
+			else if (Input::IsMouseButtonPressed(Mouse::ButtonMiddle))
 				MousePan(delta);
-			else if (Input::IsMouseButtonPressed(Mouse::ButtonLeft))
-				MouseRotate(delta);
 			else if (Input::IsMouseButtonPressed(Mouse::ButtonRight))
 				MouseZoom(delta.y);
 		}
@@ -140,5 +148,7 @@ namespace Eos {
 	{
 		return glm::quat(glm::vec3(-m_Pitch, -m_Yaw, 0.0f));
 	}
+
+	bool EditorCamera::s_RotationLocked = true;
 
 }

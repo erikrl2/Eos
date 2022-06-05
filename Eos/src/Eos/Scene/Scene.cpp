@@ -100,7 +100,7 @@ namespace Eos {
 	{
 		Entity entity = { m_Registry.create(), *this };
 		entity.AddComponent<IDComponent>(uid).AddComponent<TransformComponent>().AddComponent<TagComponent>()
-			.GetComponent<TagComponent>().Tag = name.empty() ? "Entity" : name;
+			.GetComponent<TagComponent>().Tag = name.empty() ? "GameObject" : name;
 		return entity;
 	}
 
@@ -116,7 +116,7 @@ namespace Eos {
 
 	void Scene::OnRuntimeStart()
 	{
-		m_PhysicsWorld = new b2World({ 0.0f, -9.8f });
+		m_PhysicsWorld = new b2World({ 0.0f, -9.8f }); // TODO: expose
 
 		for (auto e : m_Registry.view<Rigidbody2DComponent>())
 		{
@@ -156,7 +156,7 @@ namespace Eos {
 
 				b2CircleShape circleShape;
 				circleShape.m_p.Set(cc2d.Offset.x, cc2d.Offset.y);
-				circleShape.m_radius = transform.Scale.x * cc2d.Radius; // TODO: Fix collider scale
+				circleShape.m_radius = transform.Scale.x * cc2d.Radius; // Scaling not intended
 
 				b2FixtureDef fixtureDef;
 				fixtureDef.shape = &circleShape;

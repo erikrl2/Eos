@@ -83,8 +83,7 @@ namespace Eos {
 		{
 			case SceneState::Edit:
 			{
-				if (m_ViewportHovered)
-					m_EditorCamera.OnUpdate(ts);
+				m_EditorCamera.OnUpdate(ts);
 
 				m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 				break;
@@ -179,10 +178,11 @@ namespace Eos {
 				ImGui::EndMenu();
 			}
 
-			if (ImGui::BeginMenu("Scriping"))
+			if (ImGui::BeginMenu("Help"))
 			{
-				if (ImGui::MenuItem("TODO: Add"))
+				if (ImGui::MenuItem("Shortcuts"))
 				{
+					// TODO: Shortcut overview
 				}
 				ImGui::EndMenu();
 			}
@@ -213,15 +213,14 @@ namespace Eos {
 		{
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
 			{
-				const wchar_t* path = (const wchar_t*)payload->Data;
-				std::filesystem::path parentPath = std::filesystem::path(path).parent_path();
+				std::filesystem::path path = (const wchar_t*)payload->Data;
 
-				if (parentPath == "scenes")	// Load scene
+				if (path.extension() == ".eos")	// Load scene
 				{
 					m_HoveredEntity = Entity();
 					OpenScene(std::filesystem::path(g_AssetPath) / path);
 				}
-				else if (parentPath == "textures") // Load texture
+				else if (path.extension() == ".png" || path.extension() == ".jpeg") // Load texture
 				{
 					if (m_HoveredEntity && m_HoveredEntity.HasComponent<SpriteRendererComponent>())
 					{
@@ -322,6 +321,7 @@ namespace Eos {
 	void EditorLayer::UI_Settings()
 	{
 		ImGui::Begin("Settings");
+		ImGui::Checkbox("2D editor camera", &EditorCamera::s_RotationLocked);
 		ImGui::Checkbox("Show physics colliders", &m_ShowPhysicsColliders);
 		ImGui::End();
 	}

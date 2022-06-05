@@ -36,7 +36,7 @@ namespace Eos {
 			// Right-click on blank space
 			if (ImGui::BeginPopupContextWindow(0, 1, false))
 			{
-				if (ImGui::MenuItem("Create Empty Entity"))
+				if (ImGui::MenuItem("Create Empty"))
 					m_Context->CreateEntity();
 
 				ImGui::EndPopup();
@@ -69,10 +69,23 @@ namespace Eos {
 		{
 			// TODO: Add move up/down MenuItem
 
+			if (ImGui::MenuItem("Create Empty"))
+				m_Context->CreateEntity();
+
+			if (ImGui::MenuItem("Create Empty Child"))
+			{
+				// TODO: Add child entity
+			}
+
+			ImGui::Separator();
+
 			if (ImGui::MenuItem("Rename"))
 				tagComponent.renaming = true;
 
-			if (ImGui::MenuItem("Delete Entity"))
+			if (ImGui::MenuItem("Duplicate"))
+				m_Context->DuplicateEntity(entity);
+
+			if (ImGui::MenuItem("Delete"))
 				entityDeleted = true;
 
 			ImGui::EndPopup();
@@ -103,7 +116,7 @@ namespace Eos {
 		}
 	}
 
-	static void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f)
+	static void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 75.0f)
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		auto boldFont = io.Fonts->Fonts[0];
@@ -131,7 +144,7 @@ namespace Eos {
 		ImGui::PopStyleColor(3);
 
 		ImGui::SameLine();
-		ImGui::DragFloat("##X", &values.x, 0.01f, 0.0f, 0.0f, "%.2f");
+		ImGui::DragFloat("##X", &values.x, 0.05f, 0.0f, 0.0f, "%.2f");
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -145,7 +158,7 @@ namespace Eos {
 		ImGui::PopStyleColor(3);
 
 		ImGui::SameLine();
-		ImGui::DragFloat("##Y", &values.y, 0.01f, 0.0f, 0.0f, "%.2f");
+		ImGui::DragFloat("##Y", &values.y, 0.05f, 0.0f, 0.0f, "%.2f");
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -252,7 +265,7 @@ namespace Eos {
 
 		DrawComponent<TransformComponent>("Transform", entity, [](auto& component)
 			{
-				DrawVec3Control("Translation", component.Translation);
+				DrawVec3Control("Position", component.Translation);
 				glm::vec3 rotation = glm::degrees(component.Rotation);
 				DrawVec3Control("Rotation", rotation);
 				component.Rotation = glm::radians(rotation);
@@ -321,7 +334,8 @@ namespace Eos {
 			{
 				ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
 
-				ImGui::Button("Texture", ImVec2(100.0f, 0.0f)); // TODO: ImageButton with selected texture
+				// TODO: Add dropdown menu Texture/Subtexture
+				ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
 				if (ImGui::BeginDragDropTarget())
 				{
 					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
@@ -363,7 +377,7 @@ namespace Eos {
 				const char* currentBodyTypeString = bodyTypeStrings[(int)component.Type];
 				if (ImGui::BeginCombo("Body Type", currentBodyTypeString))
 				{
-					for (int i = 0; i < 2; i++)
+					for (int i = 0; i < 3; i++)
 					{
 						bool isSelected = currentBodyTypeString == bodyTypeStrings[i];
 						if (ImGui::Selectable(bodyTypeStrings[i], isSelected))

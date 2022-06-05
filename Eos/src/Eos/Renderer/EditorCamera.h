@@ -32,6 +32,8 @@ namespace Eos {
 
 		float GetPitch() const { return m_Pitch; }
 		float GetYaw() const { return m_Yaw; }
+	public:
+		static bool s_RotationLocked;
 	private:
 		void UpdateProjection();
 		void UpdateView();
