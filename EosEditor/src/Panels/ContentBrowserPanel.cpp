@@ -135,7 +135,7 @@ namespace Eos {
 	{
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - 110.0f);
 		ImGui::SetNextItemWidth(125.0f);
-		ImGui::InputText("##Tag", m_SearchBuffer, sizeof(m_SearchBuffer));
+		ImGui::InputText("##Search", m_SearchBuffer, sizeof(m_SearchBuffer));
 		ImGui::SameLine(ImGui::GetWindowWidth() / 2.0f + 10.0f, 0);
 		auto& colors = ImGui::GetStyle().Colors;
 		const auto& buttonColor = colors[ImGuiCol_Button];
@@ -144,6 +144,7 @@ namespace Eos {
 		ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)m_SearchIcon->GetRendererID()), { 17, 17 }, { 0, 1 }, { 1, 0 }, -1, { 0, 0, 0, 0 }, { 0.6, 0.6, 0.6, 1 });
 		ImGui::PopStyleColor(2);
 		DrawClearSearchbarButton();
+		ImGui::Separator();
 	}
 
 	void ContentBrowserPanel::DrawClearSearchbarButton()

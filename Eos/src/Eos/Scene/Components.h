@@ -12,7 +12,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
-#include <functional> // TODO: Remove
+#include <functional>
 #include <memory>
 #include <unordered_map>
 
@@ -59,6 +59,7 @@ namespace Eos {
 		glm::vec4 Color = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
 		Ref<Texture2D> Texture;
 		float TilingFactor = 1.0f;
+		bool FlipX = false, FlipY = false; // TODO
 		bool Atlas = false;
 		glm::vec2 Coords = { 0, 0 };
 		glm::vec2 CellSize = { 32, 32 };
@@ -107,7 +108,6 @@ namespace Eos {
 
 		NativeScriptComponent& Instantiate(Entity entity)
 		{
-			// note: no guarantee on order that the scripts are instantiated
 			for (const auto& [id, instantiateScript] : InstantiateScripts)
 			{
 				Instances.try_emplace(id, instantiateScript(entity));
@@ -123,7 +123,6 @@ namespace Eos {
 
 		void OnUpdate(Timestep ts)
 		{
-			// note: no guarantee on order that the instances are updated
 			for (auto& [id, instance] : Instances)
 			{
 				instance->OnUpdate(ts);

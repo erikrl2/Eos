@@ -176,7 +176,7 @@ namespace Eos {
 		ImGui::PopStyleColor(3);
 
 		ImGui::SameLine();
-		ImGui::DragFloat("##Z", &values.z, 0.01f, 0.0f, 0.0f, "%.2f");
+		ImGui::DragFloat("##Z", &values.z, 0.05f, 0.0f, 0.0f, "%.2f");
 		ImGui::PopItemWidth();
 
 		ImGui::PopStyleVar();
@@ -188,11 +188,15 @@ namespace Eos {
 		style.FrameRounding = 4.0f;
 	}
 
-	static void DrawLabelLeft(const char* label, float nextCursorPosX = 110.0f)
+	static void DrawLabelLeft(const char* label, float nextCursorPosX = 105.0f)
 	{
+		//ImGui::Separator();
+		//ImGui::SetCursorPosX(20.0f);
 		ImGui::Text(label);
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(nextCursorPosX);
+		float itemWidth = std::min(ImGui::GetContentRegionAvail().x - 2.0f, 355.0f - nextCursorPosX);
+		ImGui::SetNextItemWidth(itemWidth);
 	}
 
 	template<typename T, typename UIFunction>
@@ -217,8 +221,13 @@ namespace Eos {
 			ImGui::PopStyleVar();
 
 			ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)settingsIcon->GetRendererID()), { lineHeight, lineHeight }, { 0, 1 }, { 1, 0 }, 0, { 0, 0, 0, 0 }, { 0.8, 0.8, 0.8, 1 }))
+			ImVec4 buttonColor = ImGui::GetStyle().Colors[ImGuiCol_Button];
+			static ImVec4 iconTintColor = { 0.4, 0.4, 0.4, 1.0f };
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, buttonColor);
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)settingsIcon->GetRendererID()), { lineHeight, lineHeight }, { 0, 1 }, { 1, 0 }, 0, { 0, 0, 0, 0 }, iconTintColor))
 				ImGui::OpenPopup("ComponentSettings");
+			iconTintColor = ImGui::IsItemHovered() ? ImVec4{ 0.7f, 0.7f, 0.7f, 1.0f } : ImVec4{ 0.4, 0.4, 0.4, 1.0f };
+			ImGui::PopStyleColor();
 
 			bool removeComponent = false;
 			if (ImGui::BeginPopup("ComponentSettings"))
@@ -264,7 +273,7 @@ namespace Eos {
 		std::string uid = std::to_string(entity.GetComponent<IDComponent>().ID);
 		char idBuffer[32];
 		std::strncpy(idBuffer, uid.c_str(), sizeof(idBuffer));
-		ImGui::PushStyleColor(ImGuiCol_Text, { 0.5, 0.5, 0.5, 1 });
+		ImGui::PushStyleColor(ImGuiCol_Text, { 0.4, 0.4, 0.4, 1 });
 		ImGui::Text(idBuffer, 0);
 		//ImGui::SetNextItemWidth(150.0f);
 		//ImGui::InputText("##UID", idBuffer, sizeof(idBuffer), ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_CharsNoBlank);
@@ -274,13 +283,9 @@ namespace Eos {
 
 		ImGui::SameLine();
 		ImGui::PushItemWidth(-1);
-		ImGui::PushStyleColor(ImGuiCol_Button, { 0, 0, 0, 0 });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0, 0, 0, 0 });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, { 0, 0, 0, 0 });
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 42.0f);
-		if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)addIcon->GetRendererID()), { 23, 23 }, { 0, 1 }, { 1, 0 }, 0))
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 43.0f);
+		if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)addIcon->GetRendererID()), { 17, 17 }, { 0, 1 }, { 1, 0 }, -1, { 0, 0, 0, 0 }, { 0.7, 0.7, 0.7, 1 }))
 			ImGui::OpenPopup("AddComponent");
-		ImGui::PopStyleColor(3);
 
 		if (ImGui::BeginPopup("AddComponent"))
 		{
@@ -407,8 +412,8 @@ namespace Eos {
 						component.Texture = {};
 				}
 
-				ImGui::SameLine();
-				ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 95.0f);
+				ImGui::SameLine(200.0f);
+				//ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 95.0f);
 				ImGui::Checkbox("Atlas", &component.Atlas);
 				if (component.Atlas)
 				{
@@ -421,23 +426,25 @@ namespace Eos {
 				}
 
 				DrawLabelLeft("Tiling Factor");
-				ImGui::DragFloat("##TilingFactor", &component.TilingFactor, 0.01f, 0.0f, 100.0f);
+				ImGui::DragFloat("##TilingFactor", &component.TilingFactor, 0.01f, 0.0f, 100.0f, "%.2f");
 			});
 
 		DrawComponent<CircleRendererComponent>("Circle Renderer", entity, [](auto& component)
 			{
-				// TODO: DrawLabelLeft("Color");
-
-				ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
-				ImGui::DragFloat("Thickness", &component.Thickness, 0.025f, 0.0f, 1.0f);
-				ImGui::DragFloat("Fade", &component.Fade, 0.00025f, 0.0f, 1.0f);
+				DrawLabelLeft("Color");
+				ImGui::ColorEdit4("##Color", glm::value_ptr(component.Color));
+				DrawLabelLeft("Thickness");
+				ImGui::DragFloat("##Thickness", &component.Thickness, 0.01f, 0.0f, 1.0f, "%.2f");
+				DrawLabelLeft("Fade");
+				ImGui::DragFloat("##Fade", &component.Fade, 0.001f, 0.0f, 1.0f, "%.3f");
 			});
 
 		DrawComponent<Rigidbody2DComponent>("Rigidbody 2D", entity, [](auto& component)
 			{
+				DrawLabelLeft("Body Type");
 				const char* bodyTypeStrings[] = { "Static", "Dynamic", "Kinematic" };
 				const char* currentBodyTypeString = bodyTypeStrings[(int)component.Type];
-				if (ImGui::BeginCombo("Body Type", currentBodyTypeString))
+				if (ImGui::BeginCombo("##BodyType", currentBodyTypeString))
 				{
 					for (int i = 0; i < 3; i++)
 					{
@@ -455,34 +462,46 @@ namespace Eos {
 					ImGui::EndCombo();
 				}
 
-				ImGui::Checkbox("Fixed Rotation", &component.FixedRotation);
+				DrawLabelLeft("Fixed Rotation", 120.0f);
+				ImGui::Checkbox("##FixedRotation", &component.FixedRotation);
 			});
 
 		DrawComponent<BoxCollider2DComponent>("Box Collider 2D", entity, [](auto& component)
 			{
-				// TODO: Left aligned label
-				ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset), 0.01f);
-				ImGui::DragFloat2("Size", glm::value_ptr(component.Size), 0.01f, 0.01f, 10000.0f);
+				DrawLabelLeft("Offset");
+				ImGui::DragFloat2("##Offset", glm::value_ptr(component.Offset), 0.01f, 0.0f, 0.0f, "%.2f");
+				DrawLabelLeft("Size");
+				ImGui::DragFloat2("##Size", glm::value_ptr(component.Size), 0.01f, 0.01f, 10000.0f, "%.2f");
 
+				DrawLabelLeft("Rotation");
 				float rotation = glm::degrees(component.Rotation);
-				ImGui::DragFloat("Rotation", &rotation, 0.1f);
+				ImGui::DragFloat("##Rotation", &rotation, 0.1f, 0.0f, 0.0f, "%.2f");
 				component.Rotation = glm::radians(rotation);
 
-				ImGui::DragFloat("Density", &component.Density, 0.01f, 0.0f, 1.0f);
-				ImGui::DragFloat("Friction", &component.Friction, 0.01f, 0.0f, 1.0f);
-				ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);
-				ImGui::DragFloat("Restitution Threshold", &component.RestitutionThreshold, 0.01f, 0.0f, 10000.0f);
+				DrawLabelLeft("Density");
+				ImGui::DragFloat("##Density", &component.Density, 0.005f, 0.0f, 1.0f, "%.3f");
+				DrawLabelLeft("Friction");
+				ImGui::DragFloat("##Friction", &component.Friction, 0.005f, 0.0f, 1.0f, "%.3f");
+				DrawLabelLeft("Restitution");
+				ImGui::DragFloat("##Restitution", &component.Restitution, 0.005f, 0.0f, 1.0f, "%.3f");
+				DrawLabelLeft("Restitution Threshold", 163.0f);
+				ImGui::DragFloat("##RestitutionThreshold", &component.RestitutionThreshold, 0.01f, 0.0f, 10000.0f, "%.2f");
 			});
 
 		DrawComponent<CircleCollider2DComponent>("Circle Collider 2D", entity, [](auto& component)
 			{
-				// TODO: Left aligned label
-				ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset), 0.01f);
-				ImGui::DragFloat("Radius", &component.Radius, 0.01f, 0.01f, 10000.0f);
-				ImGui::DragFloat("Density", &component.Density, 0.01f, 0.0f, 1.0f);
-				ImGui::DragFloat("Friction", &component.Friction, 0.01f, 0.0f, 1.0f);
-				ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);
-				ImGui::DragFloat("Restitution Threshold", &component.RestitutionThreshold, 0.01f, 0.0f, 10000.0f);
+				DrawLabelLeft("Offset");
+				ImGui::DragFloat2("##Offset", glm::value_ptr(component.Offset), 0.01f, 0.0f, 0.0f, "%.2f");
+				DrawLabelLeft("Radius");
+				ImGui::DragFloat("##Radius", &component.Radius, 0.005f, 0.01f, 10000.0f, "%.2f");
+				DrawLabelLeft("Density");
+				ImGui::DragFloat("##Density", &component.Density, 0.005f, 0.0f, 1.0f, "%.3f");
+				DrawLabelLeft("Friction");
+				ImGui::DragFloat("##Friction", &component.Friction, 0.005f, 0.0f, 1.0f, "%.3f");
+				DrawLabelLeft("Restitution");
+				ImGui::DragFloat("##Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f, "%.3f");
+				DrawLabelLeft("Restitution Threshold", 163.0f);
+				ImGui::DragFloat("##RestitutionThreshold", &component.RestitutionThreshold, 0.01f, 0.0f, 10000.0f, "%.2f");
 			});
 	}
 

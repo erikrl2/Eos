@@ -69,6 +69,7 @@ namespace Eos {
 
 		int m_GizmoType = -1;
 
+		bool m_ShowSelectionHightlighting = true;
 		bool m_ShowPhysicsColliders = false;
 
 		enum class SceneState

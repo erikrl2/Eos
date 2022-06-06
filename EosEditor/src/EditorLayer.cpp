@@ -293,19 +293,21 @@ namespace Eos {
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
+		static ImVec4 buttonTintColor = { 1, 1, 1, 1 };
 
 		ImGui::Begin("Toolbar", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
 		float size = ImGui::GetContentRegionAvail().y - 4.0f;
 		Ref<Texture2D> icon = m_SceneState == SceneState::Edit ? m_IconPlay : m_IconStop;
 		ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-		if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0))
+		if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), { size, size }, { 0, 0 }, { 1, 1 }, 0, { 0, 0, 0, 0 }, buttonTintColor))
 		{
 			if (m_SceneState == SceneState::Edit)
 				OnScenePlay();
 			else if (m_SceneState == SceneState::Play)
 				OnSceneStop();
 		}
+		buttonTintColor = ImGui::IsItemActive() ? ImVec4{ 0.6, 0.6, 0.6, 1 } : ImVec4{ 1, 1, 1, 1 };
 		ImGui::PopStyleVar(2);
 		ImGui::PopStyleColor(3);
 
@@ -322,6 +324,7 @@ namespace Eos {
 	{
 		ImGui::Begin("Settings");
 		ImGui::Checkbox("2D editor camera", &EditorCamera::s_RotationLocked);
+		ImGui::Checkbox("Hightlight selection", &m_ShowSelectionHightlighting);
 		ImGui::Checkbox("Show physics colliders", &m_ShowPhysicsColliders);
 		ImGui::End();
 	}
@@ -462,26 +465,36 @@ namespace Eos {
 
 		// Entity outline
 		Entity selection = m_SceneHierarchyPanel.GetSelectedEntity();
-		if (selection)
+		if (m_ShowSelectionHightlighting && selection)
 		{
 			Renderer2D::SetLineWidth(4.0f);
 
 			if (selection.HasComponent<TransformComponent>())
 			{
+				// Calculate z index for translation
+				float zIndex = 0.001f;
+				glm::vec3 cameraForwardDirection = m_EditorCamera.GetForwardDirection();
+				glm::vec3 projectionCollider = cameraForwardDirection * glm::vec3(zIndex);
+
 				auto& tc = selection.GetComponent<TransformComponent>();
 
 				if (selection.HasComponent<SpriteRendererComponent>())
-					Renderer2D::DrawRect(tc.GetTransform(), glm::vec4(1, 1, 1, 1));
+				{
+					glm::mat4 transform = tc.GetTransform();
+					transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -projectionCollider.z)) * transform;
+
+					Renderer2D::DrawRect(transform, glm::vec4(1, 1, 1, 1));
+				}
 
 				if (selection.HasComponent<CircleRendererComponent>())
 				{
-					glm::mat4 transform = glm::translate(glm::mat4(1.0f), tc.Translation)
+					glm::mat4 transform = glm::translate(glm::mat4(1.0f), { tc.Translation.x, tc.Translation.y, tc.Translation.z - projectionCollider.z })
 						* glm::toMat4(glm::quat(tc.Rotation))
 						* glm::scale(glm::mat4(1.0f), tc.Scale + 0.03f);
 					Renderer2D::DrawCircle(transform, glm::vec4(1, 1, 1, 1), 0.03f);
 				}
 
-				// TODO: Add outline for camera?
+				// TODO: Add outline/image for camera?
 			}
 		}
 
