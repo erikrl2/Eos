@@ -30,14 +30,14 @@ namespace Eos {
 		{
 			m_Context->m_Registry.each([&](const auto e) { DrawEntityNode({ e, *m_Context }); });
 
-			if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
-				m_SelectionContext = {};
+			//if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
+			//	m_SelectionContext = {};
 
 			// Right-click on blank space
 			if (ImGui::BeginPopupContextWindow(0, 1, false))
 			{
 				if (ImGui::MenuItem("Create Empty"))
-					m_Context->CreateEntity();
+					m_SelectionContext = m_Context->CreateEntity();
 
 				ImGui::EndPopup();
 			}
@@ -50,6 +50,7 @@ namespace Eos {
 		{
 			DrawComponents(m_SelectionContext);
 		}
+
 		ImGui::End();
 	}
 
@@ -70,7 +71,7 @@ namespace Eos {
 			// TODO: Add move up/down MenuItem
 
 			if (ImGui::MenuItem("Create Empty"))
-				m_Context->CreateEntity();
+				m_SelectionContext = m_Context->CreateEntity();
 
 			if (ImGui::MenuItem("Create Empty Child"))
 			{
@@ -118,6 +119,9 @@ namespace Eos {
 
 	static void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 75.0f)
 	{
+		auto& style = ImGui::GetStyle();
+		style.FrameRounding = 0.0f;
+
 		ImGuiIO& io = ImGui::GetIO();
 		auto boldFont = io.Fonts->Fonts[0];
 
@@ -134,9 +138,9 @@ namespace Eos {
 		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
 		ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
 
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.6f, 0.1f, 0.15f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.7f, 0.2f, 0.2f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.6f, 0.1f, 0.15f, 1.0f });
 		ImGui::PushFont(boldFont);
 		if (ImGui::Button("X", buttonSize))
 			values.x = resetValue;
@@ -148,9 +152,9 @@ namespace Eos {
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.8f, 0.3f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.6f, 0.2f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.7f, 0.3f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.6f, 0.2f, 1.0f });
 		ImGui::PushFont(boldFont);
 		if (ImGui::Button("Y", buttonSize))
 			values.y = resetValue;
@@ -162,9 +166,9 @@ namespace Eos {
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.1f, 0.25f, 0.8f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.2f, 0.35f, 0.9f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.1f, 0.25f, 0.8f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.1f, 0.25f, 0.6f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.2f, 0.35f, 0.7f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.1f, 0.25f, 0.6f, 1.0f });
 		ImGui::PushFont(boldFont);
 		if (ImGui::Button("Z", buttonSize))
 			values.z = resetValue;
@@ -180,11 +184,22 @@ namespace Eos {
 		ImGui::Columns(1);
 
 		ImGui::PopID();
+
+		style.FrameRounding = 4.0f;
+	}
+
+	static void DrawLabelLeft(const char* label, float nextCursorPosX = 110.0f)
+	{
+		ImGui::Text(label);
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(nextCursorPosX);
 	}
 
 	template<typename T, typename UIFunction>
 	static void DrawComponent(const std::string& name, Entity entity, UIFunction uiFunction)
 	{
+		static Ref<Texture2D> settingsIcon = Texture2D::Create("Resources/Icons/Hierarchy/SettingsIcon.png");
+
 		const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
 		if (entity.HasComponent<T>())
 		{
@@ -202,7 +217,7 @@ namespace Eos {
 			ImGui::PopStyleVar();
 
 			ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
-			if (ImGui::Button("+", ImVec2{ lineHeight, lineHeight }))
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)settingsIcon->GetRendererID()), { lineHeight, lineHeight }, { 0, 1 }, { 1, 0 }, 0, { 0, 0, 0, 0 }, { 0.8, 0.8, 0.8, 1 }))
 				ImGui::OpenPopup("ComponentSettings");
 
 			bool removeComponent = false;
@@ -238,19 +253,38 @@ namespace Eos {
 			char buffer[128];
 			memset(buffer, 0, sizeof(buffer));
 			strcpy_s(buffer, tag.c_str());
+			ImGui::SetNextItemWidth(140.0f);
 			if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
 			{
 				tag = std::string(buffer);
 			}
+			ImGui::SameLine();
 		}
+
+		std::string uid = std::to_string(entity.GetComponent<IDComponent>().ID);
+		char idBuffer[32];
+		std::strncpy(idBuffer, uid.c_str(), sizeof(idBuffer));
+		ImGui::PushStyleColor(ImGuiCol_Text, { 0.5, 0.5, 0.5, 1 });
+		ImGui::Text(idBuffer, 0);
+		//ImGui::SetNextItemWidth(150.0f);
+		//ImGui::InputText("##UID", idBuffer, sizeof(idBuffer), ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_CharsNoBlank);
+		ImGui::PopStyleColor();
+
+		static Ref<Texture2D> addIcon = Texture2D::Create("Resources/Icons/Hierarchy/AddIcon.png");
 
 		ImGui::SameLine();
 		ImGui::PushItemWidth(-1);
-		if (ImGui::Button("Add Component"))
+		ImGui::PushStyleColor(ImGuiCol_Button, { 0, 0, 0, 0 });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0, 0, 0, 0 });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, { 0, 0, 0, 0 });
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 42.0f);
+		if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)addIcon->GetRendererID()), { 23, 23 }, { 0, 1 }, { 1, 0 }, 0))
 			ImGui::OpenPopup("AddComponent");
+		ImGui::PopStyleColor(3);
 
 		if (ImGui::BeginPopup("AddComponent"))
 		{
+			DisplayAddComponentEntry<TransformComponent>("Transform");
 			DisplayAddComponentEntry<CameraComponent>("Camera");
 			DisplayAddComponentEntry<SpriteRendererComponent>("Sprite Renderer");
 			DisplayAddComponentEntry<CircleRendererComponent>("Circle Renderer");
@@ -276,11 +310,13 @@ namespace Eos {
 			{
 				auto& camera = component.Camera;
 
-				ImGui::Checkbox("Primary", &component.Primary);
+				DrawLabelLeft("Primary");
+				ImGui::Checkbox("##Primary", &component.Primary);
 
+				DrawLabelLeft("Projection");
 				const char* projectionTypeStrings[] = { "Perspective", "Orthographic" };
 				const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.GetProjectionType()];
-				if (ImGui::BeginCombo("Projection", currentProjectionTypeString))
+				if (ImGui::BeginCombo("##Projection", currentProjectionTypeString))
 				{
 					for (int i = 0; i < 2; i++)
 					{
@@ -299,43 +335,56 @@ namespace Eos {
 
 				if (camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective)
 				{
+					DrawLabelLeft("Vertical FOV");
 					float perspectiveVerticalFov = glm::degrees(camera.GetPerspectiveVerticalFOV());
-					if (ImGui::DragFloat("Vertical FOV", &perspectiveVerticalFov, 0.1f))
+					if (ImGui::DragFloat("##VerticalFOV", &perspectiveVerticalFov, 0.1f, 0.0f, 180.0f, "%.1f"))
 						camera.SetPerspectiveVerticalFOV(glm::radians(perspectiveVerticalFov));
 
+					DrawLabelLeft("Near");
 					float perspectiveNear = camera.GetPerspectiveNearClip();
-					if (ImGui::DragFloat("Near", &perspectiveNear, 0.1f))
+					if (ImGui::DragFloat("##Near", &perspectiveNear, 0.1f, 0.0f, 0.0f, "%.1f"))
 						camera.SetPerspectiveNearClip(perspectiveNear);
 
+					DrawLabelLeft("Far");
 					float perspectiveFar = camera.GetPerspectiveFarClip();
-					if (ImGui::DragFloat("Far", &perspectiveFar, 0.1f))
+					if (ImGui::DragFloat("##Far", &perspectiveFar, 0.1f, 0.0f, 0.0f, "%.1f"))
 						camera.SetPerspectiveFarClip(perspectiveFar);
 				}
 
 				if (camera.GetProjectionType() == SceneCamera::ProjectionType::Orthographic)
 				{
+					DrawLabelLeft("Size");
 					float orthoSize = camera.GetOrthographicSize();
-					if (ImGui::DragFloat("Size", &orthoSize, 0.1f))
+					if (ImGui::DragFloat("##Size", &orthoSize, 0.1f, 0.1f, 10000.0f, "%.1f"))
 						camera.SetOrthographicSize(orthoSize);
 
+					DrawLabelLeft("Near");
 					float orthoNear = camera.GetOrthographicNearClip();
-					if (ImGui::DragFloat("Near", &orthoNear, 0.1f))
+					if (ImGui::DragFloat("##Near", &orthoNear, 0.1f, 0.0f, 0.0f, "%.1f"))
 						camera.SetOrthographicNearClip(orthoNear);
 
+					DrawLabelLeft("Far");
 					float orthoFar = camera.GetOrthographicFarClip();
-					if (ImGui::DragFloat("Far", &orthoFar, 0.1f))
+					if (ImGui::DragFloat("##Far", &orthoFar, 0.1f, 0.0f, 0.0f, "%.1f"))
 						camera.SetOrthographicFarClip(orthoFar);
 				}
 
-				ImGui::Checkbox("Fixed Aspect Ratio", &component.FixedAspectRatio);
+				//ImGui::Checkbox("##FixedAspectRatio", &component.FixedAspectRatio);
 			});
 
-		DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](auto& component)
+		DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [&](auto& component)
 			{
-				ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+				DrawLabelLeft("Color");
+				glm::vec4& color = component.Color;
+				ImGui::ColorEdit4("##Color", glm::value_ptr(color));
 
-				// TODO: Add dropdown menu Texture/Subtexture
-				ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
+				static Ref<Texture2D> checkerboard = Texture2D::Create("Resources/Icons/Hierarchy/Checkerboard.png");
+
+				uint32_t textureID = component.Texture ? component.Texture->GetRendererID() : checkerboard->GetRendererID();
+				ImVec4 tintColor = component.Texture ? ImVec4{ color.x, color.y, color.z, color.a } : ImVec4{ 1, 1, 1, 1 };
+
+				DrawLabelLeft("Texture");
+				ImGui::Image(reinterpret_cast<ImTextureID>((uint64_t)textureID), { 50.0f, 23.0f }, { 0, 0 }, { 1, 1 }, tintColor, { 1, 1, 1, 1 });
 				if (ImGui::BeginDragDropTarget())
 				{
 					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
@@ -350,22 +399,35 @@ namespace Eos {
 					}
 					ImGui::EndDragDropTarget();
 				}
+
 				if (component.Texture)
 				{
 					ImGui::SameLine();
-					ImGui::Image((ImTextureID)component.Texture->GetRendererID(), ImVec2(50.0f, 23.0f));
-					ImGui::SameLine();
-					if (ImGui::Button("del", ImVec2(0.0f, 0.0f)))
+					if (ImGui::Button("del"))
 						component.Texture = {};
 				}
 
-				// TODO: Collapsed subtexture menu with options: Coords, CellSize, SpriteSize
+				ImGui::SameLine();
+				ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 95.0f);
+				ImGui::Checkbox("Atlas", &component.Atlas);
+				if (component.Atlas)
+				{
+					DrawLabelLeft("Coords");
+					if (ImGui::DragFloat2("##Coords", glm::value_ptr(component.Coords), 1.0f, 0.0f, 100.0f, "%.0f"));
+					DrawLabelLeft("CellSize");
+					if (ImGui::DragFloat2("##CellSize", glm::value_ptr(component.CellSize), 0.01f, 0.0f, 500.0f, "%.2f"));
+					DrawLabelLeft("SpriteSize");
+					if (ImGui::DragFloat2("##SpriteSize", glm::value_ptr(component.SpriteSize), 1.0f, 1.0f, 100.0f, "%.0f"));
+				}
 
-				ImGui::DragFloat("Tiling Factor", &component.TilingFactor, 0.01f, 0.0f, 100.0f);
+				DrawLabelLeft("Tiling Factor");
+				ImGui::DragFloat("##TilingFactor", &component.TilingFactor, 0.01f, 0.0f, 100.0f);
 			});
 
 		DrawComponent<CircleRendererComponent>("Circle Renderer", entity, [](auto& component)
 			{
+				// TODO: DrawLabelLeft("Color");
+
 				ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
 				ImGui::DragFloat("Thickness", &component.Thickness, 0.025f, 0.0f, 1.0f);
 				ImGui::DragFloat("Fade", &component.Fade, 0.00025f, 0.0f, 1.0f);

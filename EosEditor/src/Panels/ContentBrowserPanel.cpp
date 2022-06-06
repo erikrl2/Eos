@@ -13,6 +13,7 @@ namespace Eos {
 	{
 		m_DirectoryIcon = Texture2D::Create("Resources/Icons/ContentBrowser/DirectoryIcon.png");
 		m_FileIcon = Texture2D::Create("Resources/Icons/ContentBrowser/FileIcon.png");
+		m_SearchIcon = Texture2D::Create("Resources/Icons/ContentBrowser/SearchIcon.png");
 
 		std::memset(m_SearchBuffer, 0, sizeof(m_SearchBuffer));
 	}
@@ -24,7 +25,11 @@ namespace Eos {
 		if (m_CurrentDirectory != std::filesystem::path(g_AssetPath))
 		{
 			if (ImGui::Button("back"))
+			{
+				if (m_SearchBuffer[0])
+					std::memset(m_SearchBuffer, 0, sizeof(m_SearchBuffer));
 				m_CurrentDirectory = m_CurrentDirectory.parent_path();
+			}
 			ImGui::SameLine();
 			DrawSearchbar();
 		}
@@ -42,16 +47,25 @@ namespace Eos {
 		ImGui::Columns(columnCount, 0, false);
 
 		if (!m_SearchBuffer[0])
+		{
 			for (auto& directoryEntry : std::filesystem::directory_iterator(m_CurrentDirectory))
 				DrawDirectoryEntry(directoryEntry, thumbnailSize);
+		}
 		else
 		{
-			for (auto& directoryEntry : std::filesystem::directory_iterator(g_AssetPath))
+			for (auto& directoryEntry : std::filesystem::recursive_directory_iterator(g_AssetPath))
 			{
-				const auto& path = directoryEntry.path();
+				// Case insensitive check if filename contains the search string
+				auto& path = directoryEntry.path();
 				std::string filenameString = path.filename().string();
-				//if (filenameString contains m_SearchBuffer)
-				DrawDirectoryEntry(directoryEntry, thumbnailSize);
+				std::string searchText = m_SearchBuffer;
+				std::transform(filenameString.begin(), filenameString.end(), filenameString.begin(), ::tolower);
+				std::transform(searchText.begin(), searchText.end(), searchText.begin(), ::tolower);
+				if (filenameString.find(searchText) != std::string::npos)
+				{
+					if (!directoryEntry.is_directory() ? path.extension() != ".ttf" && path.extension() != ".frag" && path.extension() != ".vert" && path.extension() != ".glsl" : true)
+						DrawDirectoryEntry(directoryEntry, thumbnailSize);
+				}
 			}
 		}
 
@@ -85,7 +99,12 @@ namespace Eos {
 		ImGui::PopStyleColor();
 		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 			if (directoryEntry.is_directory())
-				m_CurrentDirectory /= path.filename();
+			{
+				if (m_SearchBuffer[0])
+					std::memset(m_SearchBuffer, 0, sizeof(m_SearchBuffer));
+				m_CurrentDirectory = path;
+				//m_CurrentDirectory /= path.filename();
+			}
 		ImGui::TextWrapped(filenameString.c_str());
 
 		ImGui::NextColumn();
@@ -114,12 +133,27 @@ namespace Eos {
 
 	void ContentBrowserPanel::DrawSearchbar()
 	{
-
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - 150.0f);
-		ImGui::Text("Search:");
-		ImGui::SameLine();
-		ImGui::SetNextItemWidth(150.0f);
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - 110.0f);
+		ImGui::SetNextItemWidth(125.0f);
 		ImGui::InputText("##Tag", m_SearchBuffer, sizeof(m_SearchBuffer));
+		ImGui::SameLine(ImGui::GetWindowWidth() / 2.0f + 10.0f, 0);
+		auto& colors = ImGui::GetStyle().Colors;
+		const auto& buttonColor = colors[ImGuiCol_Button];
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(buttonColor.x, buttonColor.y, buttonColor.z, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(buttonColor.x, buttonColor.y, buttonColor.z, 1.0f));
+		ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)m_SearchIcon->GetRendererID()), { 17, 17 }, { 0, 1 }, { 1, 0 }, -1, { 0, 0, 0, 0 }, { 0.6, 0.6, 0.6, 1 });
+		ImGui::PopStyleColor(2);
+		DrawClearSearchbarButton();
+	}
+
+	void ContentBrowserPanel::DrawClearSearchbarButton()
+	{
+		if (m_SearchBuffer[0])
+		{
+			ImGui::SameLine();
+			if (ImGui::Button("clear"))
+				std::memset(m_SearchBuffer, 0, sizeof(m_SearchBuffer));
+		}
 	}
 
 }

@@ -11,6 +11,7 @@ Entities:
       Color: [0.931019008, 0.894055665, 0.95161289, 1]
       TexturePath: assets\textures\Checkerboard.png
       TilingFactor: 1
+      Atlas: false
     Rigidbody2DComponent:
       BodyType: Dynamic
       FixedRotation: false
@@ -54,6 +55,7 @@ Entities:
       Color: [0.330645204, 1, 0, 1]
       TexturePath: assets\textures\Checkerboard.png
       TilingFactor: 1
+      Atlas: false
     Rigidbody2DComponent:
       BodyType: Dynamic
       FixedRotation: false
@@ -117,6 +119,7 @@ Entities:
       Color: [1, 0.044354856, 0.807329535, 1]
       TexturePath: assets\textures\Checkerboard.png
       TilingFactor: 0.400000006
+      Atlas: false
     Rigidbody2DComponent:
       BodyType: Dynamic
       FixedRotation: false

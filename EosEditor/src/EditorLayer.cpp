@@ -180,9 +180,12 @@ namespace Eos {
 
 			if (ImGui::BeginMenu("Help"))
 			{
+				// TODO: Implement
 				if (ImGui::MenuItem("Shortcuts"))
 				{
-					// TODO: Shortcut overview
+				}
+				if (ImGui::MenuItem("About"))
+				{
 				}
 				ImGui::EndMenu();
 			}
@@ -288,11 +291,8 @@ namespace Eos {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-		auto& colors = ImGui::GetStyle().Colors;
-		const auto& buttonHovered = colors[ImGuiCol_ButtonHovered];
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(buttonHovered.x, buttonHovered.y, buttonHovered.z, 0.5f));
-		const auto& buttonActive = colors[ImGuiCol_ButtonActive];
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(buttonActive.x, buttonActive.y, buttonActive.z, 0.5f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
 
 		ImGui::Begin("Toolbar", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
@@ -651,8 +651,8 @@ namespace Eos {
 
 	void EditorLayer::DuplicateEntity()
 	{
-		if (m_SceneState != SceneState::Edit)
-			return;
+		//if (m_SceneState != SceneState::Edit)
+		//	return;
 
 		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 		if (selectedEntity)

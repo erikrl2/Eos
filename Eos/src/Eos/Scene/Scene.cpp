@@ -287,7 +287,7 @@ namespace Eos {
 		}
 	}
 
-	void Scene::DuplicateEntity(Entity entity)
+	Entity Scene::DuplicateEntity(Entity entity)
 	{
 		std::string name = entity.GetComponent<TagComponent>().Tag;
 		Entity newEntity = CreateEntity(name);
@@ -300,6 +300,8 @@ namespace Eos {
 		CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
 		CopyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
 		CopyComponentIfExists<CircleCollider2DComponent>(newEntity, entity);
+
+		return newEntity;
 	}
 
 	Entity Scene::GetPrimaryCameraEntity()	{

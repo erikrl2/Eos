@@ -544,9 +544,15 @@ namespace Eos {
 
 	void Renderer2D::DrawSprite(const glm::mat4& transform, SpriteRendererComponent& src, int entityID)
 	{
-		// TODO: Update for subtextures
 		if (src.Texture)
-			DrawQuad(transform, src.Texture, src.TilingFactor, src.Color, entityID);
+		{
+			if (src.Atlas)
+			{
+				DrawQuad(transform, SubTexture2D::CreateFromCoords(src.Texture, src.Coords, src.CellSize, src.SpriteSize), src.TilingFactor, src.Color, entityID);
+			}
+			else
+				DrawQuad(transform, src.Texture, src.TilingFactor, src.Color, entityID);
+		}
 		else
 			DrawQuad(transform, src.Color, entityID);
 	}

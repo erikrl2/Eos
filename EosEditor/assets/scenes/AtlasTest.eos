@@ -1,0 +1,65 @@
+Scene: AtlasTest
+Entities:
+  - Entity: 7289576983859043799
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: 1
+        PerspectiveFOV: 0.785398185
+        PerspectiveNear: 0.00999999978
+        PerspectiveFar: 1000
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 1
+      Primary: true
+      FixedAspectRatio: false
+  - Entity: 17265750226678367467
+    TagComponent:
+      Tag: Ship2
+    TransformComponent:
+      Translation: [-0.269256592, 0.929359198, 0]
+      Rotation: [0, 0, 2.34102249]
+      Scale: [0.999994457, 0.999994457, 1]
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]
+      TexturePath: assets\textures\ships.png
+      TilingFactor: 1.01999998
+      Atlas: true
+      Coords: [1, 3]
+      CellSize: [32, 32]
+      SpriteSize: [1, 1]
+  - Entity: 15259462493125487556
+    TagComponent:
+      Tag: Ship1
+    TransformComponent:
+      Translation: [1.71978021, -0.0434218645, -6.10351562e-05]
+      Rotation: [0, 0, 0.416270703]
+      Scale: [0.999999642, 0.999999642, 1]
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]
+      TexturePath: assets\textures\ships.png
+      TilingFactor: 1.01999998
+      Atlas: true
+      Coords: [2, 3]
+      CellSize: [32, 32]
+      SpriteSize: [1, 1]
+  - Entity: 12543014313466827817
+    TagComponent:
+      Tag: Ship3
+    TransformComponent:
+      Translation: [-1.61551285, -0.312686652, 0]
+      Rotation: [0, 0, -0.266555011]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]
+      TexturePath: assets\textures\ships.png
+      TilingFactor: 1.01999998
+      Atlas: true
+      Coords: [1, 2]
+      CellSize: [32, 32]
+      SpriteSize: [1, 1]

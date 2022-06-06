@@ -29,6 +29,7 @@ Entities:
       Color: [1, 0, 0, 0.65882355]
       TexturePath: assets\textures\Checkerboard.png
       TilingFactor: 1
+      Atlas: false
   - Entity: 15211093096628820252
     TagComponent:
       Tag: 2
@@ -40,6 +41,7 @@ Entities:
       Color: [1, 1, 0, 0.792156875]
       TexturePath: assets\textures\Checkerboard.png
       TilingFactor: 1
+      Atlas: false
   - Entity: 492802691059157710
     TagComponent:
       Tag: 3
@@ -51,6 +53,7 @@ Entities:
       Color: [0, 1, 1, 0.470588237]
       TexturePath: assets\textures\Checkerboard.png
       TilingFactor: 1
+      Atlas: false
   - Entity: 2567475563566813778
     TagComponent:
       Tag: 4
@@ -62,3 +65,4 @@ Entities:
       Color: [0, 1, 0, 0.545098066]
       TexturePath: assets\textures\Checkerboard.png
       TilingFactor: 1
+      Atlas: false

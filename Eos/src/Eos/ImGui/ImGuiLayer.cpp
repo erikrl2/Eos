@@ -46,6 +46,9 @@ namespace Eos {
 		{
 			style.WindowRounding = 0.0f;
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+
+			style.PopupRounding = 5.0f;
+			style.FrameRounding = 4.0f;
 		}
 
 		SetDarkThemeColors();

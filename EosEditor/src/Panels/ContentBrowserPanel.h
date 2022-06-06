@@ -16,7 +16,9 @@ namespace Eos {
 	private:
 		void DrawDirectoryEntry(const std::filesystem::directory_entry& directoryEntry, float thumbnailSize);
 		Ref<Texture2D>& GetFileIcon(const std::filesystem::path& filepath);
+
 		void DrawSearchbar();
+		void DrawClearSearchbarButton();
 	private:
 		std::filesystem::path m_CurrentDirectory;
 
@@ -24,6 +26,7 @@ namespace Eos {
 		Ref<Texture2D> m_FileIcon;
 		std::unordered_map<std::filesystem::path, Ref<Texture2D>> m_ImageIcons;
 
+		Ref<Texture2D> m_SearchIcon;
 		char m_SearchBuffer[128];
 	};
 

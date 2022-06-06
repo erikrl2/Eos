@@ -4,6 +4,8 @@
 #include "Eos/Scene/Scene.h"
 #include "Eos/Scene/Entity.h"
 
+#include "Eos/Renderer/Texture.h"
+
 namespace Eos {
 
 	class SceneHierarchyPanel
