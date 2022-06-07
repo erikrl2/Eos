@@ -59,7 +59,7 @@ namespace Eos {
 		glm::vec4 Color = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
 		Ref<Texture2D> Texture;
 		float TilingFactor = 1.0f;
-		bool FlipX = false, FlipY = false; // TODO
+		bool FlipX = false, FlipY = false;
 		bool Atlas = false;
 		glm::vec2 Coords = { 0, 0 };
 		glm::vec2 CellSize = { 32, 32 };
@@ -70,8 +70,6 @@ namespace Eos {
 		SpriteRendererComponent(const glm::vec4& color) : Color(color) {}
 		SpriteRendererComponent(const Ref<Texture2D>& texture, const glm::vec4& tintColor = { 1, 1, 1, 1 }, float tilingFactor = 1.0f)
 			: Texture(texture), Color(tintColor), TilingFactor(tilingFactor) {}
-		SpriteRendererComponent(const Ref<Texture2D>& texture, const glm::vec2& coords, const glm::vec2& cellSize, const glm::vec2& spriteSize = { 1, 1 })
-			: Texture(texture), Coords(coords), CellSize(cellSize), SpriteSize(spriteSize) {}
 	};
 
 	struct CircleRendererComponent

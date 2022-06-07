@@ -202,6 +202,7 @@ namespace Eos {
 			if (auto& texture = src.Texture)
 			{
 				out << YAML::Key << "TexturePath" << YAML::Value << texture->GetPath();
+				out << YAML::Key << "FlipXY" << YAML::Value << glm::vec2(src.FlipX, src.FlipY);
 				out << YAML::Key << "TilingFactor" << YAML::Value << src.TilingFactor;
 				out << YAML::Key << "Atlas" << YAML::Value << src.Atlas;
 				if (src.Atlas)
@@ -379,6 +380,10 @@ namespace Eos {
 							std::filesystem::exists(textureFilePath))
 						{
 							src.Texture = Texture2D::Create(textureFilePath);
+							glm::vec2 flipXY = spriteRendererComponent["FlipXY"].as<glm::vec2>();
+							src.FlipX = (bool)flipXY.x;
+							src.FlipY = (bool)flipXY.y;
+							src.TilingFactor = spriteRendererComponent["TilingFactor"].as<float>();
 							if (src.Atlas = spriteRendererComponent["Atlas"].as<bool>())
 							{
 								src.Coords = spriteRendererComponent["Coords"].as<glm::vec2>();
@@ -388,7 +393,6 @@ namespace Eos {
 						}
 						else
 							EOS_CORE_ERROR("Texture '{0}' was not found", textureFilePath);
-						src.TilingFactor = spriteRendererComponent["TilingFactor"].as<float>();
 					}
 				}
 

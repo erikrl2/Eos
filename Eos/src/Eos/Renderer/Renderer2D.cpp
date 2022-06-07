@@ -389,9 +389,17 @@ namespace Eos {
 	{
 		EOS_PROFILE_FUNCTION();
 
+		const glm::vec2* coords = subTexture->GetTexCoords();
+		DrawQuad(transform, subTexture->GetTexture(), coords[0], coords[2], tilingFactor, tintColor, entityID);
+	}
+
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, const glm::vec2& min, const glm::vec2& max, float tilingFactor, const glm::vec4& tintColor, int entityID)
+	{
+		EOS_PROFILE_FUNCTION();
+
+		glm::vec2 textureCoords[4] = { { min.x, min.y }, { max.x, min.y }, { max.x, max.y }, { min.x, max.y } };
+
 		constexpr const size_t quadVertexCount = 4;
-		const glm::vec2* textureCoords = subTexture->GetTexCoords();
-		const Ref<Texture2D> texture = subTexture->GetTexture();
 
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
 			NextBatch();
@@ -548,10 +556,12 @@ namespace Eos {
 		{
 			if (src.Atlas)
 			{
-				DrawQuad(transform, SubTexture2D::CreateFromCoords(src.Texture, src.Coords, src.CellSize, src.SpriteSize), src.TilingFactor, src.Color, entityID);
+				const glm::vec2 min = { src.Coords.x * src.CellSize.x / src.Texture->GetWidth(), src.Coords.y * src.CellSize.y / src.Texture->GetHeight() };
+				const glm::vec2 max = { (src.Coords.x + src.SpriteSize.x) * src.CellSize.x / src.Texture->GetWidth(), (src.Coords.y + src.SpriteSize.y) * src.CellSize.y / src.Texture->GetHeight() };
+				DrawQuad(transform, src.Texture, glm::vec2(src.FlipX ? max.x : min.x, src.FlipY ? max.y : min.y), glm::vec2(src.FlipX ? min.x : max.x, src.FlipY ? min.y : max.y), src.TilingFactor, src.Color, entityID);
 			}
 			else
-				DrawQuad(transform, src.Texture, src.TilingFactor, src.Color, entityID);
+				DrawQuad(transform, src.Texture, glm::vec2(src.FlipX, src.FlipY), glm::vec2(!src.FlipX, !src.FlipY), src.TilingFactor, src.Color, entityID);
 		}
 		else
 			DrawQuad(transform, src.Color, entityID);

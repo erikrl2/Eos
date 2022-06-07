@@ -96,7 +96,7 @@ namespace Eos {
 		{
 			char buffer[128];
 			memset(buffer, 0, sizeof(buffer));
-			std::strncpy(buffer, tag.c_str(), sizeof(buffer));
+			strncpy_s(buffer, tag.c_str(), sizeof(buffer));
 			if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
 				tag = buffer;
 
@@ -222,11 +222,11 @@ namespace Eos {
 
 			ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
 			ImVec4 buttonColor = ImGui::GetStyle().Colors[ImGuiCol_Button];
-			static ImVec4 iconTintColor = { 0.4, 0.4, 0.4, 1.0f };
+			static ImVec4 iconTintColor = { 0.4f, 0.4f, 0.4f, 1.0f };
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, buttonColor);
 			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)settingsIcon->GetRendererID()), { lineHeight, lineHeight }, { 0, 1 }, { 1, 0 }, 0, { 0, 0, 0, 0 }, iconTintColor))
 				ImGui::OpenPopup("ComponentSettings");
-			iconTintColor = ImGui::IsItemHovered() ? ImVec4{ 0.7f, 0.7f, 0.7f, 1.0f } : ImVec4{ 0.4, 0.4, 0.4, 1.0f };
+			iconTintColor = ImGui::IsItemHovered() ? ImVec4{ 0.7f, 0.7f, 0.7f, 1.0f } : ImVec4{ 0.4f, 0.4f, 0.4f, 1.0f };
 			ImGui::PopStyleColor();
 
 			bool removeComponent = false;
@@ -272,8 +272,8 @@ namespace Eos {
 
 		std::string uid = std::to_string(entity.GetComponent<IDComponent>().ID);
 		char idBuffer[32];
-		std::strncpy(idBuffer, uid.c_str(), sizeof(idBuffer));
-		ImGui::PushStyleColor(ImGuiCol_Text, { 0.4, 0.4, 0.4, 1 });
+		strncpy_s(idBuffer, uid.c_str(), sizeof(idBuffer));
+		ImGui::PushStyleColor(ImGuiCol_Text, { 0.4f, 0.4f, 0.4f, 1.0f });
 		ImGui::Text(idBuffer, 0);
 		//ImGui::SetNextItemWidth(150.0f);
 		//ImGui::InputText("##UID", idBuffer, sizeof(idBuffer), ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_CharsNoBlank);
@@ -284,7 +284,7 @@ namespace Eos {
 		ImGui::SameLine();
 		ImGui::PushItemWidth(-1);
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 43.0f);
-		if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)addIcon->GetRendererID()), { 17, 17 }, { 0, 1 }, { 1, 0 }, -1, { 0, 0, 0, 0 }, { 0.7, 0.7, 0.7, 1 }))
+		if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)addIcon->GetRendererID()), { 17, 17 }, { 0, 1 }, { 1, 0 }, -1, { 0, 0, 0, 0 }, { 0.7f, 0.7f, 0.7f, 1.0f }))
 			ImGui::OpenPopup("AddComponent");
 
 		if (ImGui::BeginPopup("AddComponent"))
@@ -374,7 +374,8 @@ namespace Eos {
 						camera.SetOrthographicFarClip(orthoFar);
 				}
 
-				//ImGui::Checkbox("##FixedAspectRatio", &component.FixedAspectRatio);
+				DrawLabelLeft("Fixed AspectRatio", 140.0f);
+				ImGui::Checkbox("##FixedAspectRatio", &component.FixedAspectRatio);
 			});
 
 		DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [&](auto& component)
@@ -407,26 +408,36 @@ namespace Eos {
 
 				if (component.Texture)
 				{
+					if (ImGui::BeginPopupContextItem("TexRemove"))
+					{
+						if (ImGui::MenuItem("Remove"))
+							component.Texture = {};
+						ImGui::EndPopup();
+					}
+
+					ImGui::SameLine(0.0f, 30.0f);
+					ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3.0f);
+					ImGui::Text("Flip X/Y");
 					ImGui::SameLine();
-					if (ImGui::Button("del"))
-						component.Texture = {};
-				}
+					ImGui::Checkbox("##FlipX", &component.FlipX);
+					ImGui::SameLine();
+					ImGui::Checkbox("##FlipY", &component.FlipY);
 
-				ImGui::SameLine(200.0f);
-				//ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 95.0f);
-				ImGui::Checkbox("Atlas", &component.Atlas);
-				if (component.Atlas)
-				{
-					DrawLabelLeft("Coords");
-					if (ImGui::DragFloat2("##Coords", glm::value_ptr(component.Coords), 1.0f, 0.0f, 100.0f, "%.0f"));
-					DrawLabelLeft("CellSize");
-					if (ImGui::DragFloat2("##CellSize", glm::value_ptr(component.CellSize), 0.01f, 0.0f, 500.0f, "%.2f"));
-					DrawLabelLeft("SpriteSize");
-					if (ImGui::DragFloat2("##SpriteSize", glm::value_ptr(component.SpriteSize), 1.0f, 1.0f, 100.0f, "%.0f"));
-				}
+					DrawLabelLeft("Tiling Factor");
+					ImGui::DragFloat("##TilingFactor", &component.TilingFactor, 0.01f, 0.0f, 100.0f, "%.2f");
 
-				DrawLabelLeft("Tiling Factor");
-				ImGui::DragFloat("##TilingFactor", &component.TilingFactor, 0.01f, 0.0f, 100.0f, "%.2f");
+					DrawLabelLeft("Is Atlas");
+					ImGui::Checkbox("##Atlas", &component.Atlas);
+					if (component.Atlas)
+					{
+						DrawLabelLeft("Coords");
+						ImGui::DragFloat2("##Coords", glm::value_ptr(component.Coords), 1.0f, 0.0f, 100.0f, "%.0f");
+						DrawLabelLeft("CellSize");
+						ImGui::DragFloat2("##CellSize", glm::value_ptr(component.CellSize), 0.01f, 0.0f, 500.0f, "%.2f");
+						DrawLabelLeft("SpriteSize");
+						ImGui::DragFloat2("##SpriteSize", glm::value_ptr(component.SpriteSize), 1.0f, 1.0f, 100.0f, "%.0f");
+					}
+				}
 			});
 
 		DrawComponent<CircleRendererComponent>("Circle Renderer", entity, [](auto& component)

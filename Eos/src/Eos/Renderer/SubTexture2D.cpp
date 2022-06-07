@@ -3,6 +3,7 @@
 
 namespace Eos {
 
+	// note: min & max are between 0 and 1; min is bottom left, max top right
 	SubTexture2D::SubTexture2D(const Ref<Texture2D>& texture, const glm::vec2& min, const glm::vec2& max)
 		: m_Texture(texture)
 	{

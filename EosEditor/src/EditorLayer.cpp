@@ -494,7 +494,10 @@ namespace Eos {
 					Renderer2D::DrawCircle(transform, glm::vec4(1, 1, 1, 1), 0.03f);
 				}
 
-				// TODO: Add outline/image for camera?
+				if (selection.HasComponent<CameraComponent>())
+				{
+					// TODO: Show camera view in corner (create texture?)
+				}
 			}
 		}
 
