@@ -10,6 +10,9 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
+// debugging
+#include <imgui.h>
+
 namespace Eos {
 
 	EditorCamera::EditorCamera(float fov, float aspectRatio, float nearClip, float farClip)
@@ -37,18 +40,14 @@ namespace Eos {
 
 	std::pair<float, float> EditorCamera::PanSpeed() const
 	{
-		// TODO: Fix formula
+		float h = m_ViewportHeight / 100000.0f;
+		float xFactor = -5290865.3846153f * (h * h * h) + 119104.0f * (h * h) - 908.105f * h + 2.58129f;
 
-		float x = std::min(m_ViewportWidth / 1000.0f, 2.4f);
-		float xFactor = 0.0366f * (x * x) - 0.1778f * x + 0.3021f;
-		//float xFactor = 0.0366f * (x * x) - 0.1778f * x + 0.3021f;
+		//float h = m_ViewportHeight / 1000.0f;
+		//float xFactor = -5.2908653846153f * (h * h * h) + 11.9104f * (h * h) - 9.08105f * h + 2.58129f;
 
-		float y = std::min(m_ViewportHeight / 1000.0f, 2.4f);
-		float yFactor = 0.0366f * (y * y) - 0.1778f * y + 0.3021f;
-		//float yFactor = 0.0366f * (y * y) - 0.1778f * y + 0.3021f;
-
+		float yFactor = xFactor;
 		return { xFactor, yFactor };
-
 	}
 
 	float EditorCamera::RotationSpeed() const
