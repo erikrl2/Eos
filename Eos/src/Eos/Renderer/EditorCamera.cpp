@@ -10,9 +10,6 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
-// debugging
-#include <imgui.h>
-
 namespace Eos {
 
 	EditorCamera::EditorCamera(float fov, float aspectRatio, float nearClip, float farClip)
@@ -38,16 +35,15 @@ namespace Eos {
 		m_ViewMatrix = glm::inverse(m_ViewMatrix);
 	}
 
-	std::pair<float, float> EditorCamera::PanSpeed() const
+	float EditorCamera::PanSpeed() const
 	{
 		float h = m_ViewportHeight / 100000.0f;
-		float xFactor = -5290865.3846153f * (h * h * h) + 119104.0f * (h * h) - 908.105f * h + 2.58129f;
+		float factor = -5290865.3846153f * (h * h * h) + 119104.0f * (h * h) - 908.105f * h + 2.58129f;
 
 		//float h = m_ViewportHeight / 1000.0f;
-		//float xFactor = -5.2908653846153f * (h * h * h) + 11.9104f * (h * h) - 9.08105f * h + 2.58129f;
+		//float factor = -5.2908653846153f * (h * h * h) + 11.9104f * (h * h) - 9.08105f * h + 2.58129f;
 
-		float yFactor = xFactor;
-		return { xFactor, yFactor };
+		return factor;
 	}
 
 	float EditorCamera::RotationSpeed() const
@@ -102,9 +98,9 @@ namespace Eos {
 
 	void EditorCamera::MousePan(const glm::vec2& delta)
 	{
-		auto [xSpeed, ySpeed] = PanSpeed();
-		m_FocalPoint += -GetRightDirection() * delta.x * xSpeed * m_Distance;
-		m_FocalPoint += GetUpDirection() * delta.y * ySpeed * m_Distance;
+		float speed = PanSpeed();
+		m_FocalPoint += -GetRightDirection() * delta.x * speed * m_Distance;
+		m_FocalPoint += GetUpDirection() * delta.y * speed * m_Distance;
 	}
 
 	void EditorCamera::MouseRotate(const glm::vec2& delta)

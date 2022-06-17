@@ -46,7 +46,7 @@ namespace Eos {
 
 		glm::vec3 CalculatePosition() const;
 		
-		std::pair<float, float> PanSpeed() const;
+		float PanSpeed() const;
 		float RotationSpeed() const;
 		float ZoomSpeed() const;
 	private:
