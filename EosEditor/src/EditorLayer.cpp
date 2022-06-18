@@ -153,51 +153,75 @@ namespace Eos {
 		UI_Viewport();
 		UI_Toolbar();
 		UI_ChildPanels();
-		UI_Settings();
 		UI_RendererStats();
+		UI_Settings();
 
 		ImGui::End();
 	}
 
 	void EditorLayer::UI_MenuBar()
 	{
-		if (ImGui::BeginMenuBar())
+
+		ImGui::BeginMenuBar();
+		if (ImGui::BeginMenu("File"))
 		{
-			if (ImGui::BeginMenu("File"))
+			if (ImGui::MenuItem("New", "Ctrl+N"))
+				NewScene();
+
+			if (ImGui::MenuItem("Open...", "Ctrl+O"))
+				OpenScene();
+
+			if (ImGui::MenuItem("Save", "Ctrl+S"))
+				SaveScene();
+
+			if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
+				SaveSceneAs();
+
+			ImGui::Separator();
+
+			if (ImGui::MenuItem("Exit"))
+				Application::Get().Close();
+
+			ImGui::EndMenu();
+		}
+
+		static bool renamingScene = false;
+
+		if (ImGui::BeginMenu("Edit"))
+		{
+			if (ImGui::MenuItem("Rename Scene"))
 			{
-				if (ImGui::MenuItem("New", "Ctrl+N"))
-					NewScene();
-
-				if (ImGui::MenuItem("Open...", "Ctrl+O"))
-					OpenScene();
-
-				if (ImGui::MenuItem("Save", "Ctrl+S"))
-					SaveScene();
-
-				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
-					SaveSceneAs();
-
-				ImGui::Separator();
-
-				if (ImGui::MenuItem("Exit"))
-					Application::Get().Close();
-
-				ImGui::EndMenu();
+				renamingScene = true;
 			}
+			ImGui::EndMenu();
+		}
 
-			if (ImGui::BeginMenu("Help"))
+		if (ImGui::BeginMenu("Help"))
+		{
+			// TODO
+			if (ImGui::MenuItem("Shortcuts"))
 			{
-				// TODO: Implement
-				if (ImGui::MenuItem("Shortcuts"))
-				{
-				}
-				if (ImGui::MenuItem("About"))
-				{
-				}
-				ImGui::EndMenu();
 			}
+			if (ImGui::MenuItem("About"))
+			{
+			}
+			ImGui::EndMenu();
+		}
 
-			ImGui::EndMenuBar();
+		ImGui::EndMenuBar();
+
+		if (renamingScene)
+		{
+			ImGui::Begin("Rename Scene", &renamingScene, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings);
+			char sceneName[64];
+			strncpy_s(sceneName, m_EditorScene->GetName().c_str(), sizeof(sceneName));
+			if (ImGui::InputText("##RenameInput", sceneName, sizeof(sceneName), ImGuiInputTextFlags_EnterReturnsTrue))
+			{
+				m_EditorScene->SetName(sceneName);
+				SyncWindowTitle();
+				renamingScene = false;
+			}
+			ImGui::End();
 		}
 	}
 
@@ -299,38 +323,36 @@ namespace Eos {
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
+		static ImVec4 tintColor1 = { 0.9f, 0.9f, 0.9f, 1.0f };
+		static ImVec4 tintColor2 = { 0.9f, 0.9f, 0.9f, 1.0f };
 
 		ImGui::Begin("Toolbar", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-
-		bool toolbarEnabled = (bool)m_ActiveScene; // Should always be true
-
-		ImVec4 tintColor = ImVec4(1, 1, 1, 1);
-		if (!toolbarEnabled)
-			tintColor.w = 0.4f;
 
 		float size = ImGui::GetContentRegionAvail().y - 4.0f;
 		{
 			Ref<Texture2D> icon = (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate) ? m_IconPlay : m_IconStop;
-			ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)icon->GetRendererID()), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0, 0, 0, 0), tintColor) && toolbarEnabled)
+			ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - size);
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)icon->GetRendererID()), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0, 0, 0, 0), tintColor1))
 			{
 				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate)
 					OnScenePlay();
 				else if (m_SceneState == SceneState::Play)
 					OnSceneStop();
 			}
+			tintColor1 = ImGui::IsItemHovered() ? ImGui::IsItemActive() ? ImVec4(0.6f, 0.6f, 0.6f, 1.0f) : ImVec4(1, 1, 1, 1) : ImVec4(0.8f, 0.8f, 0.8f, 1.0f);
 		}
 		ImGui::SameLine();
 		{
 			Ref<Texture2D> icon = (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play) ? m_IconSimulate : m_IconStop;
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)icon->GetRendererID()), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), tintColor) && toolbarEnabled)
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)icon->GetRendererID()), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), tintColor2))
 			{
 				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play)
 					OnSceneSimulate();
 				else if (m_SceneState == SceneState::Simulate)
 					OnSceneStop();
 			}
+			tintColor2 = ImGui::IsItemHovered() ? ImGui::IsItemActive() ? ImVec4(0.6f, 0.6f, 0.6f, 1.0f) : ImVec4(1, 1, 1, 1) : ImVec4(0.8f, 0.8f, 0.8f, 1.0f);
 		}
 		ImGui::PopStyleVar(2);
 		ImGui::PopStyleColor(3);
@@ -641,7 +663,8 @@ namespace Eos {
 		std::filesystem::path filepath = FileDialogs::SaveFile("Eos Scene (*.eos)\0*.eos\0");
 		if (!filepath.empty())
 		{
-			m_EditorScene->SetName(filepath.stem().string());
+			if (m_EditorScene->GetName() == "Untitled")
+				m_EditorScene->SetName(filepath.stem().string());
 			m_EditorScenePath = filepath;
 
 			SerializeScene(m_EditorScene, filepath);
