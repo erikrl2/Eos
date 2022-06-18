@@ -348,8 +348,12 @@ namespace Eos {
 	{
 		ImGui::Begin("Settings");
 		ImGui::Checkbox("2D editor camera", &EditorCamera::s_RotationLocked);
-		ImGui::Checkbox("Hightlight selection", &m_ShowSelectionHightlighting);
+		ImGui::Checkbox("Show entity outline", &m_ShowEntityOutline);
+		ImGui::SameLine();
+		ImGui::ColorEdit3("##Ouline", glm::value_ptr(m_EntityOutlineColor), ImGuiColorEditFlags_NoInputs);
 		ImGui::Checkbox("Show physics colliders", &m_ShowPhysicsColliders);
+		ImGui::SameLine();
+		ImGui::ColorEdit3("##PhysicsVisualization", glm::value_ptr(m_PhysicsVisualizationColor), ImGuiColorEditFlags_NoInputs);
 		ImGui::End();
 	}
 
@@ -489,7 +493,7 @@ namespace Eos {
 
 		// Entity outline
 		Entity selection = m_SceneHierarchyPanel.GetSelectedEntity();
-		if (m_ShowSelectionHightlighting && selection)
+		if (m_ShowEntityOutline && selection)
 		{
 			Renderer2D::SetLineWidth(4.0f);
 
@@ -507,7 +511,7 @@ namespace Eos {
 					glm::mat4 transform = tc.GetTransform();
 					transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -projectionCollider.z)) * transform;
 
-					Renderer2D::DrawRect(transform, glm::vec4(1, 1, 1, 1));
+					Renderer2D::DrawRect(transform, m_EntityOutlineColor);
 				}
 
 				if (selection.HasComponent<CircleRendererComponent>())
@@ -515,7 +519,7 @@ namespace Eos {
 					glm::mat4 transform = glm::translate(glm::mat4(1.0f), { tc.Translation.x, tc.Translation.y, tc.Translation.z - projectionCollider.z })
 						* glm::toMat4(glm::quat(tc.Rotation))
 						* glm::scale(glm::mat4(1.0f), tc.Scale + 0.03f);
-					Renderer2D::DrawCircle(transform, glm::vec4(1, 1, 1, 1), 0.03f);
+					Renderer2D::DrawCircle(transform, m_EntityOutlineColor, 0.03f);
 				}
 
 				if (selection.HasComponent<CameraComponent>())
@@ -554,7 +558,7 @@ namespace Eos {
 						* glm::rotate(glm::mat4(1.0f), bc2d.Rotation, glm::vec3(0.0f, 0.0f, 1.0f))
 						* glm::scale(glm::mat4(1.0f), scale);
 
-					Renderer2D::DrawRect(transform, glm::vec4(0, 1, 0, 1));
+					Renderer2D::DrawRect(transform, m_PhysicsVisualizationColor);
 				}
 			}
 
@@ -578,7 +582,7 @@ namespace Eos {
 						* glm::translate(glm::mat4(1.0f), glm::vec3(cc2d.Offset, -projectionCollider.z))
 						* glm::scale(glm::mat4(1.0f), scale);
 
-					Renderer2D::DrawCircle(transform, glm::vec4(0, 1, 0, 1), 0.02f);
+					Renderer2D::DrawCircle(transform, m_PhysicsVisualizationColor, 0.02f);
 				}
 			}
 		}
