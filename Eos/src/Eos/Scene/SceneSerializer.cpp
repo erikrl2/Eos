@@ -534,25 +534,25 @@ namespace Eos {
 		// TODO
 	}
 
-	template<typename...Component>
+	template<typename... Component>
 	static void SerializeEntityComponents(YAML::Emitter& out, Entity entity)
 	{
 		(SerializeEntityComponent<Component>(out, entity), ...);
 	}
 
-	template<typename...Component>
+	template<typename... Component>
 	static void DeserializeEntityComponents(YAML::detail::iterator_value& entity, Entity& deserializedEntity)
 	{
 		(DeserializeEntityComponent<Component>(entity, deserializedEntity), ...);
 	}
 
-	template<typename... PrefixComponent, typename...Component>
+	template<typename... PrefixComponent, typename... Component>
 	static void SerializeEntityComponents(ComponentGroup<Component...>, YAML::Emitter& out, Entity entity)
 	{
 		SerializeEntityComponents<PrefixComponent..., Component...>(out, entity);
 	}
 
-	template<typename... PrefixComponent, typename...Component>
+	template<typename... PrefixComponent, typename... Component>
 	static void DeserializeEntityComponents(ComponentGroup<Component...>, YAML::detail::iterator_value& entity, Entity& deserializedEntity)
 	{
 		DeserializeEntityComponents<PrefixComponent..., Component...>(entity, deserializedEntity);
