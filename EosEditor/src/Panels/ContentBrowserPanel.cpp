@@ -141,7 +141,7 @@ namespace Eos {
 		const auto& buttonColor = colors[ImGuiCol_Button];
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(buttonColor.x, buttonColor.y, buttonColor.z, 1.0f));
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(buttonColor.x, buttonColor.y, buttonColor.z, 1.0f));
-		ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)m_SearchIcon->GetRendererID()), { 17, 17 }, { 0, 1 }, { 1, 0 }, -1, { 0, 0, 0, 0 }, { 0.6, 0.6, 0.6, 1 });
+		ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)m_SearchIcon->GetRendererID()), { 17, 17 }, { 0, 1 }, { 1, 0 }, -1, { 0, 0, 0, 0 }, { 0.6f, 0.6f, 0.6f, 1.0f });
 		ImGui::PopStyleColor(2);
 		DrawClearSearchbarButton();
 		ImGui::Separator();

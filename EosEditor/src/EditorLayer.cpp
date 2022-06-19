@@ -396,7 +396,7 @@ namespace Eos {
 
 	void EditorLayer::OnEvent(Event& e)
 	{
-		if (m_SceneState == SceneState::Edit && m_ViewportHovered)
+		if (m_SceneState != SceneState::Play && m_ViewportHovered)
 			m_EditorCamera.OnEvent(e);
 
 		EventDispatcher dispatcher(e);
