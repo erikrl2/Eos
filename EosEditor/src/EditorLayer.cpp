@@ -37,6 +37,8 @@ namespace Eos {
 		fbSpec.Height = 720;
 		m_Framebuffer = Framebuffer::Create(fbSpec);
 
+		m_CameraPreviewFramebuffer = Framebuffer::Create({ 1280, 720, {FramebufferTextureFormat::RGBA8,  FramebufferTextureFormat::Depth} });
+
 		Application::Get().GetImGuiLayer()->BlockEvents(false);
 
 		bool sceneLoaded = false;
@@ -125,28 +127,23 @@ namespace Eos {
 		EOS_PROFILE_FUNCTION();
 
 		// Dockspace
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;;
 		const ImGuiViewport* viewport = ImGui::GetMainViewport();
 		ImGui::SetNextWindowPos(viewport->WorkPos);
 		ImGui::SetNextWindowSize(viewport->WorkSize);
 		ImGui::SetNextWindowViewport(viewport->ID);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("DockSpace", 0, window_flags);
-		ImGui::PopStyleVar();
-
-		ImGui::PopStyleVar(2);
+		ImGui::PopStyleVar(3);
 
 		ImGuiStyle& style = ImGui::GetStyle();
 		ImVec2 minWinSize = style.WindowMinSize;
 		style.WindowMinSize = { 350.0f, 50.0f };
 
 		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+		ImGui::DockSpace(dockspace_id);
 		style.WindowMinSize = minWinSize;
 
 		UI_MenuBar();
@@ -240,8 +237,8 @@ namespace Eos {
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
-		uint64_t textureID = m_Framebuffer->GetColorAttachmentRendererID(0);
-		ImGui::Image(reinterpret_cast<void*>(textureID), viewportPanelSize, ImVec2{0, 1}, ImVec2{1, 0});
+		uint64_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
+		ImGui::Image(reinterpret_cast<void*>(textureID), viewportPanelSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
 		if (ImGui::BeginDragDropTarget())
 		{
@@ -274,6 +271,29 @@ namespace Eos {
 
 		ImGui::End();
 		ImGui::PopStyleVar();
+
+		// Camera preview window
+		if (m_ShowCameraPreview && m_SceneState == SceneState::Edit)
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(0.0f, 0.0f));
+			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1, 1, 1, 1));
+			ImGui::SetNextWindowPos(ImVec2(m_ViewportBounds[0].x, m_ViewportBounds[0].y));
+			ImGui::Begin("CameraPreview", &m_ShowCameraPreview, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoSavedSettings);
+			ImGui::PopStyleVar(3);
+			ImGui::PopStyleColor();
+			uint64_t textureID = m_CameraPreviewFramebuffer->GetColorAttachmentRendererID();
+			ImVec2 imageSize;
+			float imageHeigth = m_ViewportSize.y / 3.0f;
+			float imageWidth = imageHeigth * 1.78f;
+			if (imageWidth <= m_ViewportSize.x / 2.0f)
+				imageSize = ImVec2(imageWidth, imageHeigth);
+			else
+				imageSize = ImVec2(m_ViewportSize.x / 2.0f, m_ViewportSize.x / 3.56f);
+			ImGui::Image(reinterpret_cast<void*>(textureID), imageSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+			ImGui::End();
+		}
 	}
 
 	void EditorLayer::UI_Gizmos()
@@ -511,6 +531,7 @@ namespace Eos {
 		else
 		{
 			Renderer2D::BeginScene(m_EditorCamera);
+			m_ShowCameraPreview = false;
 		}
 
 		// Entity outline
@@ -527,26 +548,35 @@ namespace Eos {
 				glm::vec3 projectionCollider = cameraForwardDirection * glm::vec3(zIndex);
 
 				auto& tc = selection.GetComponent<TransformComponent>();
+				glm::mat4 transform = tc.GetTransform();
 
 				if (selection.HasComponent<SpriteRendererComponent>())
 				{
-					glm::mat4 transform = tc.GetTransform();
 					transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -projectionCollider.z)) * transform;
-
 					Renderer2D::DrawRect(transform, m_EntityOutlineColor);
 				}
 
 				if (selection.HasComponent<CircleRendererComponent>())
 				{
-					glm::mat4 transform = glm::translate(glm::mat4(1.0f), { tc.Translation.x, tc.Translation.y, tc.Translation.z - projectionCollider.z })
+					glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(tc.Translation.x, tc.Translation.y, tc.Translation.z - projectionCollider.z))
 						* glm::toMat4(glm::quat(tc.Rotation))
 						* glm::scale(glm::mat4(1.0f), tc.Scale + 0.03f);
 					Renderer2D::DrawCircle(transform, m_EntityOutlineColor, 0.03f);
 				}
 
-				if (selection.HasComponent<CameraComponent>())
+				if (selection.HasComponent<CameraComponent>() && m_SceneState == SceneState::Edit)
 				{
-					// TODO: Show camera view in corner (create texture?)
+					auto& camera = selection.GetComponent<CameraComponent>().Camera;
+					camera.SetViewportSize(1280, 720);
+
+					m_CameraPreviewFramebuffer->Bind();
+					RenderCommand::SetClearColor({ 0.15f, 0.15f, 0.15f, 1.0f });
+					RenderCommand::Clear();
+					m_EditorScene->RenderScene(camera, transform);
+					m_CameraPreviewFramebuffer->Unbind();
+
+					camera.SetViewportSize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+					m_ShowCameraPreview = true;
 				}
 			}
 		}
