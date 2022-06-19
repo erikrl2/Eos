@@ -27,29 +27,21 @@ namespace Eos {
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable | ImGuiConfigFlags_NavNoCaptureKeyboard;
 
 		io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Bold.ttf", Window::s_HighDPIScaleFactor * 17.0f);
 		io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Regular.ttf", Window::s_HighDPIScaleFactor * 17.0f);
 
-		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
-		//ImGui::StyleColorsClassic();
 
 		ImGuiStyle& style = ImGui::GetStyle();
 		style.ScaleAllSizes(Window::s_HighDPIScaleFactor);
 
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-		{
-			style.WindowRounding = 0.0f;
-			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+		style.WindowRounding = 0.0f;
+		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 
-			style.PopupRounding = 5.0f;
-			style.FrameRounding = 4.0f;
-		}
+		style.PopupRounding = 5.0f;
+		style.FrameRounding = 4.0f;
 
 		SetDarkThemeColors();
 
@@ -141,6 +133,10 @@ namespace Eos {
 		colors[ImGuiCol_TitleBg] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 		colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 		colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+
+		// Docking
+		colors[ImGuiCol_DockingPreview] = ImVec4(0.6f, 0.2f, 0.3f, 1.0f);
+		colors[ImGuiCol_DockingEmptyBg] = ImVec4(0.3f, 0.1f, 0.1f, 1.0f);
 	}
 
 }
