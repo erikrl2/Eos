@@ -28,6 +28,7 @@ namespace Eos {
 		EOS_PROFILE_FUNCTION();
 
 		m_IconPlay = Texture2D::Create("Resources/Icons/PlayButton.png");
+		m_IconSimulate = Texture2D::Create("Resources/Icons/SimulateButton.png");
 		m_IconStop = Texture2D::Create("Resources/Icons/StopButton.png");
 
 		FramebufferSpecification fbSpec;
@@ -39,7 +40,6 @@ namespace Eos {
 		Application::Get().GetImGuiLayer()->BlockEvents(false);
 
 		bool sceneLoaded = false;
-
 		auto commandLineArgs = Application::Get().GetCommandLineArgs();
 		if (commandLineArgs.Count > 1)
 			sceneLoaded = OpenScene(commandLineArgs[1]);
@@ -47,7 +47,7 @@ namespace Eos {
 		if (!sceneLoaded)
 			NewScene();
 
-		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1, 1000.0f);
+		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 	}
 
 	void EditorLayer::OnDetach()
@@ -83,10 +83,16 @@ namespace Eos {
 		{
 			case SceneState::Edit:
 			{
-				if (m_ViewportHovered)
-					m_EditorCamera.OnUpdate(ts);
+				m_EditorCamera.OnUpdate(ts);
 
 				m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+				break;
+			}
+			case SceneState::Simulate:
+			{
+				m_EditorCamera.OnUpdate(ts);
+
+				m_ActiveScene->OnUpdateSimulation(ts, m_EditorCamera);
 				break;
 			}
 			case SceneState::Play:
@@ -147,47 +153,75 @@ namespace Eos {
 		UI_Viewport();
 		UI_Toolbar();
 		UI_ChildPanels();
-		UI_Settings();
 		UI_RendererStats();
+		UI_Settings();
 
 		ImGui::End();
 	}
 
 	void EditorLayer::UI_MenuBar()
 	{
-		if (ImGui::BeginMenuBar())
+
+		ImGui::BeginMenuBar();
+		if (ImGui::BeginMenu("File"))
 		{
-			if (ImGui::BeginMenu("File"))
+			if (ImGui::MenuItem("New", "Ctrl+N"))
+				NewScene();
+
+			if (ImGui::MenuItem("Open...", "Ctrl+O"))
+				OpenScene();
+
+			if (ImGui::MenuItem("Save", "Ctrl+S"))
+				SaveScene();
+
+			if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
+				SaveSceneAs();
+
+			ImGui::Separator();
+
+			if (ImGui::MenuItem("Exit"))
+				Application::Get().Close();
+
+			ImGui::EndMenu();
+		}
+
+		static bool renamingScene = false;
+
+		if (ImGui::BeginMenu("Edit"))
+		{
+			if (ImGui::MenuItem("Rename Scene"))
 			{
-				if (ImGui::MenuItem("New", "Ctrl+N"))
-					NewScene();
-
-				if (ImGui::MenuItem("Open...", "Ctrl+O"))
-					OpenScene();
-
-				if (ImGui::MenuItem("Save", "Ctrl+S"))
-					SaveScene();
-
-				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
-					SaveSceneAs();
-
-				ImGui::Separator();
-
-				if (ImGui::MenuItem("Exit"))
-					Application::Get().Close();
-
-				ImGui::EndMenu();
+				renamingScene = true;
 			}
+			ImGui::EndMenu();
+		}
 
-			if (ImGui::BeginMenu("Scriping"))
+		if (ImGui::BeginMenu("Help"))
+		{
+			// TODO
+			if (ImGui::MenuItem("Shortcuts"))
 			{
-				if (ImGui::MenuItem("TODO: Add"))
-				{
-				}
-				ImGui::EndMenu();
 			}
+			if (ImGui::MenuItem("About"))
+			{
+			}
+			ImGui::EndMenu();
+		}
 
-			ImGui::EndMenuBar();
+		ImGui::EndMenuBar();
+
+		if (renamingScene)
+		{
+			ImGui::Begin("Rename Scene", &renamingScene, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings);
+			char sceneName[64];
+			strncpy_s(sceneName, m_EditorScene->GetName().c_str(), sizeof(sceneName));
+			if (ImGui::InputText("##RenameInput", sceneName, sizeof(sceneName), ImGuiInputTextFlags_EnterReturnsTrue))
+			{
+				m_EditorScene->SetName(sceneName);
+				SyncWindowTitle();
+				renamingScene = false;
+			}
+			ImGui::End();
 		}
 	}
 
@@ -213,15 +247,14 @@ namespace Eos {
 		{
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
 			{
-				const wchar_t* path = (const wchar_t*)payload->Data;
-				std::filesystem::path parentPath = std::filesystem::path(path).parent_path();
+				std::filesystem::path path = (const wchar_t*)payload->Data;
 
-				if (parentPath == "scenes")	// Load scene
+				if (path.extension() == ".eos")	// Load scene
 				{
 					m_HoveredEntity = Entity();
 					OpenScene(std::filesystem::path(g_AssetPath) / path);
 				}
-				else if (parentPath == "textures") // Load texture
+				else if (path.extension() == ".png" || path.extension() == ".jpeg") // Load texture
 				{
 					if (m_HoveredEntity && m_HoveredEntity.HasComponent<SpriteRendererComponent>())
 					{
@@ -289,23 +322,37 @@ namespace Eos {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-		auto& colors = ImGui::GetStyle().Colors;
-		const auto& buttonHovered = colors[ImGuiCol_ButtonHovered];
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(buttonHovered.x, buttonHovered.y, buttonHovered.z, 0.5f));
-		const auto& buttonActive = colors[ImGuiCol_ButtonActive];
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(buttonActive.x, buttonActive.y, buttonActive.z, 0.5f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
+		static ImVec4 tintColor1 = { 0.9f, 0.9f, 0.9f, 1.0f };
+		static ImVec4 tintColor2 = { 0.9f, 0.9f, 0.9f, 1.0f };
 
 		ImGui::Begin("Toolbar", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
 		float size = ImGui::GetContentRegionAvail().y - 4.0f;
-		Ref<Texture2D> icon = m_SceneState == SceneState::Edit ? m_IconPlay : m_IconStop;
-		ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-		if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0))
 		{
-			if (m_SceneState == SceneState::Edit)
-				OnScenePlay();
-			else if (m_SceneState == SceneState::Play)
-				OnSceneStop();
+			Ref<Texture2D> icon = (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate) ? m_IconPlay : m_IconStop;
+			ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - size);
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)icon->GetRendererID()), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0, 0, 0, 0), tintColor1))
+			{
+				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate)
+					OnScenePlay();
+				else if (m_SceneState == SceneState::Play)
+					OnSceneStop();
+			}
+			tintColor1 = ImGui::IsItemHovered() ? ImGui::IsItemActive() ? ImVec4(0.6f, 0.6f, 0.6f, 1.0f) : ImVec4(1, 1, 1, 1) : ImVec4(0.8f, 0.8f, 0.8f, 1.0f);
+		}
+		ImGui::SameLine();
+		{
+			Ref<Texture2D> icon = (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play) ? m_IconSimulate : m_IconStop;
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)icon->GetRendererID()), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), tintColor2))
+			{
+				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play)
+					OnSceneSimulate();
+				else if (m_SceneState == SceneState::Simulate)
+					OnSceneStop();
+			}
+			tintColor2 = ImGui::IsItemHovered() ? ImGui::IsItemActive() ? ImVec4(0.6f, 0.6f, 0.6f, 1.0f) : ImVec4(1, 1, 1, 1) : ImVec4(0.8f, 0.8f, 0.8f, 1.0f);
 		}
 		ImGui::PopStyleVar(2);
 		ImGui::PopStyleColor(3);
@@ -322,7 +369,13 @@ namespace Eos {
 	void EditorLayer::UI_Settings()
 	{
 		ImGui::Begin("Settings");
+		ImGui::Checkbox("2D editor camera", &EditorCamera::s_RotationLocked);
+		ImGui::Checkbox("Show entity outline", &m_ShowEntityOutline);
+		ImGui::SameLine();
+		ImGui::ColorEdit3("##Ouline", glm::value_ptr(m_EntityOutlineColor), ImGuiColorEditFlags_NoInputs);
 		ImGui::Checkbox("Show physics colliders", &m_ShowPhysicsColliders);
+		ImGui::SameLine();
+		ImGui::ColorEdit3("##PhysicsVisualization", glm::value_ptr(m_PhysicsVisualizationColor), ImGuiColorEditFlags_NoInputs);
 		ImGui::End();
 	}
 
@@ -343,7 +396,7 @@ namespace Eos {
 
 	void EditorLayer::OnEvent(Event& e)
 	{
-		if (m_SceneState == SceneState::Edit && m_ViewportHovered)
+		if (m_SceneState != SceneState::Play && m_ViewportHovered)
 			m_EditorCamera.OnEvent(e);
 
 		EventDispatcher dispatcher(e);
@@ -462,26 +515,39 @@ namespace Eos {
 
 		// Entity outline
 		Entity selection = m_SceneHierarchyPanel.GetSelectedEntity();
-		if (selection)
+		if (m_ShowEntityOutline && selection)
 		{
 			Renderer2D::SetLineWidth(4.0f);
 
 			if (selection.HasComponent<TransformComponent>())
 			{
+				// Calculate z index for translation
+				float zIndex = 0.001f;
+				glm::vec3 cameraForwardDirection = m_EditorCamera.GetForwardDirection();
+				glm::vec3 projectionCollider = cameraForwardDirection * glm::vec3(zIndex);
+
 				auto& tc = selection.GetComponent<TransformComponent>();
 
 				if (selection.HasComponent<SpriteRendererComponent>())
-					Renderer2D::DrawRect(tc.GetTransform(), glm::vec4(1, 1, 1, 1));
+				{
+					glm::mat4 transform = tc.GetTransform();
+					transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -projectionCollider.z)) * transform;
+
+					Renderer2D::DrawRect(transform, m_EntityOutlineColor);
+				}
 
 				if (selection.HasComponent<CircleRendererComponent>())
 				{
-					glm::mat4 transform = glm::translate(glm::mat4(1.0f), tc.Translation)
+					glm::mat4 transform = glm::translate(glm::mat4(1.0f), { tc.Translation.x, tc.Translation.y, tc.Translation.z - projectionCollider.z })
 						* glm::toMat4(glm::quat(tc.Rotation))
 						* glm::scale(glm::mat4(1.0f), tc.Scale + 0.03f);
-					Renderer2D::DrawCircle(transform, glm::vec4(1, 1, 1, 1), 0.03f);
+					Renderer2D::DrawCircle(transform, m_EntityOutlineColor, 0.03f);
 				}
 
-				// TODO: Add outline for camera?
+				if (selection.HasComponent<CameraComponent>())
+				{
+					// TODO: Show camera view in corner (create texture?)
+				}
 			}
 		}
 
@@ -514,7 +580,7 @@ namespace Eos {
 						* glm::rotate(glm::mat4(1.0f), bc2d.Rotation, glm::vec3(0.0f, 0.0f, 1.0f))
 						* glm::scale(glm::mat4(1.0f), scale);
 
-					Renderer2D::DrawRect(transform, glm::vec4(0, 1, 0, 1));
+					Renderer2D::DrawRect(transform, m_PhysicsVisualizationColor);
 				}
 			}
 
@@ -538,7 +604,7 @@ namespace Eos {
 						* glm::translate(glm::mat4(1.0f), glm::vec3(cc2d.Offset, -projectionCollider.z))
 						* glm::scale(glm::mat4(1.0f), scale);
 
-					Renderer2D::DrawCircle(transform, glm::vec4(0, 1, 0, 1), 0.02f);
+					Renderer2D::DrawCircle(transform, m_PhysicsVisualizationColor, 0.02f);
 				}
 			}
 		}
@@ -597,7 +663,8 @@ namespace Eos {
 		std::filesystem::path filepath = FileDialogs::SaveFile("Eos Scene (*.eos)\0*.eos\0");
 		if (!filepath.empty())
 		{
-			m_EditorScene->SetName(filepath.stem().string());
+			if (m_EditorScene->GetName() == "Untitled")
+				m_EditorScene->SetName(filepath.stem().string());
 			m_EditorScenePath = filepath;
 
 			SerializeScene(m_EditorScene, filepath);
@@ -613,6 +680,9 @@ namespace Eos {
 
 	void EditorLayer::OnScenePlay()
 	{
+		if (m_SceneState == SceneState::Simulate)
+			OnSceneStop();
+
 		m_SceneState = SceneState::Play;
 
 		m_ActiveScene = Scene::Copy(m_EditorScene);
@@ -621,11 +691,30 @@ namespace Eos {
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 	}
 
+	void EditorLayer::OnSceneSimulate()
+	{
+		if (m_SceneState == SceneState::Play)
+			OnSceneStop();
+
+		m_SceneState = SceneState::Simulate;
+
+		m_ActiveScene = Scene::Copy(m_EditorScene);
+		m_ActiveScene->OnSimulationStart();
+
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+	}
+
 	void EditorLayer::OnSceneStop()
 	{
+		EOS_CORE_ASSERT(m_SceneState == SceneState::Play || m_SceneState == SceneState::Simulate);
+
+		if (m_SceneState == SceneState::Play)
+			m_ActiveScene->OnRuntimeStop();
+		else if (m_SceneState == SceneState::Simulate)
+			m_ActiveScene->OnSimulationStop();
+
 		m_SceneState = SceneState::Edit;
 
-		m_ActiveScene->OnRuntimeStop();
 		m_ActiveScene = m_EditorScene;
 
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
@@ -651,8 +740,8 @@ namespace Eos {
 
 	void EditorLayer::DuplicateEntity()
 	{
-		if (m_SceneState != SceneState::Edit)
-			return;
+		//if (m_SceneState != SceneState::Edit)
+		//	return;
 
 		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 		if (selectedEntity)

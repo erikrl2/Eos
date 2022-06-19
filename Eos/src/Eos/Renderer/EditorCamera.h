@@ -32,6 +32,8 @@ namespace Eos {
 
 		float GetPitch() const { return m_Pitch; }
 		float GetYaw() const { return m_Yaw; }
+	public:
+		static bool s_RotationLocked;
 	private:
 		void UpdateProjection();
 		void UpdateView();
@@ -44,7 +46,7 @@ namespace Eos {
 
 		glm::vec3 CalculatePosition() const;
 		
-		std::pair<float, float> PanSpeed() const;
+		float PanSpeed() const;
 		float RotationSpeed() const;
 		float ZoomSpeed() const;
 	private:

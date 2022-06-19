@@ -29,7 +29,7 @@ namespace Eos::Math {
 		outTranslation = vec3(LocalMatrix[3]);
 		LocalMatrix[3] = vec4(0, 0, 0, LocalMatrix[3].w);
 
-		vec3 Row[3], Pdum3;
+		vec3 Row[3] = {};
 
 		for (length_t i = 0; i < 3; ++i)
 			for (length_t j = 0; j < 3; ++j)
@@ -53,6 +53,8 @@ namespace Eos::Math {
 			outRotation.x = atan2(-Row[2][0], Row[1][1]);
 			outRotation.z = 0;
 		}
+
+		return true;
 	}
 
 }

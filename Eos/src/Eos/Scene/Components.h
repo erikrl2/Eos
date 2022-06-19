@@ -12,7 +12,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
-#include <functional> // TODO: Remove
+#include <functional>
 #include <memory>
 #include <unordered_map>
 
@@ -58,14 +58,18 @@ namespace Eos {
 	{
 		glm::vec4 Color = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
 		Ref<Texture2D> Texture;
-		// TODO: Add subtexture support
-		// glm::vec2 Coords, CellSize, SpriteSize;
 		float TilingFactor = 1.0f;
+		bool FlipX = false, FlipY = false;
+		bool Atlas = false;
+		glm::vec2 Coords = { 0, 0 };
+		glm::vec2 CellSize = { 32, 32 };
+		glm::vec2 SpriteSize = { 1, 1 };
 
 		SpriteRendererComponent() = default;
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;
 		SpriteRendererComponent(const glm::vec4& color) : Color(color) {}
-		SpriteRendererComponent(const Ref<Texture2D>& texture) : Texture(texture) {}
+		SpriteRendererComponent(const Ref<Texture2D>& texture, const glm::vec4& tintColor = { 1, 1, 1, 1 }, float tilingFactor = 1.0f)
+			: Texture(texture), Color(tintColor), TilingFactor(tilingFactor) {}
 	};
 
 	struct CircleRendererComponent
@@ -102,7 +106,6 @@ namespace Eos {
 
 		NativeScriptComponent& Instantiate(Entity entity)
 		{
-			// note: no guarantee on order that the scripts are instantiated
 			for (const auto& [id, instantiateScript] : InstantiateScripts)
 			{
 				Instances.try_emplace(id, instantiateScript(entity));
@@ -118,7 +121,6 @@ namespace Eos {
 
 		void OnUpdate(Timestep ts)
 		{
-			// note: no guarantee on order that the instances are updated
 			for (auto& [id, instance] : Instances)
 			{
 				instance->OnUpdate(ts);
@@ -175,5 +177,10 @@ namespace Eos {
 		CircleCollider2DComponent() = default;
 		CircleCollider2DComponent(const CircleCollider2DComponent&) = default;
 	};
+
+	template<typename... Component>
+	struct ComponentGroup {};
+
+	using AllComponents = ComponentGroup<TransformComponent, SpriteRendererComponent, CircleRendererComponent, CameraComponent, NativeScriptComponent, Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent>;
 
 }
