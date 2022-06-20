@@ -280,7 +280,7 @@ namespace Eos {
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(0.0f, 0.0f));
 			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1, 1, 1, 1));
 			ImGui::SetNextWindowPos(ImVec2(m_ViewportBounds[0].x, m_ViewportBounds[0].y));
-			ImGui::Begin("CameraPreview", &m_ShowCameraPreview, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoSavedSettings);
+			ImGui::Begin("CameraPreview", 0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoSavedSettings);
 			ImGui::PopStyleVar(3);
 			ImGui::PopStyleColor();
 			uint64_t textureID = m_CameraPreviewFramebuffer->GetColorAttachmentRendererID();
@@ -531,6 +531,7 @@ namespace Eos {
 		else
 		{
 			Renderer2D::BeginScene(m_EditorCamera);
+
 			m_ShowCameraPreview = false;
 		}
 
@@ -564,6 +565,7 @@ namespace Eos {
 					Renderer2D::DrawCircle(transform, m_EntityOutlineColor, 0.03f);
 				}
 
+				// Camera preview
 				if (selection.HasComponent<CameraComponent>() && m_SceneState == SceneState::Edit)
 				{
 					auto& camera = selection.GetComponent<CameraComponent>().Camera;
@@ -571,7 +573,7 @@ namespace Eos {
 
 					m_CameraPreviewFramebuffer->Bind();
 					RenderCommand::SetClearColor({ 0.15f, 0.15f, 0.15f, 1.0f });
-					RenderCommand::Clear();
+					RenderCommand::Clear(); // TODO: Fix Program/shader state performance warning
 					m_EditorScene->RenderScene(camera, transform);
 					m_CameraPreviewFramebuffer->Unbind();
 
