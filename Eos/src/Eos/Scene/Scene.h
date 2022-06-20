@@ -39,6 +39,8 @@ namespace Eos {
 		void OnUpdateEditor(Timestep ts, EditorCamera& camera);
 		void OnViewportResize(uint32_t width, uint32_t height);
 
+		void RenderScene(const Camera& camera, const glm::mat4& transform);
+
 		Entity DuplicateEntity(Entity entity);
 
 		Entity GetPrimaryCameraEntity();

@@ -58,6 +58,7 @@ namespace Eos {
 		EditorCamera m_EditorCamera;
 
 		Ref<Framebuffer> m_Framebuffer;
+		Ref<Framebuffer> m_CameraPreviewFramebuffer;
 
 		Ref<Scene> m_ActiveScene;
 		Ref<Scene> m_EditorScene;
@@ -72,8 +73,10 @@ namespace Eos {
 
 		bool m_ShowEntityOutline = true;
 		glm::vec4 m_EntityOutlineColor = { 1, 1, 1, 1 };
-		bool m_ShowPhysicsColliders = false;
+		bool m_ShowPhysicsColliders = true;
 		glm::vec4 m_PhysicsVisualizationColor = { 0, 1, 0, 1 };
+
+		bool m_ShowCameraPreview = false;
 
 		enum class SceneState
 		{

@@ -198,25 +198,7 @@ namespace Eos {
 
 		if (mainCamera)
 		{
-			Renderer2D::BeginScene(*mainCamera, cameraTransform);
-
-			// Draw sprites
-			{
-				for (auto&& [entity, transform, sprite] : m_Registry.view<TransformComponent, SpriteRendererComponent>().each())
-				{
-					Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
-				}
-			}
-
-			// Draw circles
-			{
-				for (auto&& [entity, transform, circle] : m_Registry.view<TransformComponent, CircleRendererComponent>().each())
-				{
-					Renderer2D::DrawCircle(transform.GetTransform(), circle.Color, circle.Thickness, circle.Fade, (int)entity);
-				}
-			}
-
-			Renderer2D::EndScene();
+			RenderScene(*mainCamera, cameraTransform);
 		}
 	}
 
@@ -348,6 +330,29 @@ namespace Eos {
 	{
 		delete m_PhysicsWorld;
 		m_PhysicsWorld = nullptr;
+	}
+
+	void Scene::RenderScene(const Camera& camera, const glm::mat4& cameraTransform)
+	{
+		Renderer2D::BeginScene(camera, cameraTransform);
+
+		// Draw sprites
+		{
+			for (auto&& [entity, transform, sprite] : m_Registry.view<TransformComponent, SpriteRendererComponent>().each())
+			{
+				Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
+			}
+		}
+
+		// Draw circles
+		{
+			for (auto&& [entity, transform, circle] : m_Registry.view<TransformComponent, CircleRendererComponent>().each())
+			{
+				Renderer2D::DrawCircle(transform.GetTransform(), circle.Color, circle.Thickness, circle.Fade, (int)entity);
+			}
+		}
+
+		Renderer2D::EndScene();
 	}
 
 	void Scene::RenderScene(EditorCamera& camera)

@@ -36,22 +36,12 @@ project "EosEditor"
 		runtime "Debug"
 		symbols "on"
 
-		postbuildcommands
-		{
-			"{COPYDIR} \"%{LibraryDir.VulkanSDK_DebugDLL}\" \"%{cfg.targetdir}\""
-		}
-
 	filter "configurations:Release"
 		defines "EOS_RELEASE"
 		runtime "Release"
 		optimize "on"
 		kind "WindowedApp"
 		entrypoint "mainCRTStartup"
-
-		postbuildcommands
-		{
-			"{COPYDIR} \"%{LibraryDir.VulkanSDK_DebugDLL}\" \"%{cfg.targetdir}\""
-		}
 
 	filter "configurations:Dist"
 		defines "EOS_DIST"
