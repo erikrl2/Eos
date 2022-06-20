@@ -120,8 +120,6 @@ namespace Eos {
 		OnOverlayRender();
 
 		m_Framebuffer->Unbind();
-
-		EOS_TRACE("Spacebar pressed: {0}", Input::IsKeyPressed(Key::Space));
 	}
 
 	void EditorLayer::OnImGuiRender()
@@ -533,7 +531,6 @@ namespace Eos {
 		else
 		{
 			Renderer2D::BeginScene(m_EditorCamera);
-
 			m_ShowCameraPreview = false;
 		}
 
