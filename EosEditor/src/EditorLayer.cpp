@@ -284,14 +284,9 @@ namespace Eos {
 			ImGui::PopStyleVar(3);
 			ImGui::PopStyleColor();
 			uint64_t textureID = m_CameraPreviewFramebuffer->GetColorAttachmentRendererID();
-			ImVec2 imageSize;
-			float imageHeigth = m_ViewportSize.y / 3.0f;
-			float imageWidth = imageHeigth * 1.78f;
-			if (imageWidth <= m_ViewportSize.x / 2.0f)
-				imageSize = ImVec2(imageWidth, imageHeigth);
-			else
-				imageSize = ImVec2(m_ViewportSize.x / 2.0f, m_ViewportSize.x / 3.56f);
-			ImGui::Image(reinterpret_cast<void*>(textureID), imageSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+			float width = std::min(m_ViewportSize.y / 3.0f * 1.78f, m_ViewportSize.x / 2.0f);
+			float height = std::min(m_ViewportSize.y / 3.0f, m_ViewportSize.x / 2.0f / 1.78f);
+			ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2(width, height), ImVec2(0, 1), ImVec2(1, 0));
 			ImGui::End();
 		}
 	}
@@ -390,7 +385,7 @@ namespace Eos {
 	{
 		ImGui::Begin("Settings");
 		ImGui::Checkbox("2D editor camera", &EditorCamera::s_RotationLocked);
-		ImGui::Checkbox("Show entity outline", &m_ShowEntityOutline);
+		ImGui::Checkbox("Highlight selection", &m_ShowEntityOutline);
 		ImGui::SameLine();
 		ImGui::ColorEdit3("##Ouline", glm::value_ptr(m_EntityOutlineColor), ImGuiColorEditFlags_NoInputs);
 		ImGui::Checkbox("Show physics colliders", &m_ShowPhysicsColliders);
@@ -531,10 +526,11 @@ namespace Eos {
 		else
 		{
 			Renderer2D::BeginScene(m_EditorCamera);
+
 			m_ShowCameraPreview = false;
 		}
 
-		// Entity outline
+		// Hightlight selected entity
 		Entity selection = m_SceneHierarchyPanel.GetSelectedEntity();
 		if (m_ShowEntityOutline && selection)
 		{
