@@ -76,7 +76,7 @@ namespace Eos {
 		Renderer2D::ResetStats();
 		m_Framebuffer->Bind();
 
-		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+		RenderCommand::SetClearColor({ 0.07f, 0.07f, 0.07f, 1.0f });
 		RenderCommand::Clear();
 
 		m_Framebuffer->ClearAttachment(1, -1);
@@ -209,6 +209,8 @@ namespace Eos {
 
 		if (renamingScene)
 		{
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(6.0f, 6.0f));
+			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.25f, 0.25f, 0.25f, 1.0f));
 			ImGui::Begin("Rename Scene", &renamingScene, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings);
 			char sceneName[64];
 			strncpy_s(sceneName, m_EditorScene->GetName().c_str(), sizeof(sceneName));
@@ -219,6 +221,8 @@ namespace Eos {
 				renamingScene = false;
 			}
 			ImGui::End();
+			ImGui::PopStyleVar();
+			ImGui::PopStyleColor();
 		}
 	}
 
@@ -567,7 +571,7 @@ namespace Eos {
 					camera.SetViewportSize(1280, 720);
 
 					m_CameraPreviewFramebuffer->Bind();
-					RenderCommand::SetClearColor({ 0.15f, 0.15f, 0.15f, 1.0f });
+					RenderCommand::SetClearColor({ 0.11f, 0.11f, 0.11f, 1.0f });
 					RenderCommand::Clear(); // TODO: Fix Program/shader state performance warning
 					m_EditorScene->RenderScene(camera, transform);
 					m_CameraPreviewFramebuffer->Unbind();

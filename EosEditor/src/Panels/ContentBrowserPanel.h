@@ -15,7 +15,7 @@ namespace Eos {
 		void OnImGuiRender();
 	private:
 		void DrawDirectoryEntry(const std::filesystem::directory_entry& directoryEntry, float thumbnailSize);
-		Ref<Texture2D>& GetFileIcon(const std::filesystem::path& filepath);
+		Ref<Texture2D> GetFileIcon(const std::filesystem::path& filepath);
 
 		void DrawSearchbar();
 		void DrawClearSearchbarButton();

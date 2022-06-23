@@ -22,11 +22,13 @@ namespace Eos {
 	{
 		ImGui::Begin("Content Browser");
 
+		bool searching = m_SearchBuffer[0];
+
 		if (m_CurrentDirectory != std::filesystem::path(g_AssetPath))
 		{
 			if (ImGui::Button("back"))
 			{
-				if (m_SearchBuffer[0])
+				if (searching)
 					std::memset(m_SearchBuffer, 0, sizeof(m_SearchBuffer));
 				m_CurrentDirectory = m_CurrentDirectory.parent_path();
 			}
@@ -43,10 +45,10 @@ namespace Eos {
 		float panelWidth = ImGui::GetContentRegionAvail().x;
 		int columnCount = (int)(panelWidth / cellSize);
 		columnCount = std::max(columnCount, 1);
-
+		
 		ImGui::Columns(columnCount, 0, false);
 
-		if (!m_SearchBuffer[0])
+		if (!searching)
 		{
 			for (auto& directoryEntry : std::filesystem::directory_iterator(m_CurrentDirectory))
 				DrawDirectoryEntry(directoryEntry, thumbnailSize);
@@ -69,7 +71,7 @@ namespace Eos {
 			}
 		}
 
-		ImGui::Columns(1);
+		ImGui::Columns();
 
 		ImGui::SetNextItemWidth(100.0f);
 		ImGui::SetCursorPos({ ImGui::GetWindowWidth() - 120.0f, 31.0f });
@@ -84,8 +86,8 @@ namespace Eos {
 		std::string filenameString = path.filename().string();
 
 		ImGui::PushID(filenameString.c_str());
-		Ref<Texture2D> icon = directoryEntry.is_directory() ? m_DirectoryIcon : GetFileIcon(directoryEntry.path());
 		ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Button, { 0, 0, 0, 0 });
+		Ref<Texture2D> icon = directoryEntry.is_directory() ? m_DirectoryIcon : GetFileIcon(directoryEntry.path());
 		ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)icon->GetRendererID()), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
 
 		if (!directoryEntry.is_directory() && ImGui::BeginDragDropSource())
@@ -95,15 +97,14 @@ namespace Eos {
 			ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t));
 			ImGui::EndDragDropSource();
 		}
-
 		ImGui::PopStyleColor();
+
 		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 			if (directoryEntry.is_directory())
 			{
 				if (m_SearchBuffer[0])
 					std::memset(m_SearchBuffer, 0, sizeof(m_SearchBuffer));
 				m_CurrentDirectory = path;
-				//m_CurrentDirectory /= path.filename();
 			}
 		ImGui::TextWrapped(filenameString.c_str());
 
@@ -111,7 +112,7 @@ namespace Eos {
 		ImGui::PopID();
 	}
 
-	Ref<Texture2D>& ContentBrowserPanel::GetFileIcon(const std::filesystem::path& filepath)
+	Ref<Texture2D> ContentBrowserPanel::GetFileIcon(const std::filesystem::path& filepath)
 	{
 		if (m_ImageIcons.find(filepath) != m_ImageIcons.end())
 			return m_ImageIcons[filepath];
@@ -137,12 +138,12 @@ namespace Eos {
 		ImGui::SetNextItemWidth(125.0f);
 		ImGui::InputText("##Search", m_SearchBuffer, sizeof(m_SearchBuffer));
 		ImGui::SameLine(ImGui::GetWindowWidth() / 2.0f + 10.0f, 0);
-		auto& colors = ImGui::GetStyle().Colors;
-		const auto& buttonColor = colors[ImGuiCol_Button];
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(buttonColor.x, buttonColor.y, buttonColor.z, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(buttonColor.x, buttonColor.y, buttonColor.z, 1.0f));
+		ImVec4& buttonColor = ImGui::GetStyle().Colors[ImGuiCol_FrameBg];
+		ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, buttonColor);
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, buttonColor);
 		ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)m_SearchIcon->GetRendererID()), { 17, 17 }, { 0, 1 }, { 1, 0 }, -1, { 0, 0, 0, 0 }, { 0.6f, 0.6f, 0.6f, 1.0f });
-		ImGui::PopStyleColor(2);
+		ImGui::PopStyleColor(3);
 		DrawClearSearchbarButton();
 		ImGui::Separator();
 	}
