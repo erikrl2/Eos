@@ -14,7 +14,6 @@
 #include "Eos/Core/Input.h"
 #include "Eos/Core/KeyCodes.h"
 #include "Eos/Core/MouseCodes.h"
-#include "Eos/Renderer/OrthographicCameraController.h"
 
 #include "Eos/ImGui/ImGuiLayer.h"
 
@@ -34,6 +33,4 @@
 #include "Eos/Renderer/Texture.h"
 #include "Eos/Renderer/SubTexture2D.h"
 #include "Eos/Renderer/VertexArray.h"
-
-#include "Eos/Renderer/OrthographicCamera.h"
 // ----------------------------------

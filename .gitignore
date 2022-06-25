@@ -2,8 +2,9 @@
 **/bin/
 bin-int/
 
-# Hazel files
-*.log
+# Eos files
+**.log
+EosEditor/EosEditor.ini
 
 # Visual Studio files and folder
 .vs/
@@ -11,6 +12,5 @@ bin-int/
 **.vcxproj*
 
 # Directories
-Eos/vendor/VulkanSDK
 EosEditor/assets/cache
 scripts/__pycache__

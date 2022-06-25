@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Eos/Renderer/OrthographicCamera.h"
-
 #include "Eos/Renderer/Texture.h"
 #include "Eos/Renderer/SubTexture2D.h"
 

@@ -6,7 +6,15 @@
 
 #include "Eos/Renderer/EditorCamera.h"
 
+#include "EditorStyle.h"
+
 namespace Eos {
+
+	struct EditorSettings
+	{
+		Style::Theme Theme = {};
+		Style::Font Font = {};
+	};
 
 	class EditorLayer : public Layer
 	{
@@ -44,6 +52,12 @@ namespace Eos {
 		void SetEditorScene(const Ref<Scene>& scene);
 		void SyncWindowTitle();
 
+		void SetEditorTheme(Style::Theme theme);
+		void SetEditorFont(Style::Font font);
+
+		void SaveEditorSettings();
+		void LoadEditorSettings();
+
 		void DuplicateEntity();
 
 		// UI Panels
@@ -51,7 +65,6 @@ namespace Eos {
 		void UI_Viewport();
 		void UI_Gizmos();
 		void UI_Toolbar();
-		void UI_ChildPanels();
 		void UI_Settings();
 		void UI_RendererStats();
 	private:
@@ -67,7 +80,7 @@ namespace Eos {
 
 		bool m_ViewportFocused = false, m_ViewportHovered = false;
 		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
-		glm::vec2 m_ViewportBounds[2];
+		glm::vec2 m_ViewportBounds[2] = {};
 
 		int m_GizmoType = -1;
 
@@ -90,6 +103,10 @@ namespace Eos {
 
 		// Editor resources
 		Ref<Texture2D> m_IconPlay, m_IconSimulate, m_IconStop;
+
+		EditorSettings m_Settings;
+		bool m_ThemeSelection[16] = {};
+		bool m_FontSelection[16] = {};
 	};
 
 }

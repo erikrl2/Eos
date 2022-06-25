@@ -1,31 +1,34 @@
 #include "EditorLayer.h"
 
+#include "Eos/Scene/SceneSerializer.h"
+#include "EditorSerializer.h"
+
+#include "Eos/Utils/PlatformUtils.h"
+
+#include "Eos/Math/Math.h"
+
 #include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Eos/Scene/SceneSerializer.h"
-
-#include "Eos/Utils/PlatformUtils.h"
-
 #include <ImGuizmo/ImGuizmo.h>
-
-#include "Eos/Math/Math.h"
 
 namespace Eos {
 
-	extern const std::filesystem::path g_AssetPath;
+	extern const std::filesystem::path g_AssetPath; // Serialize?
 
 	EditorLayer::EditorLayer()
 		: Layer("EditorLayer")
 	{
-		memset(m_ViewportBounds, 0, sizeof(m_ViewportBounds));
 	}
 
 	void EditorLayer::OnAttach()
 	{
 		EOS_PROFILE_FUNCTION();
+
+		LoadEditorSettings();
 
 		m_IconPlay = Texture2D::Create("Resources/Icons/PlayButton.png");
 		m_IconSimulate = Texture2D::Create("Resources/Icons/SimulateButton.png");
@@ -56,6 +59,7 @@ namespace Eos {
 	{
 		EOS_PROFILE_FUNCTION();
 
+		SaveEditorSettings();
 	}
 
 	void EditorLayer::OnUpdate(Timestep ts)
@@ -127,7 +131,6 @@ namespace Eos {
 		EOS_PROFILE_FUNCTION();
 
 		// Dockspace
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;;
 		const ImGuiViewport* viewport = ImGui::GetMainViewport();
 		ImGui::SetNextWindowPos(viewport->WorkPos);
 		ImGui::SetNextWindowSize(viewport->WorkSize);
@@ -135,43 +138,43 @@ namespace Eos {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("DockSpace", 0, window_flags);
+		ImGui::Begin("DockSpace", 0, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus);
 		ImGui::PopStyleVar(3);
 
 		ImGuiStyle& style = ImGui::GetStyle();
 		ImVec2 minWinSize = style.WindowMinSize;
 		style.WindowMinSize = { 350.0f, 50.0f };
-
-		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-		ImGui::DockSpace(dockspace_id);
+		ImGui::DockSpace(ImGui::GetID("MyDockSpace"));
 		style.WindowMinSize = minWinSize;
 
+		// Child panels
 		UI_MenuBar();
 		UI_Viewport();
 		UI_Toolbar();
-		UI_ChildPanels();
 		UI_RendererStats();
 		UI_Settings();
+		m_SceneHierarchyPanel.OnImGuiRender();
+		m_ContentBrowserPanel.OnImGuiRender();
 
 		ImGui::End();
 	}
 
 	void EditorLayer::UI_MenuBar()
 	{
+		ImGui::BeginMenuBar(); // TODO: Custom window with more padding/height
 
-		ImGui::BeginMenuBar();
 		if (ImGui::BeginMenu("File"))
 		{
 			if (ImGui::MenuItem("New", "Ctrl+N"))
 				NewScene();
 
-			if (ImGui::MenuItem("Open...", "Ctrl+O"))
+			if (ImGui::MenuItem("Open..", "Ctrl+O"))
 				OpenScene();
 
 			if (ImGui::MenuItem("Save", "Ctrl+S"))
 				SaveScene();
 
-			if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
+			if (ImGui::MenuItem("Save As..", "Ctrl+Shift+S"))
 				SaveSceneAs();
 
 			ImGui::Separator();
@@ -187,23 +190,83 @@ namespace Eos {
 		if (ImGui::BeginMenu("Edit"))
 		{
 			if (ImGui::MenuItem("Rename Scene"))
-			{
 				renamingScene = true;
+
+			ImGui::Separator();
+
+			if (ImGui::BeginMenu("Themes"))
+			{
+				using namespace Eos::Style;
+
+				if (ImGui::MenuItem("Eos Dark 1", 0, m_ThemeSelection[(int)Theme::Dark1]))
+					SetEditorTheme(Theme::Dark1);
+				if (ImGui::MenuItem("Eos Dark 2", 0, m_ThemeSelection[(int)Theme::Dark2]))
+					SetEditorTheme(Theme::Dark2);
+				if (ImGui::MenuItem("Eos Dark 3", 0, m_ThemeSelection[(int)Theme::Dark3]))
+					SetEditorTheme(Theme::Dark3);
+				if (ImGui::MenuItem("Eos Dark 4", 0, m_ThemeSelection[(int)Theme::Dark4]))
+					SetEditorTheme(Theme::Dark4);
+				if (ImGui::MenuItem("Eos Dark 5", 0, m_ThemeSelection[(int)Theme::Dark5]))
+					SetEditorTheme(Theme::Dark5);
+				if (ImGui::MenuItem("Eos Dark 6", 0, m_ThemeSelection[(int)Theme::Dark6]))
+					SetEditorTheme(Theme::Dark6);
+				if (ImGui::MenuItem("Eos Dark 7", 0, m_ThemeSelection[(int)Theme::Dark7]))
+					SetEditorTheme(Theme::Dark7);
+
+				if (ImGui::MenuItem("Unreal", 0, m_ThemeSelection[(int)Theme::Unreal]))
+					SetEditorTheme(Theme::Unreal);
+				if (ImGui::MenuItem("Visual Studio", 0, m_ThemeSelection[(int)Theme::VisualStudio]))
+					SetEditorTheme(Theme::VisualStudio);
+				if (ImGui::MenuItem("Photoshop", 0, m_ThemeSelection[(int)Theme::Photoshop]))
+					SetEditorTheme(Theme::Photoshop);
+				if (ImGui::MenuItem("Sonic Riders", 0, m_ThemeSelection[(int)Theme::SonicRiders]))
+					SetEditorTheme(Theme::SonicRiders);
+				if (ImGui::MenuItem("Dark Ruda", 0, m_ThemeSelection[(int)Theme::DarkRuda]))
+					SetEditorTheme(Theme::DarkRuda);
+
+				if (ImGui::BeginMenu("Dear ImGui"))
+				{
+					if (ImGui::MenuItem("Classic", 0, m_ThemeSelection[(int)Theme::ImGuiClassic]))
+						SetEditorTheme(Theme::ImGuiClassic);
+					if (ImGui::MenuItem("Dark", 0, m_ThemeSelection[(int)Theme::ImGuiDark]))
+						SetEditorTheme(Theme::ImGuiDark);
+					if (ImGui::MenuItem("Light", 0, m_ThemeSelection[(int)Theme::ImGuiLight]))
+						SetEditorTheme(Theme::ImGuiLight);
+					ImGui::EndMenu();
+				}
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("Fonts"))
+			{
+				if (ImGui::MenuItem("OpenSans-Regular", 0, m_FontSelection[(int)Style::Font::OpenSansRegular]))
+					SetEditorFont(Style::Font::OpenSansRegular);
+				if (ImGui::MenuItem("OpenSans-Bold", 0, m_FontSelection[(int)Style::Font::OpenSansBold]))
+					SetEditorFont(Style::Font::OpenSansBold);
+				if (ImGui::MenuItem("Roboto-Medium", 0, m_FontSelection[(int)Style::Font::RobotoMedium]))
+					SetEditorFont(Style::Font::RobotoMedium);
+				if (ImGui::MenuItem("Ruda-Regular", 0, m_FontSelection[(int)Style::Font::RudaRegular]))
+					SetEditorFont(Style::Font::RudaRegular);
+				if (ImGui::MenuItem("Ruda-Bold", 0, m_FontSelection[(int)Style::Font::RudaBold]))
+					SetEditorFont(Style::Font::RudaBold);
+				ImGui::EndMenu();
 			}
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Help"))
-		{
-			// TODO
-			if (ImGui::MenuItem("Shortcuts"))
-			{
-			}
-			if (ImGui::MenuItem("About"))
-			{
-			}
-			ImGui::EndMenu();
-		}
+		//if (ImGui::BeginMenu("Help"))
+		//{
+		//	// TODO
+		//	if (ImGui::MenuItem("Shortcuts"))
+		//	{
+		//	}
+
+		//	if (ImGui::MenuItem("About"))
+		//	{
+		//	}
+
+		//	ImGui::EndMenu();
+		//}
 
 		ImGui::EndMenuBar();
 
@@ -379,12 +442,6 @@ namespace Eos {
 		ImGui::End();
 	}
 
-	void EditorLayer::UI_ChildPanels()
-	{
-		m_SceneHierarchyPanel.OnImGuiRender();
-		m_ContentBrowserPanel.OnImGuiRender();
-	}
-
 	void EditorLayer::UI_Settings()
 	{
 		ImGui::Begin("Settings");
@@ -538,7 +595,7 @@ namespace Eos {
 		Entity selection = m_SceneHierarchyPanel.GetSelectedEntity();
 		if (m_ShowEntityOutline && selection)
 		{
-			Renderer2D::SetLineWidth(4.0f);
+			Renderer2D::SetLineWidth(3.0f);
 
 			if (selection.HasComponent<TransformComponent>())
 			{
@@ -767,6 +824,47 @@ namespace Eos {
 	void EditorLayer::SyncWindowTitle()
 	{
 		Application::Get().GetWindow().SetTitle("Eos Editor - " + m_EditorScene->GetName());
+	}
+
+	void EditorLayer::SetEditorTheme(Style::Theme theme)
+	{
+		if (!m_ThemeSelection[(int)theme])
+		{
+			Style::SetTheme(theme);
+			m_ThemeSelection[(int)m_Settings.Theme] = false;
+			m_ThemeSelection[(int)theme] = true;
+			m_Settings.Theme = theme;
+		}
+	}
+
+	void EditorLayer::SetEditorFont(Style::Font font)
+	{
+		if (!m_FontSelection[(int)font])
+		{
+			Style::SetFont(font);
+			m_FontSelection[(int)m_Settings.Font] = false;
+			m_FontSelection[(int)font] = true;
+			m_Settings.Font = font;
+		}
+	}
+
+	void EditorLayer::SaveEditorSettings()
+	{
+		std::filesystem::path filepath = "EosEditor.ini";
+		EditorSerializer serializer(&m_Settings);
+		serializer.Serialize(filepath);
+	}
+
+	void EditorLayer::LoadEditorSettings()
+	{
+		std::filesystem::path filepath = "EosEditor.ini";
+		if (std::filesystem::exists(filepath))
+		{
+			EditorSerializer serializer(&m_Settings);
+			serializer.Deserialize(filepath);
+		}
+		SetEditorTheme(m_Settings.Theme);
+		SetEditorFont(m_Settings.Font);
 	}
 
 	void EditorLayer::DuplicateEntity()
