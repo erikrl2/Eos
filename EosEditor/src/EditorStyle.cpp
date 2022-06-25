@@ -19,7 +19,7 @@ namespace Eos {
 		style.CellPadding								= ImVec2(4.0f, 2.0f);
 		style.ButtonTextAlign							= ImVec2(0.5f, 0.5f);
 		style.SelectableTextAlign						= ImVec2(0.0f, 0.0f);
-		style.WindowMenuButtonPosition					= ImGuiDir_Left;
+		style.WindowMenuButtonPosition					= ImGuiDir_Right;
 		style.ColorButtonPosition						= ImGuiDir_Right;
 		style.Alpha										= 1.0f;
 		style.DisabledAlpha								= 0.60f;

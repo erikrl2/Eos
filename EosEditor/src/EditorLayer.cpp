@@ -8,6 +8,7 @@
 #include "Eos/Math/Math.h"
 
 #include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -160,7 +161,7 @@ namespace Eos {
 
 	void EditorLayer::UI_MenuBar()
 	{
-		ImGui::BeginMenuBar(); // TODO: Make bigger / more padding
+		ImGui::BeginMenuBar(); // TODO: Custom window with more padding/height
 
 		if (ImGui::BeginMenu("File"))
 		{
