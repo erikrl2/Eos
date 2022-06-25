@@ -19,6 +19,7 @@ project "EosEditor"
 		"%{wks.location}/Eos/src",
 		"%{wks.location}/Eos/vendor",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.entt}"
 	}
 

@@ -6,9 +6,15 @@
 
 #include "Eos/Renderer/EditorCamera.h"
 
-#include "Eos/ImGui/ImGuiStyle.h"
+#include "EditorStyle.h"
 
 namespace Eos {
+
+	struct EditorSettings
+	{
+		Style::Theme Theme = {};
+		Style::Font Font = {};
+	};
 
 	class EditorLayer : public Layer
 	{
@@ -48,6 +54,9 @@ namespace Eos {
 
 		void SetEditorTheme(Style::Theme theme);
 		void SetEditorFont(Style::Font font);
+
+		void SaveEditorSettings();
+		void LoadEditorSettings();
 
 		void DuplicateEntity();
 
@@ -95,9 +104,8 @@ namespace Eos {
 		// Editor resources
 		Ref<Texture2D> m_IconPlay, m_IconSimulate, m_IconStop;
 
-		Style::Theme m_Theme = {};
+		EditorSettings m_Settings;
 		bool m_ThemeSelection[16] = {};
-		Style::Font m_Font = {};
 		bool m_FontSelection[16] = {};
 	};
 

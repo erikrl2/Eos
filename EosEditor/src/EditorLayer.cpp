@@ -1,6 +1,7 @@
 #include "EditorLayer.h"
 
 #include "Eos/Scene/SceneSerializer.h"
+#include "EditorSerializer.h"
 
 #include "Eos/Utils/PlatformUtils.h"
 
@@ -15,7 +16,7 @@
 
 namespace Eos {
 
-	extern const std::filesystem::path g_AssetPath;
+	extern const std::filesystem::path g_AssetPath; // Serialize?
 
 	EditorLayer::EditorLayer()
 		: Layer("EditorLayer")
@@ -26,9 +27,7 @@ namespace Eos {
 	{
 		EOS_PROFILE_FUNCTION();
 
-		// TODO: Deserialize
-		SetEditorFont(Style::Font::OpenSansRegular);
-		SetEditorTheme(Style::Theme::Dark1);
+		LoadEditorSettings();
 
 		m_IconPlay = Texture2D::Create("Resources/Icons/PlayButton.png");
 		m_IconSimulate = Texture2D::Create("Resources/Icons/SimulateButton.png");
@@ -59,6 +58,7 @@ namespace Eos {
 	{
 		EOS_PROFILE_FUNCTION();
 
+		SaveEditorSettings();
 	}
 
 	void EditorLayer::OnUpdate(Timestep ts)
@@ -197,25 +197,25 @@ namespace Eos {
 			{
 				using namespace Eos::Style;
 
-				if (ImGui::MenuItem("Dark 1", 0, m_ThemeSelection[(int)Theme::Dark1]))
+				if (ImGui::MenuItem("Eos Dark 1", 0, m_ThemeSelection[(int)Theme::Dark1]))
 					SetEditorTheme(Theme::Dark1);
-				if (ImGui::MenuItem("Dark 2", 0, m_ThemeSelection[(int)Theme::Dark2]))
+				if (ImGui::MenuItem("Eos Dark 2", 0, m_ThemeSelection[(int)Theme::Dark2]))
 					SetEditorTheme(Theme::Dark2);
-				if (ImGui::MenuItem("Dark 3", 0, m_ThemeSelection[(int)Theme::Dark3]))
+				if (ImGui::MenuItem("Eos Dark 3", 0, m_ThemeSelection[(int)Theme::Dark3]))
 					SetEditorTheme(Theme::Dark3);
-				if (ImGui::MenuItem("Dark 4", 0, m_ThemeSelection[(int)Theme::Dark4]))
+				if (ImGui::MenuItem("Eos Dark 4", 0, m_ThemeSelection[(int)Theme::Dark4]))
 					SetEditorTheme(Theme::Dark4);
-				if (ImGui::MenuItem("Dark 5", 0, m_ThemeSelection[(int)Theme::Dark5]))
+				if (ImGui::MenuItem("Eos Dark 5", 0, m_ThemeSelection[(int)Theme::Dark5]))
 					SetEditorTheme(Theme::Dark5);
-				if (ImGui::MenuItem("Dark 6", 0, m_ThemeSelection[(int)Theme::Dark6]))
+				if (ImGui::MenuItem("Eos Dark 6", 0, m_ThemeSelection[(int)Theme::Dark6]))
 					SetEditorTheme(Theme::Dark6);
-				if (ImGui::MenuItem("Dark 7", 0, m_ThemeSelection[(int)Theme::Dark7]))
+				if (ImGui::MenuItem("Eos Dark 7", 0, m_ThemeSelection[(int)Theme::Dark7]))
 					SetEditorTheme(Theme::Dark7);
 
-				if (ImGui::MenuItem("Visual Studio", 0, m_ThemeSelection[(int)Theme::VisualStudio]))
-					SetEditorTheme(Theme::VisualStudio);
 				if (ImGui::MenuItem("Unreal", 0, m_ThemeSelection[(int)Theme::Unreal]))
 					SetEditorTheme(Theme::Unreal);
+				if (ImGui::MenuItem("Visual Studio", 0, m_ThemeSelection[(int)Theme::VisualStudio]))
+					SetEditorTheme(Theme::VisualStudio);
 				if (ImGui::MenuItem("Photoshop", 0, m_ThemeSelection[(int)Theme::Photoshop]))
 					SetEditorTheme(Theme::Photoshop);
 				if (ImGui::MenuItem("Sonic Riders", 0, m_ThemeSelection[(int)Theme::SonicRiders]))
@@ -825,26 +825,45 @@ namespace Eos {
 		Application::Get().GetWindow().SetTitle("Eos Editor - " + m_EditorScene->GetName());
 	}
 
-	void EditorLayer::SetEditorTheme(Style::Theme newTheme)
+	void EditorLayer::SetEditorTheme(Style::Theme theme)
 	{
-		if (!m_ThemeSelection[(int)newTheme])
+		if (!m_ThemeSelection[(int)theme])
 		{
-			Style::SetTheme(newTheme);
-			m_ThemeSelection[(int)m_Theme] = false;
-			m_ThemeSelection[(int)newTheme] = true;
-			m_Theme = newTheme;
+			Style::SetTheme(theme);
+			m_ThemeSelection[(int)m_Settings.Theme] = false;
+			m_ThemeSelection[(int)theme] = true;
+			m_Settings.Theme = theme;
 		}
 	}
 
-	void EditorLayer::SetEditorFont(Style::Font newFont)
+	void EditorLayer::SetEditorFont(Style::Font font)
 	{
-		if (!m_FontSelection[(int)newFont])
+		if (!m_FontSelection[(int)font])
 		{
-			Style::SetFont(newFont);
-			m_FontSelection[(int)m_Font] = false;
-			m_FontSelection[(int)newFont] = true;
-			m_Font = newFont;
+			Style::SetFont(font);
+			m_FontSelection[(int)m_Settings.Font] = false;
+			m_FontSelection[(int)font] = true;
+			m_Settings.Font = font;
 		}
+	}
+
+	void EditorLayer::SaveEditorSettings()
+	{
+		std::filesystem::path filepath = "EosEditor.ini";
+		EditorSerializer serializer(&m_Settings);
+		serializer.Serialize(filepath);
+	}
+
+	void EditorLayer::LoadEditorSettings()
+	{
+		std::filesystem::path filepath = "EosEditor.ini";
+		if (std::filesystem::exists(filepath))
+		{
+			EditorSerializer serializer(&m_Settings);
+			serializer.Deserialize(filepath);
+		}
+		SetEditorTheme(m_Settings.Theme);
+		SetEditorFont(m_Settings.Font);
 	}
 
 	void EditorLayer::DuplicateEntity()

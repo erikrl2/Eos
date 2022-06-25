@@ -1,7 +1,7 @@
 #include "eospch.h"
-#include "ImGuiStyle.h"
+#include "EditorStyle.h"
 
-#include <imgui.h>
+#include <imgui/imgui.h>
 
 namespace Eos {
 
@@ -98,7 +98,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.00f, 0.00f, 0.00f, 0.58f);
 	}
 
-	void SetEosDark2()
+	static void SetEosDark2()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -190,7 +190,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(1.00f, 0.00f, 0.00f, 0.35f);
 	}
 
-	void SetEosDark3()
+	static void SetEosDark3()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -227,9 +227,9 @@ namespace Eos {
 
 		style.Colors[ImGuiCol_Text]						= ImVec4(0.75f, 0.75f, 0.75f, 1.00f);
 		style.Colors[ImGuiCol_TextDisabled]				= ImVec4(0.35f, 0.35f, 0.35f, 1.00f);
-		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.00f, 0.00f, 0.00f, 0.94f);
+		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
 		style.Colors[ImGuiCol_ChildBg]					= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-		style.Colors[ImGuiCol_PopupBg]					= ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
+		style.Colors[ImGuiCol_PopupBg]					= ImVec4(0.38f, 0.18f, 0.18f, 0.94f);
 		style.Colors[ImGuiCol_Border]					= ImVec4(0.00f, 0.00f, 0.00f, 0.50f);
 		style.Colors[ImGuiCol_BorderShadow]				= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		style.Colors[ImGuiCol_FrameBg]					= ImVec4(0.00f, 0.00f, 0.00f, 0.54f);
@@ -282,7 +282,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 	}
 
-	void SetEosDark4()
+	static void SetEosDark4()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -319,7 +319,7 @@ namespace Eos {
 
 		style.Colors[ImGuiCol_Text]						= ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 		style.Colors[ImGuiCol_TextDisabled]				= ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
+		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.06f, 0.06f, 0.06f, 1.00f);
 		style.Colors[ImGuiCol_ChildBg]					= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		style.Colors[ImGuiCol_PopupBg]					= ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
 		style.Colors[ImGuiCol_Border]					= ImVec4(0.43f, 0.43f, 0.50f, 0.50f);
@@ -374,7 +374,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 	}
 
-	void SetEosDark5()
+	static void SetEosDark5()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -466,7 +466,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 	}
 
-	void SetEosDark6()
+	static void SetEosDark6()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -503,7 +503,7 @@ namespace Eos {
 
 		style.Colors[ImGuiCol_Text]						= ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 		style.Colors[ImGuiCol_TextDisabled]				= ImVec4(0.73f, 0.75f, 0.74f, 1.00f);
-		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.09f, 0.09f, 0.09f, 0.94f);
+		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.09f, 0.09f, 0.09f, 1.00f);
 		style.Colors[ImGuiCol_ChildBg]					= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		style.Colors[ImGuiCol_PopupBg]					= ImVec4(0.28f, 0.08f, 0.08f, 0.94f);
 		style.Colors[ImGuiCol_Border]					= ImVec4(0.20f, 0.20f, 0.20f, 0.50f);
@@ -558,7 +558,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 	}
 
-	void SetEosDark7()
+	static void SetEosDark7()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -651,7 +651,7 @@ namespace Eos {
 	}
 
 	// Photoshop Theme
-	void SetPhotoshop()
+	static void SetPhotoshop()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -744,7 +744,7 @@ namespace Eos {
 	}
 
 	// Sonic Riders Theme
-	void SetSonicRiders()
+	static void SetSonicRiders()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -837,7 +837,7 @@ namespace Eos {
 	}
 
 	// Unreal Theme
-	void SetUnreal()
+	static void SetUnreal()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -930,7 +930,7 @@ namespace Eos {
 	}
 
 	// Visual Studio Theme
-	void SetVisualStudio()
+	static void SetVisualStudio()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -1023,7 +1023,7 @@ namespace Eos {
 	}
 
 	// Dark Ruda Theme
-	void SetDarkRuda()
+	static void SetDarkRuda()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -1120,7 +1120,7 @@ namespace Eos {
 
 		void SetTheme(Theme theme)
 		{
-			static ImGuiStyle style = ImGui::GetStyle();
+			static ImGuiStyle imguiStyle = ImGui::GetStyle(); // Backup of original style
 
 			switch (theme)
 			{
@@ -1136,9 +1136,9 @@ namespace Eos {
 				case Theme::Unreal:			SetUnreal(); break;
 				case Theme::VisualStudio:	SetVisualStudio(); break;
 				case Theme::DarkRuda:		SetDarkRuda(); break;
-				case Theme::ImGuiClassic:	ImGui::GetStyle() = style; ImGui::StyleColorsClassic(); break;
-				case Theme::ImGuiDark:		ImGui::GetStyle() = style; ImGui::StyleColorsDark(); break;
-				case Theme::ImGuiLight:		ImGui::GetStyle() = style; ImGui::StyleColorsLight(); break;
+				case Theme::ImGuiClassic:	ImGui::GetStyle() = imguiStyle; ImGui::StyleColorsClassic(); break;
+				case Theme::ImGuiDark:		ImGui::GetStyle() = imguiStyle; ImGui::StyleColorsDark(); break;
+				case Theme::ImGuiLight:		ImGui::GetStyle() = imguiStyle; ImGui::StyleColorsLight(); break;
 			}
 		}
 

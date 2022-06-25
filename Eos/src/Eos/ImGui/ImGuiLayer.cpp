@@ -1,8 +1,6 @@
 #include "eospch.h"
 #include "Eos/ImGui/ImGuiLayer.h"
 
-#include "Eos/ImGui/ImGuiStyle.h"
-
 #define IMGUI_IMPL_API
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
