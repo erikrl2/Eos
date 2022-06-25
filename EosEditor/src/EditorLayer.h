@@ -6,6 +6,8 @@
 
 #include "Eos/Renderer/EditorCamera.h"
 
+#include "Eos/ImGui/ImGuiStyle.h"
+
 namespace Eos {
 
 	class EditorLayer : public Layer
@@ -43,6 +45,9 @@ namespace Eos {
 
 		void SetEditorScene(const Ref<Scene>& scene);
 		void SyncWindowTitle();
+
+		void SetEditorTheme(Style::Theme theme);
+		void SetEditorFont(Style::Font font);
 
 		void DuplicateEntity();
 
@@ -89,6 +94,11 @@ namespace Eos {
 
 		// Editor resources
 		Ref<Texture2D> m_IconPlay, m_IconSimulate, m_IconStop;
+
+		Style::Theme m_Theme = {};
+		bool m_ThemeSelection[16] = {};
+		Style::Font m_Font = {};
+		bool m_FontSelection[16] = {};
 	};
 
 }

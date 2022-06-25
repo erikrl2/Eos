@@ -1,17 +1,14 @@
 #include "eospch.h"
-#include "ImGuiThemes.h"
+#include "ImGuiStyle.h"
 
 #include <imgui.h>
 
 namespace Eos {
 
 	// Eos Themes
-	void ImGuiThemes::SetEosDark1Theme()
+	static void SetEosDark1()
 	{
-		ImGuiIO& io = ImGui::GetIO();
 		ImGuiStyle& style = ImGui::GetStyle();
-
-		io.FontDefault = io.Fonts->Fonts[0]; // OpenSans-Regular
 
 		style.WindowPadding								= ImVec2(8.0f, 8.0f);
 		style.WindowMinSize								= ImVec2(32.0f, 32.0f);
@@ -101,12 +98,9 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.00f, 0.00f, 0.00f, 0.58f);
 	}
 
-	void ImGuiThemes::SetEosDark2Theme()
+	void SetEosDark2()
 	{
-		ImGuiIO& io = ImGui::GetIO();
 		ImGuiStyle& style = ImGui::GetStyle();
-
-		io.FontDefault = io.Fonts->Fonts[0]; // OpenSans-Regular
 
 		style.WindowPadding								= ImVec2(8.00f, 8.00f);
 		style.WindowMinSize								= ImVec2(32.00f, 32.00f);
@@ -196,12 +190,9 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(1.00f, 0.00f, 0.00f, 0.35f);
 	}
 
-	void ImGuiThemes::SetEosDark3Theme()
+	void SetEosDark3()
 	{
-		ImGuiIO& io = ImGui::GetIO();
 		ImGuiStyle& style = ImGui::GetStyle();
-
-		io.FontDefault = io.Fonts->Fonts[2]; // Roboto-Medium
 
 		style.WindowPadding								= ImVec2(8.0f, 8.0f);
 		style.WindowMinSize								= ImVec2(32.0f, 32.0f);
@@ -291,12 +282,9 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 	}
 
-	void ImGuiThemes::SetEosDark4Theme()
+	void SetEosDark4()
 	{
-		ImGuiIO& io = ImGui::GetIO();
 		ImGuiStyle& style = ImGui::GetStyle();
-
-		io.FontDefault = io.Fonts->Fonts[0]; // OpenSans-Regular
 
 		style.WindowPadding								= ImVec2(8.00f, 8.00f);
 		style.WindowMinSize								= ImVec2(32.00f, 32.00f);
@@ -386,12 +374,9 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 	}
 
-	void ImGuiThemes::SetEosDark5Theme()
+	void SetEosDark5()
 	{
-		ImGuiIO& io = ImGui::GetIO();
 		ImGuiStyle& style = ImGui::GetStyle();
-
-		io.FontDefault = io.Fonts->Fonts[0]; // OpenSans-Regular
 
 		style.WindowPadding								= ImVec2(8.00f, 8.00f);
 		style.WindowMinSize								= ImVec2(32.00f, 32.00f);
@@ -481,12 +466,9 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 	}
 
-	void ImGuiThemes::SetEosDark6Theme()
+	void SetEosDark6()
 	{
-		ImGuiIO& io = ImGui::GetIO();
 		ImGuiStyle& style = ImGui::GetStyle();
-
-		io.FontDefault = io.Fonts->Fonts[4]; // Ruda-Bold
 
 		style.WindowPadding								= ImVec2(8.0f, 8.0f);
 		style.WindowMinSize								= ImVec2(32.0f, 32.0f);
@@ -576,12 +558,9 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 	}
 
-	void ImGuiThemes::SetEosDark7Theme()
+	void SetEosDark7()
 	{
-		ImGuiIO& io = ImGui::GetIO();
 		ImGuiStyle& style = ImGui::GetStyle();
-
-		io.FontDefault = io.Fonts->Fonts[4]; // Ruda-Bold
 
 		style.WindowPadding								= ImVec2(8.0f, 8.0f);
 		style.WindowMinSize								= ImVec2(32.0f, 32.0f);
@@ -672,12 +651,9 @@ namespace Eos {
 	}
 
 	// Photoshop Theme
-	void ImGuiThemes::SetPhotoshopTheme()
+	void SetPhotoshop()
 	{
-		ImGuiIO& io = ImGui::GetIO();
 		ImGuiStyle& style = ImGui::GetStyle();
-
-		io.FontDefault = io.Fonts->Fonts[0]; // OpenSans-Regular
 
 		style.WindowPadding								= ImVec2(8.0f, 8.0f);
 		style.WindowMinSize								= ImVec2(32.0f, 32.0f);
@@ -768,12 +744,9 @@ namespace Eos {
 	}
 
 	// Sonic Riders Theme
-	void ImGuiThemes::SetSonicRidersTheme()
+	void SetSonicRiders()
 	{
-		ImGuiIO& io = ImGui::GetIO();
 		ImGuiStyle& style = ImGui::GetStyle();
-
-		io.FontDefault = io.Fonts->Fonts[0]; // OpenSans-Regular
 
 		style.WindowPadding								= ImVec2(8.0f, 8.0f);
 		style.WindowMinSize								= ImVec2(32.0f, 32.0f);
@@ -864,12 +837,9 @@ namespace Eos {
 	}
 
 	// Unreal Theme
-	void ImGuiThemes::SetUnrealTheme()
+	void SetUnreal()
 	{
-		ImGuiIO& io = ImGui::GetIO();
 		ImGuiStyle& style = ImGui::GetStyle();
-
-		io.FontDefault = io.Fonts->Fonts[0]; // OpenSans-Regular
 
 		style.WindowPadding								= ImVec2(8.0f, 8.0f);
 		style.WindowMinSize								= ImVec2(32.0f, 32.0f);
@@ -960,12 +930,9 @@ namespace Eos {
 	}
 
 	// Visual Studio Theme
-	void ImGuiThemes::SetVisualStudioTheme()
+	void SetVisualStudio()
 	{
-		ImGuiIO& io = ImGui::GetIO();
 		ImGuiStyle& style = ImGui::GetStyle();
-
-		io.FontDefault = io.Fonts->Fonts[0]; // OpenSans-Regular
 
 		style.WindowPadding								= ImVec2(8.0f, 8.0f);
 		style.WindowMinSize								= ImVec2(32.0f, 32.0f);
@@ -1056,12 +1023,9 @@ namespace Eos {
 	}
 
 	// Dark Ruda Theme
-	void ImGuiThemes::SetDarkRudaTheme()
+	void SetDarkRuda()
 	{
-		ImGuiIO& io = ImGui::GetIO();
 		ImGuiStyle& style = ImGui::GetStyle();
-
-		io.FontDefault = io.Fonts->Fonts[0]; // OpenSans-Regular
 
 		style.WindowPadding								= ImVec2(8.0f, 8.0f);
 		style.WindowMinSize								= ImVec2(32.0f, 32.0f);
@@ -1149,6 +1113,41 @@ namespace Eos {
 		style.Colors[ImGuiCol_NavWindowingHighlight]	= ImVec4(1.000f, 1.000f, 1.000f, 0.69f);
 		style.Colors[ImGuiCol_NavWindowingDimBg]		= ImVec4(0.800f, 0.800f, 0.800f, 0.20f);
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.800f, 0.800f, 0.800f, 0.35f);
+	}
+
+
+	namespace Style {
+
+		void SetTheme(Theme theme)
+		{
+			static ImGuiStyle style = ImGui::GetStyle();
+
+			switch (theme)
+			{
+				case Theme::Dark1:			SetEosDark1(); break;
+				case Theme::Dark2:			SetEosDark2(); break;
+				case Theme::Dark3:			SetEosDark3(); break;
+				case Theme::Dark4:			SetEosDark4(); break;
+				case Theme::Dark5:			SetEosDark5(); break;
+				case Theme::Dark6:			SetEosDark6(); break;
+				case Theme::Dark7:			SetEosDark7(); break;
+				case Theme::Photoshop:		SetPhotoshop(); break;
+				case Theme::SonicRiders:	SetSonicRiders(); break;
+				case Theme::Unreal:			SetUnreal(); break;
+				case Theme::VisualStudio:	SetVisualStudio(); break;
+				case Theme::DarkRuda:		SetDarkRuda(); break;
+				case Theme::ImGuiClassic:	ImGui::GetStyle() = style; ImGui::StyleColorsClassic(); break;
+				case Theme::ImGuiDark:		ImGui::GetStyle() = style; ImGui::StyleColorsDark(); break;
+				case Theme::ImGuiLight:		ImGui::GetStyle() = style; ImGui::StyleColorsLight(); break;
+			}
+		}
+
+		void SetFont(Font font)
+		{
+			ImGuiIO& io = ImGui::GetIO();
+			io.FontDefault = io.Fonts->Fonts[(int)font];
+		}
+
 	}
 
 }

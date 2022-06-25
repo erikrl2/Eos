@@ -1,7 +1,7 @@
 #include "eospch.h"
 #include "Eos/ImGui/ImGuiLayer.h"
 
-#include "Eos/ImGui/ImGuiThemes.h"
+#include "Eos/ImGui/ImGuiStyle.h"
 
 #define IMGUI_IMPL_API
 #include <backends/imgui_impl_glfw.h>
@@ -31,7 +31,7 @@ namespace Eos {
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable | ImGuiConfigFlags_NavNoCaptureKeyboard;
 
-		io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Regular.ttf", Window::s_HighDPIScaleFactor * 17.0f);
+		io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Regular.ttf", Window::s_HighDPIScaleFactor * 17.0f);
 		io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Bold.ttf", Window::s_HighDPIScaleFactor * 17.0f);
 		io.Fonts->AddFontFromFileTTF("assets/fonts/Roboto/Roboto-Medium.ttf", Window::s_HighDPIScaleFactor * 16.0f);
 		io.Fonts->AddFontFromFileTTF("assets/fonts/Ruda/Ruda-Regular.ttf", Window::s_HighDPIScaleFactor * 16.0f);
@@ -39,7 +39,7 @@ namespace Eos {
 
 		ImGui::GetStyle().ScaleAllSizes(Window::s_HighDPIScaleFactor);
 
-		ImGuiThemes::SetEosDark1Theme();
+		ImGui::StyleColorsDark();
 
 		GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 

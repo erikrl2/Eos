@@ -6,8 +6,6 @@
 
 #include "Eos/Math/Math.h"
 
-#include "Eos/ImGui/ImGuiThemes.h"
-
 #include <imgui/imgui.h>
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -19,17 +17,18 @@ namespace Eos {
 
 	extern const std::filesystem::path g_AssetPath;
 
-	static bool themeSelectionIndicators[16] = {};
-
 	EditorLayer::EditorLayer()
 		: Layer("EditorLayer")
 	{
-		themeSelectionIndicators[0] = true; // to indicate EosDark1 theme as selected at start
 	}
 
 	void EditorLayer::OnAttach()
 	{
 		EOS_PROFILE_FUNCTION();
+
+		// TODO: Deserialize
+		SetEditorFont(Style::Font::OpenSansRegular);
+		SetEditorTheme(Style::Theme::Dark1);
 
 		m_IconPlay = Texture2D::Create("Resources/Icons/PlayButton.png");
 		m_IconSimulate = Texture2D::Create("Resources/Icons/SimulateButton.png");
@@ -159,11 +158,9 @@ namespace Eos {
 		ImGui::End();
 	}
 
-	static void DrawThemeMenuItem(const char* label, void(*setTheme)(), uint32_t index);
-	
 	void EditorLayer::UI_MenuBar()
 	{
-		ImGui::BeginMenuBar();
+		ImGui::BeginMenuBar(); // TODO: Make bigger / more padding
 
 		if (ImGui::BeginMenu("File"))
 		{
@@ -196,34 +193,61 @@ namespace Eos {
 
 			ImGui::Separator();
 
-			// TODO: save/serialize selection
 			if (ImGui::BeginMenu("Themes"))
 			{
-				if (ImGui::BeginMenu("Eos"))
-				{
-					DrawThemeMenuItem("Dark 1", []() { ImGuiThemes::SetEosDark1Theme(); }, 0);
-					DrawThemeMenuItem("Dark 2", []() { ImGuiThemes::SetEosDark2Theme(); }, 1);
-					DrawThemeMenuItem("Dark 3", []() { ImGuiThemes::SetEosDark3Theme(); }, 2);
-					DrawThemeMenuItem("Dark 4", []() { ImGuiThemes::SetEosDark4Theme(); }, 3);
-					DrawThemeMenuItem("Dark 5", []() { ImGuiThemes::SetEosDark5Theme(); }, 4);
-					DrawThemeMenuItem("Dark 6", []() { ImGuiThemes::SetEosDark6Theme(); }, 5);
-					DrawThemeMenuItem("Dark 7", []() { ImGuiThemes::SetEosDark7Theme(); }, 6);
-					ImGui::EndMenu();
-				}
+				using namespace Eos::Style;
 
-				DrawThemeMenuItem("Visual Studio", []() { ImGuiThemes::SetVisualStudioTheme(); }, 7);
-				DrawThemeMenuItem("Unreal", []() { ImGuiThemes::SetUnrealTheme(); }, 8);
-				DrawThemeMenuItem("Photoshop", []() { ImGuiThemes::SetPhotoshopTheme(); }, 9);
-				DrawThemeMenuItem("Sonic Riders", []() { ImGuiThemes::SetSonicRidersTheme(); }, 10);
-				DrawThemeMenuItem("Dark Ruda", []() { ImGuiThemes::SetDarkRudaTheme(); }, 11);
+				if (ImGui::MenuItem("Dark 1", 0, m_ThemeSelection[(int)Theme::Dark1]))
+					SetEditorTheme(Theme::Dark1);
+				if (ImGui::MenuItem("Dark 2", 0, m_ThemeSelection[(int)Theme::Dark2]))
+					SetEditorTheme(Theme::Dark2);
+				if (ImGui::MenuItem("Dark 3", 0, m_ThemeSelection[(int)Theme::Dark3]))
+					SetEditorTheme(Theme::Dark3);
+				if (ImGui::MenuItem("Dark 4", 0, m_ThemeSelection[(int)Theme::Dark4]))
+					SetEditorTheme(Theme::Dark4);
+				if (ImGui::MenuItem("Dark 5", 0, m_ThemeSelection[(int)Theme::Dark5]))
+					SetEditorTheme(Theme::Dark5);
+				if (ImGui::MenuItem("Dark 6", 0, m_ThemeSelection[(int)Theme::Dark6]))
+					SetEditorTheme(Theme::Dark6);
+				if (ImGui::MenuItem("Dark 7", 0, m_ThemeSelection[(int)Theme::Dark7]))
+					SetEditorTheme(Theme::Dark7);
+
+				if (ImGui::MenuItem("Visual Studio", 0, m_ThemeSelection[(int)Theme::VisualStudio]))
+					SetEditorTheme(Theme::VisualStudio);
+				if (ImGui::MenuItem("Unreal", 0, m_ThemeSelection[(int)Theme::Unreal]))
+					SetEditorTheme(Theme::Unreal);
+				if (ImGui::MenuItem("Photoshop", 0, m_ThemeSelection[(int)Theme::Photoshop]))
+					SetEditorTheme(Theme::Photoshop);
+				if (ImGui::MenuItem("Sonic Riders", 0, m_ThemeSelection[(int)Theme::SonicRiders]))
+					SetEditorTheme(Theme::SonicRiders);
+				if (ImGui::MenuItem("Dark Ruda", 0, m_ThemeSelection[(int)Theme::DarkRuda]))
+					SetEditorTheme(Theme::DarkRuda);
 
 				if (ImGui::BeginMenu("Dear ImGui"))
 				{
-					DrawThemeMenuItem("Classic", []() { ImGui::StyleColorsClassic(); }, 12);
-					DrawThemeMenuItem("Dark", []() { ImGui::StyleColorsDark(); }, 13);
-					DrawThemeMenuItem("Light", []() { ImGui::StyleColorsLight(); }, 14);
+					if (ImGui::MenuItem("Classic", 0, m_ThemeSelection[(int)Theme::ImGuiClassic]))
+						SetEditorTheme(Theme::ImGuiClassic);
+					if (ImGui::MenuItem("Dark", 0, m_ThemeSelection[(int)Theme::ImGuiDark]))
+						SetEditorTheme(Theme::ImGuiDark);
+					if (ImGui::MenuItem("Light", 0, m_ThemeSelection[(int)Theme::ImGuiLight]))
+						SetEditorTheme(Theme::ImGuiLight);
 					ImGui::EndMenu();
 				}
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("Fonts"))
+			{
+				if (ImGui::MenuItem("OpenSans-Regular", 0, m_FontSelection[(int)Style::Font::OpenSansRegular]))
+					SetEditorFont(Style::Font::OpenSansRegular);
+				if (ImGui::MenuItem("OpenSans-Bold", 0, m_FontSelection[(int)Style::Font::OpenSansBold]))
+					SetEditorFont(Style::Font::OpenSansBold);
+				if (ImGui::MenuItem("Roboto-Medium", 0, m_FontSelection[(int)Style::Font::RobotoMedium]))
+					SetEditorFont(Style::Font::RobotoMedium);
+				if (ImGui::MenuItem("Ruda-Regular", 0, m_FontSelection[(int)Style::Font::RudaRegular]))
+					SetEditorFont(Style::Font::RudaRegular);
+				if (ImGui::MenuItem("Ruda-Bold", 0, m_FontSelection[(int)Style::Font::RudaBold]))
+					SetEditorFont(Style::Font::RudaBold);
 				ImGui::EndMenu();
 			}
 			ImGui::EndMenu();
@@ -801,6 +825,28 @@ namespace Eos {
 		Application::Get().GetWindow().SetTitle("Eos Editor - " + m_EditorScene->GetName());
 	}
 
+	void EditorLayer::SetEditorTheme(Style::Theme newTheme)
+	{
+		if (!m_ThemeSelection[(int)newTheme])
+		{
+			Style::SetTheme(newTheme);
+			m_ThemeSelection[(int)m_Theme] = false;
+			m_ThemeSelection[(int)newTheme] = true;
+			m_Theme = newTheme;
+		}
+	}
+
+	void EditorLayer::SetEditorFont(Style::Font newFont)
+	{
+		if (!m_FontSelection[(int)newFont])
+		{
+			Style::SetFont(newFont);
+			m_FontSelection[(int)m_Font] = false;
+			m_FontSelection[(int)newFont] = true;
+			m_Font = newFont;
+		}
+	}
+
 	void EditorLayer::DuplicateEntity()
 	{
 		//if (m_SceneState != SceneState::Edit)
@@ -809,17 +855,6 @@ namespace Eos {
 		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 		if (selectedEntity)
 			m_EditorScene->DuplicateEntity(selectedEntity);
-	}
-
-
-	static void DrawThemeMenuItem(const char* label, void(*setTheme)(), uint32_t index)
-	{
-		if (ImGui::MenuItem(label, 0, themeSelectionIndicators[index]))
-		{
-			setTheme();
-			std::memset(themeSelectionIndicators, 0, sizeof(themeSelectionIndicators)); // Reset last selection
-			themeSelectionIndicators[index] = true; // Set new selection
-		}
 	}
 
 }
