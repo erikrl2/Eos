@@ -120,10 +120,11 @@ namespace Eos {
 	static void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 70.0f)
 	{
 		auto& style = ImGui::GetStyle();
+		float frameRounding = style.FrameRounding;
 		style.FrameRounding = 0.0f;
 
 		ImGuiIO& io = ImGui::GetIO();
-		auto boldFont = io.Fonts->Fonts[0];
+		ImFont* boldFont = io.Fonts->Fonts[1];
 
 		ImGui::PushID(label.c_str());
 
@@ -185,7 +186,7 @@ namespace Eos {
 
 		ImGui::PopID();
 
-		style.FrameRounding = 4.0f;
+		style.FrameRounding = frameRounding;
 	}
 
 	static void DrawLabelLeft(const char* label, float nextCursorPosX = 105.0f)
@@ -272,14 +273,12 @@ namespace Eos {
 			}
 		}
 
-		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 127.0f);
 		//static Ref<Texture2D> addIcon = Texture2D::Create("Resources/Icons/Hierarchy/AddIcon.png");
 		//if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)addIcon->GetRendererID()), { 17, 17 }, { 0, 1 }, { 1, 0 }, -1, { 0, 0, 0, 0 }, { 0.7f, 0.7f, 0.7f, 1.0f }))
 		if (ImGui::Button("Add Component"))
 			ImGui::OpenPopup("AddComponent");
-		ImGui::PopFont();
 
 		if (ImGui::BeginPopup("AddComponent"))
 		{
@@ -366,7 +365,7 @@ namespace Eos {
 						camera.SetOrthographicFarClip(orthoFar);
 				}
 
-				DrawLabelLeft("Fixed AspectRatio", 140.0f);
+				DrawLabelLeft("Fixed AspectRatio", 150.0f);
 				ImGui::Checkbox("##FixedAspectRatio", &component.FixedAspectRatio);
 			});
 
@@ -465,7 +464,7 @@ namespace Eos {
 					ImGui::EndCombo();
 				}
 
-				DrawLabelLeft("Fixed Rotation", 120.0f);
+				DrawLabelLeft("Fixed Rotation", 130.0f);
 				ImGui::Checkbox("##FixedRotation", &component.FixedRotation);
 			});
 
@@ -487,7 +486,7 @@ namespace Eos {
 				ImGui::DragFloat("##Friction", &component.Friction, 0.005f, 0.0f, 1.0f, "%.3f");
 				DrawLabelLeft("Restitution");
 				ImGui::DragFloat("##Restitution", &component.Restitution, 0.005f, 0.0f, 1.0f, "%.3f");
-				DrawLabelLeft("Restitution Threshold", 163.0f);
+				DrawLabelLeft("Restitution Threshold", 173.0f);
 				ImGui::DragFloat("##RestitutionThreshold", &component.RestitutionThreshold, 0.01f, 0.0f, 10000.0f, "%.2f");
 			});
 

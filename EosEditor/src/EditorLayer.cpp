@@ -1,26 +1,30 @@
 #include "EditorLayer.h"
 
+#include "Eos/Scene/SceneSerializer.h"
+
+#include "Eos/Utils/PlatformUtils.h"
+
+#include "Eos/Math/Math.h"
+
+#include "Eos/ImGui/ImGuiThemes.h"
+
 #include <imgui/imgui.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Eos/Scene/SceneSerializer.h"
-
-#include "Eos/Utils/PlatformUtils.h"
-
 #include <ImGuizmo/ImGuizmo.h>
-
-#include "Eos/Math/Math.h"
 
 namespace Eos {
 
 	extern const std::filesystem::path g_AssetPath;
 
+	static bool themeSelectionIndicators[16] = {};
+
 	EditorLayer::EditorLayer()
 		: Layer("EditorLayer")
 	{
-		memset(m_ViewportBounds, 0, sizeof(m_ViewportBounds));
+		themeSelectionIndicators[0] = true; // to indicate EosDark1 theme as selected at start
 	}
 
 	void EditorLayer::OnAttach()
@@ -127,7 +131,6 @@ namespace Eos {
 		EOS_PROFILE_FUNCTION();
 
 		// Dockspace
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;;
 		const ImGuiViewport* viewport = ImGui::GetMainViewport();
 		ImGui::SetNextWindowPos(viewport->WorkPos);
 		ImGui::SetNextWindowSize(viewport->WorkSize);
@@ -135,43 +138,45 @@ namespace Eos {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("DockSpace", 0, window_flags);
+		ImGui::Begin("DockSpace", 0, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus);
 		ImGui::PopStyleVar(3);
 
 		ImGuiStyle& style = ImGui::GetStyle();
 		ImVec2 minWinSize = style.WindowMinSize;
 		style.WindowMinSize = { 350.0f, 50.0f };
-
-		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-		ImGui::DockSpace(dockspace_id);
+		ImGui::DockSpace(ImGui::GetID("MyDockSpace"));
 		style.WindowMinSize = minWinSize;
 
+		// Child panels
 		UI_MenuBar();
 		UI_Viewport();
 		UI_Toolbar();
-		UI_ChildPanels();
 		UI_RendererStats();
 		UI_Settings();
+		m_SceneHierarchyPanel.OnImGuiRender();
+		m_ContentBrowserPanel.OnImGuiRender();
 
 		ImGui::End();
 	}
 
+	static void DrawThemeMenuItem(const char* label, void(*setTheme)(), uint32_t index);
+	
 	void EditorLayer::UI_MenuBar()
 	{
-
 		ImGui::BeginMenuBar();
+
 		if (ImGui::BeginMenu("File"))
 		{
 			if (ImGui::MenuItem("New", "Ctrl+N"))
 				NewScene();
 
-			if (ImGui::MenuItem("Open...", "Ctrl+O"))
+			if (ImGui::MenuItem("Open..", "Ctrl+O"))
 				OpenScene();
 
 			if (ImGui::MenuItem("Save", "Ctrl+S"))
 				SaveScene();
 
-			if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
+			if (ImGui::MenuItem("Save As..", "Ctrl+Shift+S"))
 				SaveSceneAs();
 
 			ImGui::Separator();
@@ -187,23 +192,56 @@ namespace Eos {
 		if (ImGui::BeginMenu("Edit"))
 		{
 			if (ImGui::MenuItem("Rename Scene"))
-			{
 				renamingScene = true;
+
+			ImGui::Separator();
+
+			// TODO: save/serialize selection
+			if (ImGui::BeginMenu("Themes"))
+			{
+				if (ImGui::BeginMenu("Eos"))
+				{
+					DrawThemeMenuItem("Dark 1", []() { ImGuiThemes::SetEosDark1Theme(); }, 0);
+					DrawThemeMenuItem("Dark 2", []() { ImGuiThemes::SetEosDark2Theme(); }, 1);
+					DrawThemeMenuItem("Dark 3", []() { ImGuiThemes::SetEosDark3Theme(); }, 2);
+					DrawThemeMenuItem("Dark 4", []() { ImGuiThemes::SetEosDark4Theme(); }, 3);
+					DrawThemeMenuItem("Dark 5", []() { ImGuiThemes::SetEosDark5Theme(); }, 4);
+					DrawThemeMenuItem("Dark 6", []() { ImGuiThemes::SetEosDark6Theme(); }, 5);
+					DrawThemeMenuItem("Dark 7", []() { ImGuiThemes::SetEosDark7Theme(); }, 6);
+					ImGui::EndMenu();
+				}
+
+				DrawThemeMenuItem("Visual Studio", []() { ImGuiThemes::SetVisualStudioTheme(); }, 7);
+				DrawThemeMenuItem("Unreal", []() { ImGuiThemes::SetUnrealTheme(); }, 8);
+				DrawThemeMenuItem("Photoshop", []() { ImGuiThemes::SetPhotoshopTheme(); }, 9);
+				DrawThemeMenuItem("Sonic Riders", []() { ImGuiThemes::SetSonicRidersTheme(); }, 10);
+				DrawThemeMenuItem("Dark Ruda", []() { ImGuiThemes::SetDarkRudaTheme(); }, 11);
+
+				if (ImGui::BeginMenu("Dear ImGui"))
+				{
+					DrawThemeMenuItem("Classic", []() { ImGui::StyleColorsClassic(); }, 12);
+					DrawThemeMenuItem("Dark", []() { ImGui::StyleColorsDark(); }, 13);
+					DrawThemeMenuItem("Light", []() { ImGui::StyleColorsLight(); }, 14);
+					ImGui::EndMenu();
+				}
+				ImGui::EndMenu();
 			}
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Help"))
-		{
-			// TODO
-			if (ImGui::MenuItem("Shortcuts"))
-			{
-			}
-			if (ImGui::MenuItem("About"))
-			{
-			}
-			ImGui::EndMenu();
-		}
+		//if (ImGui::BeginMenu("Help"))
+		//{
+		//	// TODO
+		//	if (ImGui::MenuItem("Shortcuts"))
+		//	{
+		//	}
+
+		//	if (ImGui::MenuItem("About"))
+		//	{
+		//	}
+
+		//	ImGui::EndMenu();
+		//}
 
 		ImGui::EndMenuBar();
 
@@ -379,12 +417,6 @@ namespace Eos {
 		ImGui::End();
 	}
 
-	void EditorLayer::UI_ChildPanels()
-	{
-		m_SceneHierarchyPanel.OnImGuiRender();
-		m_ContentBrowserPanel.OnImGuiRender();
-	}
-
 	void EditorLayer::UI_Settings()
 	{
 		ImGui::Begin("Settings");
@@ -538,7 +570,7 @@ namespace Eos {
 		Entity selection = m_SceneHierarchyPanel.GetSelectedEntity();
 		if (m_ShowEntityOutline && selection)
 		{
-			Renderer2D::SetLineWidth(4.0f);
+			Renderer2D::SetLineWidth(3.0f);
 
 			if (selection.HasComponent<TransformComponent>())
 			{
@@ -777,6 +809,17 @@ namespace Eos {
 		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 		if (selectedEntity)
 			m_EditorScene->DuplicateEntity(selectedEntity);
+	}
+
+
+	static void DrawThemeMenuItem(const char* label, void(*setTheme)(), uint32_t index)
+	{
+		if (ImGui::MenuItem(label, 0, themeSelectionIndicators[index]))
+		{
+			setTheme();
+			std::memset(themeSelectionIndicators, 0, sizeof(themeSelectionIndicators)); // Reset last selection
+			themeSelectionIndicators[index] = true; // Set new selection
+		}
 	}
 
 }

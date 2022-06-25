@@ -134,16 +134,16 @@ namespace Eos {
 
 	void ContentBrowserPanel::DrawSearchbar()
 	{
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - 110.0f);
-		ImGui::SetNextItemWidth(125.0f);
-		ImGui::InputText("##Search", m_SearchBuffer, sizeof(m_SearchBuffer));
-		ImGui::SameLine(ImGui::GetWindowWidth() / 2.0f + 10.0f, 0);
-		ImVec4& buttonColor = ImGui::GetStyle().Colors[ImGuiCol_FrameBg];
-		ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, buttonColor);
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, buttonColor);
-		ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)m_SearchIcon->GetRendererID()), { 17, 17 }, { 0, 1 }, { 1, 0 }, -1, { 0, 0, 0, 0 }, { 0.6f, 0.6f, 0.6f, 1.0f });
-		ImGui::PopStyleColor(3);
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - 124.0f);
+		ImGui::SetNextItemWidth(130.0f);
+		ImGui::InputTextWithHint("##Search", "Search...", m_SearchBuffer, sizeof(m_SearchBuffer));
+		//ImGui::SameLine(ImGui::GetWindowWidth() / 2.0f + 10.0f, 0);
+		//ImVec4& buttonColor = ImGui::GetStyle().Colors[ImGuiCol_FrameBg];
+		//ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
+		//ImGui::PushStyleColor(ImGuiCol_ButtonHovered, buttonColor);
+		//ImGui::PushStyleColor(ImGuiCol_ButtonActive, buttonColor);
+		//ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)m_SearchIcon->GetRendererID()), { 17, 17 }, { 0, 1 }, { 1, 0 }, -1, { 0, 0, 0, 0 }, { 0.6f, 0.6f, 0.6f, 1.0f });
+		//ImGui::PopStyleColor(3);
 		DrawClearSearchbarButton();
 		ImGui::Separator();
 	}
