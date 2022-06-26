@@ -1,5 +1,7 @@
 #pragma once
 
+#include <imgui/imgui.h>
+
 namespace Eos::Style {
 
 	enum class Theme : int
@@ -15,6 +17,8 @@ namespace Eos::Style {
 	};
 
 	void SetTheme(Theme theme);
-	void SetFont(Font font);
+
+	ImFont* GetImGuiFont(Font font);
+	void SetDefaultFont(Font font);
 
 }

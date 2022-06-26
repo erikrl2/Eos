@@ -1,19 +1,16 @@
 #include "eospch.h"
 #include "EditorStyle.h"
 
-#include <imgui/imgui.h>
-
 namespace Eos {
 
-	// Eos Themes
 	static void SetEosDark1()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
-		style.WindowPadding								= ImVec2(8.0f, 8.0f);
-		style.WindowMinSize								= ImVec2(32.0f, 32.0f);
+		style.WindowPadding								= ImVec2(7.0f, 7.0f);
+		style.WindowMinSize								= ImVec2(300.0f, 200.0f);
 		style.WindowTitleAlign							= ImVec2(0.5f, 0.5f);
-		style.FramePadding								= ImVec2(4.0f, 3.0f);
+		style.FramePadding								= ImVec2(4.0f, 4.0f);
 		style.ItemSpacing								= ImVec2(8.0f, 4.0f);
 		style.ItemInnerSpacing							= ImVec2(4.0f, 4.0f);
 		style.CellPadding								= ImVec2(4.0f, 2.0f);
@@ -29,32 +26,28 @@ namespace Eos {
 		style.ChildBorderSize							= 1.0f;
 		style.PopupRounding								= 0.0f;
 		style.PopupBorderSize							= 1.0f;
-		style.FrameRounding								= 1.0f;
+		style.FrameRounding								= 6.0f;
 		style.FrameBorderSize							= 0.0f;
 		style.IndentSpacing								= 21.0f;
 		style.ColumnsMinSpacing							= 6.0f;
 		style.ScrollbarSize								= 13.0f;
 		style.ScrollbarRounding							= 12.0f;
 		style.GrabMinSize								= 7.0f;
-		style.GrabRounding								= 0.0f;
-		style.TabRounding								= 0.0f;
+		style.GrabRounding								= 3.0f;
+		style.TabRounding								= 4.0f;
 		style.TabBorderSize								= 0.0f;
 		style.TabMinWidthForCloseButton					= 0.0f;
 
 		style.Colors[ImGuiCol_Text]						= ImVec4(0.90f, 0.90f, 0.90f, 1.00f);
 		style.Colors[ImGuiCol_TextDisabled]				= ImVec4(0.40f, 0.40f, 0.40f, 1.00f);
-		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.17f, 0.17f, 0.17f, 1.00f); // also sets: Header TabHovered, TabActive, TabUnfocusedActive
 		style.Colors[ImGuiCol_ChildBg]					= ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-		style.Colors[ImGuiCol_PopupBg]					= ImVec4(0.06f, 0.06f, 0.06f, 1.00f);
 		style.Colors[ImGuiCol_Border]					= ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
 		style.Colors[ImGuiCol_BorderShadow]				= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-		style.Colors[ImGuiCol_FrameBg]					= ImVec4(0.06f, 0.06f, 0.06f, 1.00f);
+		style.Colors[ImGuiCol_FrameBg]					= ImVec4(0.11f, 0.11f, 0.11f, 1.00f);
 		style.Colors[ImGuiCol_FrameBgHovered]			= ImVec4(0.07f, 0.07f, 0.07f, 1.00f);
-		style.Colors[ImGuiCol_FrameBgActive]			= ImVec4(0.07f, 0.07f, 0.07f, 1.00f);
-		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.09f, 0.09f, 0.09f, 1.00f);
-		style.Colors[ImGuiCol_TitleBgActive]			= ImVec4(0.09f, 0.09f, 0.09f, 1.00f);
-		style.Colors[ImGuiCol_TitleBgCollapsed]			= ImVec4(0.09f, 0.09f, 0.09f, 1.00f);
-		style.Colors[ImGuiCol_MenuBarBg]				= ImVec4(0.09f, 0.09f, 0.09f, 1.00f);
+		style.Colors[ImGuiCol_FrameBgActive]			= ImVec4(0.02f, 0.02f, 0.02f, 1.00f);
+		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.06f, 0.06f, 0.06f, 1.00f); // also sets: TitleBgActive, TitleBgCollapsed, MenuBarBg, Separator, SeparatorHovered, SeparatorActive
 		style.Colors[ImGuiCol_ScrollbarBg]				= ImVec4(0.15f, 0.15f, 0.15f, 1.00f);
 		style.Colors[ImGuiCol_ScrollbarGrab]			= ImVec4(0.27f, 0.27f, 0.27f, 1.00f);
 		style.Colors[ImGuiCol_ScrollbarGrabHovered]		= ImVec4(0.29f, 0.29f, 0.29f, 1.00f);
@@ -65,20 +58,10 @@ namespace Eos {
 		style.Colors[ImGuiCol_Button]					= ImVec4(0.23f, 0.23f, 0.23f, 1.00f);
 		style.Colors[ImGuiCol_ButtonHovered]			= ImVec4(0.33f, 0.33f, 0.33f, 1.00f);
 		style.Colors[ImGuiCol_ButtonActive]				= ImVec4(0.18f, 0.18f, 0.18f, 1.00f);
-		style.Colors[ImGuiCol_Header]					= ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
-		style.Colors[ImGuiCol_HeaderHovered]			= ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
-		style.Colors[ImGuiCol_HeaderActive]				= ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
-		style.Colors[ImGuiCol_Separator]				= ImVec4(0.30f, 0.30f, 0.30f, 1.00f);
-		style.Colors[ImGuiCol_SeparatorHovered]			= ImVec4(0.40f, 0.40f, 0.40f, 1.00f);
-		style.Colors[ImGuiCol_SeparatorActive]			= ImVec4(0.40f, 0.40f, 0.40f, 1.00f);
 		style.Colors[ImGuiCol_ResizeGrip]				= ImVec4(0.30f, 0.30f, 0.30f, 1.00f);
 		style.Colors[ImGuiCol_ResizeGripHovered]		= ImVec4(0.70f, 0.70f, 0.70f, 1.00f);
 		style.Colors[ImGuiCol_ResizeGripActive]			= ImVec4(0.90f, 0.90f, 0.90f, 1.00f);
-		style.Colors[ImGuiCol_Tab]						= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-		style.Colors[ImGuiCol_TabHovered]				= ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
-		style.Colors[ImGuiCol_TabActive]				= ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
-		style.Colors[ImGuiCol_TabUnfocused]				= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-		style.Colors[ImGuiCol_TabUnfocusedActive]		= ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+		style.Colors[ImGuiCol_Tab]						= ImVec4(0.00f, 0.00f, 0.00f, 0.00f); // also sets: TabUnfocused
 		style.Colors[ImGuiCol_DockingPreview]			= ImVec4(0.40f, 0.40f, 0.40f, 1.00f);
 		style.Colors[ImGuiCol_DockingEmptyBg]			= ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
 		style.Colors[ImGuiCol_PlotLines]				= ImVec4(0.46f, 0.46f, 0.46f, 1.00f);
@@ -91,7 +74,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_TableRowBg]				= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		style.Colors[ImGuiCol_TableRowBgAlt]			= ImVec4(1.00f, 1.00f, 1.00f, 0.05f);
 		style.Colors[ImGuiCol_TextSelectedBg]			= ImVec4(1.00f, 1.00f, 1.00f, 0.15f);
-		style.Colors[ImGuiCol_DragDropTarget]			= ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
+		style.Colors[ImGuiCol_DragDropTarget]			= ImVec4(1.00f, 1.00f, 1.00f, 1.00f); // TODO: change to fitting color on every theme
 		style.Colors[ImGuiCol_NavHighlight]				= ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
 		style.Colors[ImGuiCol_NavWindowingHighlight]	= ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
 		style.Colors[ImGuiCol_NavWindowingDimBg]		= ImVec4(0.00f, 0.00f, 0.00f, 0.58f);
@@ -111,7 +94,7 @@ namespace Eos {
 		style.ItemInnerSpacing							= ImVec2(6.00f, 6.00f);
 		style.ButtonTextAlign							= ImVec2(0.50f, 0.50f);
 		style.SelectableTextAlign						= ImVec2(0.00f, 0.00f);
-		style.WindowMenuButtonPosition					= ImGuiDir_Left;
+		style.WindowMenuButtonPosition					= ImGuiDir_Right;
 		style.ColorButtonPosition						= ImGuiDir_Right;
 		style.DisabledAlpha								= 0.6f;
 		style.Alpha										= 1;
@@ -135,18 +118,14 @@ namespace Eos {
 
 		style.Colors[ImGuiCol_Text]						= ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 		style.Colors[ImGuiCol_TextDisabled]				= ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
+		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.10f, 0.10f, 0.10f, 1.00f); // also sets: Header TabHovered, TabActive, TabUnfocusedActive
 		style.Colors[ImGuiCol_ChildBg]					= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-		style.Colors[ImGuiCol_PopupBg]					= ImVec4(0.19f, 0.19f, 0.19f, 0.92f);
 		style.Colors[ImGuiCol_Border]					= ImVec4(0.19f, 0.19f, 0.19f, 0.29f);
 		style.Colors[ImGuiCol_BorderShadow]				= ImVec4(0.00f, 0.00f, 0.00f, 0.24f);
 		style.Colors[ImGuiCol_FrameBg]					= ImVec4(0.05f, 0.05f, 0.05f, 0.54f);
 		style.Colors[ImGuiCol_FrameBgHovered]			= ImVec4(0.19f, 0.19f, 0.19f, 0.54f);
 		style.Colors[ImGuiCol_FrameBgActive]			= ImVec4(0.20f, 0.22f, 0.23f, 1.00f);
-		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
-		style.Colors[ImGuiCol_TitleBgActive]			= ImVec4(0.06f, 0.06f, 0.06f, 1.00f);
-		style.Colors[ImGuiCol_TitleBgCollapsed]			= ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
-		style.Colors[ImGuiCol_MenuBarBg]				= ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.00f, 0.00f, 0.00f, 1.00f); // also sets: TitleBgActive, TitleBgCollapsed, MenuBarBg, Separator, SeparatorHovered, SeparatorActive
 		style.Colors[ImGuiCol_ScrollbarBg]				= ImVec4(0.05f, 0.05f, 0.05f, 0.54f);
 		style.Colors[ImGuiCol_ScrollbarGrab]			= ImVec4(0.34f, 0.34f, 0.34f, 0.54f);
 		style.Colors[ImGuiCol_ScrollbarGrabHovered]		= ImVec4(0.40f, 0.40f, 0.40f, 0.54f);
@@ -157,20 +136,10 @@ namespace Eos {
 		style.Colors[ImGuiCol_Button]					= ImVec4(0.05f, 0.05f, 0.05f, 0.54f);
 		style.Colors[ImGuiCol_ButtonHovered]			= ImVec4(0.19f, 0.19f, 0.19f, 0.54f);
 		style.Colors[ImGuiCol_ButtonActive]				= ImVec4(0.20f, 0.22f, 0.23f, 1.00f);
-		style.Colors[ImGuiCol_Header]					= ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
-		style.Colors[ImGuiCol_HeaderHovered]			= ImVec4(0.00f, 0.00f, 0.00f, 0.36f);
-		style.Colors[ImGuiCol_HeaderActive]				= ImVec4(0.20f, 0.22f, 0.23f, 0.33f);
-		style.Colors[ImGuiCol_Separator]				= ImVec4(0.28f, 0.28f, 0.28f, 0.29f);
-		style.Colors[ImGuiCol_SeparatorHovered]			= ImVec4(0.44f, 0.44f, 0.44f, 0.29f);
-		style.Colors[ImGuiCol_SeparatorActive]			= ImVec4(0.40f, 0.44f, 0.47f, 1.00f);
 		style.Colors[ImGuiCol_ResizeGrip]				= ImVec4(0.28f, 0.28f, 0.28f, 0.29f);
 		style.Colors[ImGuiCol_ResizeGripHovered]		= ImVec4(0.44f, 0.44f, 0.44f, 0.29f);
 		style.Colors[ImGuiCol_ResizeGripActive]			= ImVec4(0.40f, 0.44f, 0.47f, 1.00f);
-		style.Colors[ImGuiCol_Tab]						= ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
-		style.Colors[ImGuiCol_TabHovered]				= ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-		style.Colors[ImGuiCol_TabActive]				= ImVec4(0.20f, 0.20f, 0.20f, 0.36f);
-		style.Colors[ImGuiCol_TabUnfocused]				= ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
-		style.Colors[ImGuiCol_TabUnfocusedActive]		= ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+		style.Colors[ImGuiCol_Tab]						= ImVec4(0.00f, 0.00f, 0.00f, 0.52f); // also sets: TabUnfocused
 		style.Colors[ImGuiCol_DockingPreview]			= ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
 		style.Colors[ImGuiCol_DockingEmptyBg]			= ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
 		style.Colors[ImGuiCol_PlotLines]				= ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
@@ -203,7 +172,7 @@ namespace Eos {
 		style.CellPadding								= ImVec2(4.0f, 2.0f);
 		style.ButtonTextAlign							= ImVec2(0.5f, 0.5f);
 		style.SelectableTextAlign						= ImVec2(0.0f, 0.0f);
-		style.WindowMenuButtonPosition					= ImGuiDir_Left;
+		style.WindowMenuButtonPosition					= ImGuiDir_Right;
 		style.ColorButtonPosition						= ImGuiDir_Right;
 		style.Alpha										= 1.0f;
 		style.DisabledAlpha								= 0.6f;
@@ -227,18 +196,14 @@ namespace Eos {
 
 		style.Colors[ImGuiCol_Text]						= ImVec4(0.75f, 0.75f, 0.75f, 1.00f);
 		style.Colors[ImGuiCol_TextDisabled]				= ImVec4(0.35f, 0.35f, 0.35f, 1.00f);
-		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
+		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.00f, 0.00f, 0.00f, 1.00f); // also sets: Header TabHovered, TabActive, TabUnfocusedActive
 		style.Colors[ImGuiCol_ChildBg]					= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-		style.Colors[ImGuiCol_PopupBg]					= ImVec4(0.38f, 0.18f, 0.18f, 0.94f);
 		style.Colors[ImGuiCol_Border]					= ImVec4(0.00f, 0.00f, 0.00f, 0.50f);
 		style.Colors[ImGuiCol_BorderShadow]				= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		style.Colors[ImGuiCol_FrameBg]					= ImVec4(0.00f, 0.00f, 0.00f, 0.54f);
 		style.Colors[ImGuiCol_FrameBgHovered]			= ImVec4(0.37f, 0.14f, 0.14f, 0.67f);
 		style.Colors[ImGuiCol_FrameBgActive]			= ImVec4(0.39f, 0.20f, 0.20f, 0.67f);
-		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.48f, 0.16f, 0.16f, 1.00f);
-		style.Colors[ImGuiCol_TitleBgActive]			= ImVec4(0.48f, 0.16f, 0.16f, 1.00f);
-		style.Colors[ImGuiCol_TitleBgCollapsed]			= ImVec4(0.48f, 0.16f, 0.16f, 1.00f);
-		style.Colors[ImGuiCol_MenuBarBg]				= ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.48f, 0.16f, 0.16f, 1.00f); // also sets: TitleBgActive, TitleBgCollapsed, MenuBarBg, Separator, SeparatorHovered, SeparatorActive
 		style.Colors[ImGuiCol_ScrollbarBg]				= ImVec4(0.02f, 0.02f, 0.02f, 0.53f);
 		style.Colors[ImGuiCol_ScrollbarGrab]			= ImVec4(0.31f, 0.31f, 0.31f, 1.00f);
 		style.Colors[ImGuiCol_ScrollbarGrabHovered]		= ImVec4(0.41f, 0.41f, 0.41f, 1.00f);
@@ -249,20 +214,10 @@ namespace Eos {
 		style.Colors[ImGuiCol_Button]					= ImVec4(1.00f, 0.19f, 0.19f, 0.40f);
 		style.Colors[ImGuiCol_ButtonHovered]			= ImVec4(0.80f, 0.17f, 0.00f, 1.00f);
 		style.Colors[ImGuiCol_ButtonActive]				= ImVec4(0.89f, 0.00f, 0.19f, 1.00f);
-		style.Colors[ImGuiCol_Header]					= ImVec4(0.33f, 0.35f, 0.36f, 0.53f);
-		style.Colors[ImGuiCol_HeaderHovered]			= ImVec4(0.76f, 0.28f, 0.44f, 0.67f);
-		style.Colors[ImGuiCol_HeaderActive]				= ImVec4(0.47f, 0.47f, 0.47f, 0.67f);
-		style.Colors[ImGuiCol_Separator]				= ImVec4(0.32f, 0.32f, 0.32f, 1.00f);
-		style.Colors[ImGuiCol_SeparatorHovered]			= ImVec4(0.32f, 0.32f, 0.32f, 1.00f);
-		style.Colors[ImGuiCol_SeparatorActive]			= ImVec4(0.32f, 0.32f, 0.32f, 1.00f);
 		style.Colors[ImGuiCol_ResizeGrip]				= ImVec4(1.00f, 1.00f, 1.00f, 0.85f);
 		style.Colors[ImGuiCol_ResizeGripHovered]		= ImVec4(1.00f, 1.00f, 1.00f, 0.60f);
 		style.Colors[ImGuiCol_ResizeGripActive]			= ImVec4(1.00f, 1.00f, 1.00f, 0.90f);
-		style.Colors[ImGuiCol_Tab]						= ImVec4(0.07f, 0.07f, 0.07f, 0.21f);
-		style.Colors[ImGuiCol_TabHovered]				= ImVec4(0.86f, 0.23f, 0.43f, 0.67f);
-		style.Colors[ImGuiCol_TabActive]				= ImVec4(0.86f, 0.23f, 0.43f, 0.35f);
-		style.Colors[ImGuiCol_TabUnfocused]				= ImVec4(0.07f, 0.07f, 0.07f, 0.21f);
-		style.Colors[ImGuiCol_TabUnfocusedActive]		= ImVec4(0.86f, 0.23f, 0.43f, 0.35f);
+		style.Colors[ImGuiCol_Tab]						= ImVec4(0.07f, 0.07f, 0.07f, 0.21f); // also sets: TabUnfocused
 		style.Colors[ImGuiCol_DockingPreview]			= ImVec4(0.47f, 0.47f, 0.47f, 0.47f);
 		style.Colors[ImGuiCol_DockingEmptyBg]			= ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
 		style.Colors[ImGuiCol_PlotLines]				= ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
@@ -295,7 +250,7 @@ namespace Eos {
 		style.ItemInnerSpacing							= ImVec2(6.00f, 6.00f);
 		style.ButtonTextAlign							= ImVec2(0.50f, 0.50f);
 		style.SelectableTextAlign						= ImVec2(0.00f, 0.00f);
-		style.WindowMenuButtonPosition					= ImGuiDir_Left;
+		style.WindowMenuButtonPosition					= ImGuiDir_Right;
 		style.ColorButtonPosition						= ImGuiDir_Right;
 		style.DisabledAlpha								= 0.6f;
 		style.Alpha										= 1;
@@ -319,18 +274,14 @@ namespace Eos {
 
 		style.Colors[ImGuiCol_Text]						= ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 		style.Colors[ImGuiCol_TextDisabled]				= ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.06f, 0.06f, 0.06f, 1.00f);
+		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.06f, 0.06f, 0.06f, 1.00f); // also sets: Header TabHovered, TabActive, TabUnfocusedActive
 		style.Colors[ImGuiCol_ChildBg]					= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-		style.Colors[ImGuiCol_PopupBg]					= ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
 		style.Colors[ImGuiCol_Border]					= ImVec4(0.43f, 0.43f, 0.50f, 0.50f);
 		style.Colors[ImGuiCol_BorderShadow]				= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		style.Colors[ImGuiCol_FrameBg]					= ImVec4(0.44f, 0.44f, 0.44f, 0.60f);
 		style.Colors[ImGuiCol_FrameBgHovered]			= ImVec4(0.57f, 0.57f, 0.57f, 0.70f);
 		style.Colors[ImGuiCol_FrameBgActive]			= ImVec4(0.76f, 0.76f, 0.76f, 0.80f);
-		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
-		style.Colors[ImGuiCol_TitleBgActive]			= ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
-		style.Colors[ImGuiCol_TitleBgCollapsed]			= ImVec4(0.00f, 0.00f, 0.00f, 0.60f);
-		style.Colors[ImGuiCol_MenuBarBg]				= ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.04f, 0.04f, 0.04f, 1.00f); // also sets: TitleBgActive, TitleBgCollapsed, MenuBarBg, Separator, SeparatorHovered, SeparatorActive
 		style.Colors[ImGuiCol_ScrollbarBg]				= ImVec4(0.02f, 0.02f, 0.02f, 0.53f);
 		style.Colors[ImGuiCol_ScrollbarGrab]			= ImVec4(0.31f, 0.31f, 0.31f, 1.00f);
 		style.Colors[ImGuiCol_ScrollbarGrabHovered]		= ImVec4(0.41f, 0.41f, 0.41f, 1.00f);
@@ -341,20 +292,10 @@ namespace Eos {
 		style.Colors[ImGuiCol_Button]					= ImVec4(0.13f, 0.75f, 0.55f, 0.40f);
 		style.Colors[ImGuiCol_ButtonHovered]			= ImVec4(0.13f, 0.75f, 0.75f, 0.60f);
 		style.Colors[ImGuiCol_ButtonActive]				= ImVec4(0.13f, 0.75f, 1.00f, 0.80f);
-		style.Colors[ImGuiCol_Header]					= ImVec4(0.13f, 0.75f, 0.55f, 0.40f);
-		style.Colors[ImGuiCol_HeaderHovered]			= ImVec4(0.13f, 0.75f, 0.75f, 0.60f);
-		style.Colors[ImGuiCol_HeaderActive]				= ImVec4(0.13f, 0.75f, 1.00f, 0.80f);
-		style.Colors[ImGuiCol_Separator]				= ImVec4(0.13f, 0.75f, 0.55f, 0.40f);
-		style.Colors[ImGuiCol_SeparatorHovered]			= ImVec4(0.13f, 0.75f, 0.75f, 0.60f);
-		style.Colors[ImGuiCol_SeparatorActive]			= ImVec4(0.13f, 0.75f, 1.00f, 0.80f);
 		style.Colors[ImGuiCol_ResizeGrip]				= ImVec4(0.13f, 0.75f, 0.55f, 0.40f);
 		style.Colors[ImGuiCol_ResizeGripHovered]		= ImVec4(0.13f, 0.75f, 0.75f, 0.60f);
 		style.Colors[ImGuiCol_ResizeGripActive]			= ImVec4(0.13f, 0.75f, 1.00f, 0.80f);
-		style.Colors[ImGuiCol_Tab]						= ImVec4(0.18f, 0.18f, 0.18f, 1.00f);
-		style.Colors[ImGuiCol_TabHovered]				= ImVec4(0.13f, 0.75f, 0.75f, 0.80f);
-		style.Colors[ImGuiCol_TabActive]				= ImVec4(0.13f, 0.75f, 0.55f, 0.70f);
-		style.Colors[ImGuiCol_TabUnfocused]				= ImVec4(0.18f, 0.18f, 0.18f, 1.00f);
-		style.Colors[ImGuiCol_TabUnfocusedActive]		= ImVec4(0.13f, 0.75f, 0.55f, 0.70f);
+		style.Colors[ImGuiCol_Tab]						= ImVec4(0.18f, 0.18f, 0.18f, 1.00f); // also sets: TabUnfocused
 		style.Colors[ImGuiCol_DockingPreview]			= ImVec4(0.13f, 0.75f, 0.55f, 0.80f);
 		style.Colors[ImGuiCol_DockingEmptyBg]			= ImVec4(0.13f, 0.13f, 0.13f, 0.80f);
 		style.Colors[ImGuiCol_PlotLines]				= ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
@@ -387,7 +328,7 @@ namespace Eos {
 		style.ItemInnerSpacing							= ImVec2(6.00f, 6.00f);
 		style.ButtonTextAlign							= ImVec2(0.50f, 0.50f);
 		style.SelectableTextAlign						= ImVec2(0.00f, 0.00f);
-		style.WindowMenuButtonPosition					= ImGuiDir_Left;
+		style.WindowMenuButtonPosition					= ImGuiDir_Right;
 		style.ColorButtonPosition						= ImGuiDir_Right;
 		style.DisabledAlpha								= 0.6f;
 		style.Alpha										= 1;
@@ -411,18 +352,14 @@ namespace Eos {
 
 		style.Colors[ImGuiCol_Text]						= ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 		style.Colors[ImGuiCol_TextDisabled]				= ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.13f, 0.14f, 0.15f, 1.00f);
+		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.13f, 0.14f, 0.15f, 1.00f); // also sets: Header TabHovered, TabActive, TabUnfocusedActive
 		style.Colors[ImGuiCol_ChildBg]					= ImVec4(0.13f, 0.14f, 0.15f, 1.00f);
-		style.Colors[ImGuiCol_PopupBg]					= ImVec4(0.13f, 0.14f, 0.15f, 1.00f);
 		style.Colors[ImGuiCol_Border]					= ImVec4(0.43f, 0.43f, 0.50f, 0.50f);
 		style.Colors[ImGuiCol_BorderShadow]				= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		style.Colors[ImGuiCol_FrameBg]					= ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
 		style.Colors[ImGuiCol_FrameBgHovered]			= ImVec4(0.38f, 0.38f, 0.38f, 1.00f);
 		style.Colors[ImGuiCol_FrameBgActive]			= ImVec4(0.67f, 0.67f, 0.67f, 0.39f);
-		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.08f, 0.08f, 0.09f, 1.00f);
-		style.Colors[ImGuiCol_TitleBgActive]			= ImVec4(0.08f, 0.08f, 0.09f, 1.00f);
-		style.Colors[ImGuiCol_TitleBgCollapsed]			= ImVec4(0.00f, 0.00f, 0.00f, 0.51f);
-		style.Colors[ImGuiCol_MenuBarBg]				= ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.08f, 0.08f, 0.09f, 1.00f); // also sets: TitleBgActive, TitleBgCollapsed, MenuBarBg, Separator, SeparatorHovered, SeparatorActive
 		style.Colors[ImGuiCol_ScrollbarBg]				= ImVec4(0.02f, 0.02f, 0.02f, 0.53f);
 		style.Colors[ImGuiCol_ScrollbarGrab]			= ImVec4(0.31f, 0.31f, 0.31f, 1.00f);
 		style.Colors[ImGuiCol_ScrollbarGrabHovered]		= ImVec4(0.41f, 0.41f, 0.41f, 1.00f);
@@ -433,20 +370,10 @@ namespace Eos {
 		style.Colors[ImGuiCol_Button]					= ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
 		style.Colors[ImGuiCol_ButtonHovered]			= ImVec4(0.38f, 0.38f, 0.38f, 1.00f);
 		style.Colors[ImGuiCol_ButtonActive]				= ImVec4(0.67f, 0.67f, 0.67f, 0.39f);
-		style.Colors[ImGuiCol_Header]					= ImVec4(0.22f, 0.22f, 0.22f, 1.00f);
-		style.Colors[ImGuiCol_HeaderHovered]			= ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
-		style.Colors[ImGuiCol_HeaderActive]				= ImVec4(0.67f, 0.67f, 0.67f, 0.39f);
-		style.Colors[ImGuiCol_Separator]				= ImVec4(0.43f, 0.43f, 0.50f, 0.50f);
-		style.Colors[ImGuiCol_SeparatorHovered]			= ImVec4(0.41f, 0.42f, 0.44f, 1.00f);
-		style.Colors[ImGuiCol_SeparatorActive]			= ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
 		style.Colors[ImGuiCol_ResizeGrip]				= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		style.Colors[ImGuiCol_ResizeGripHovered]		= ImVec4(0.29f, 0.30f, 0.31f, 0.67f);
 		style.Colors[ImGuiCol_ResizeGripActive]			= ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
-		style.Colors[ImGuiCol_Tab]						= ImVec4(0.08f, 0.08f, 0.09f, 0.83f);
-		style.Colors[ImGuiCol_TabHovered]				= ImVec4(0.33f, 0.34f, 0.36f, 0.83f);
-		style.Colors[ImGuiCol_TabActive]				= ImVec4(0.23f, 0.23f, 0.24f, 1.00f);
-		style.Colors[ImGuiCol_TabUnfocused]				= ImVec4(0.08f, 0.08f, 0.09f, 1.00f);
-		style.Colors[ImGuiCol_TabUnfocusedActive]		= ImVec4(0.23f, 0.23f, 0.24f, 1.00f);
+		style.Colors[ImGuiCol_Tab]						= ImVec4(0.08f, 0.08f, 0.09f, 0.83f); // also sets: TabUnfocused
 		style.Colors[ImGuiCol_DockingPreview]			= ImVec4(0.23f, 0.23f, 0.24f, 1.00f);
 		style.Colors[ImGuiCol_DockingEmptyBg]			= ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
 		style.Colors[ImGuiCol_PlotLines]				= ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
@@ -479,7 +406,7 @@ namespace Eos {
 		style.CellPadding								= ImVec2(4.0f, 2.0f);
 		style.ButtonTextAlign							= ImVec2(0.5f, 0.5f);
 		style.SelectableTextAlign						= ImVec2(0.0f, 0.0f);
-		style.WindowMenuButtonPosition					= ImGuiDir_Left;
+		style.WindowMenuButtonPosition					= ImGuiDir_Right;
 		style.ColorButtonPosition						= ImGuiDir_Right;
 		style.Alpha										= 1.0f;
 		style.DisabledAlpha								= 0.6f;
@@ -503,18 +430,14 @@ namespace Eos {
 
 		style.Colors[ImGuiCol_Text]						= ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 		style.Colors[ImGuiCol_TextDisabled]				= ImVec4(0.73f, 0.75f, 0.74f, 1.00f);
-		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.09f, 0.09f, 0.09f, 1.00f);
+		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.09f, 0.09f, 0.09f, 1.00f); // also sets: Header TabHovered, TabActive, TabUnfocusedActive
 		style.Colors[ImGuiCol_ChildBg]					= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-		style.Colors[ImGuiCol_PopupBg]					= ImVec4(0.28f, 0.08f, 0.08f, 0.94f);
 		style.Colors[ImGuiCol_Border]					= ImVec4(0.20f, 0.20f, 0.20f, 0.50f);
 		style.Colors[ImGuiCol_BorderShadow]				= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		style.Colors[ImGuiCol_FrameBg]					= ImVec4(0.71f, 0.39f, 0.39f, 0.54f);
 		style.Colors[ImGuiCol_FrameBgHovered]			= ImVec4(0.84f, 0.66f, 0.66f, 0.40f);
 		style.Colors[ImGuiCol_FrameBgActive]			= ImVec4(0.84f, 0.66f, 0.66f, 0.67f);
-		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.47f, 0.22f, 0.22f, 0.67f);
-		style.Colors[ImGuiCol_TitleBgActive]			= ImVec4(0.47f, 0.22f, 0.22f, 0.67f);
-		style.Colors[ImGuiCol_TitleBgCollapsed]			= ImVec4(0.47f, 0.22f, 0.22f, 0.67f);
-		style.Colors[ImGuiCol_MenuBarBg]				= ImVec4(0.34f, 0.16f, 0.16f, 1.00f);
+		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.47f, 0.22f, 0.22f, 0.67f); // also sets: TitleBgActive, TitleBgCollapsed, MenuBarBg, Separator, SeparatorHovered, SeparatorActive
 		style.Colors[ImGuiCol_ScrollbarBg]				= ImVec4(0.02f, 0.02f, 0.02f, 0.53f);
 		style.Colors[ImGuiCol_ScrollbarGrab]			= ImVec4(0.31f, 0.31f, 0.31f, 1.00f);
 		style.Colors[ImGuiCol_ScrollbarGrabHovered]		= ImVec4(0.41f, 0.41f, 0.41f, 1.00f);
@@ -525,20 +448,10 @@ namespace Eos {
 		style.Colors[ImGuiCol_Button]					= ImVec4(0.47f, 0.22f, 0.22f, 0.65f);
 		style.Colors[ImGuiCol_ButtonHovered]			= ImVec4(0.71f, 0.39f, 0.39f, 0.65f);
 		style.Colors[ImGuiCol_ButtonActive]				= ImVec4(0.20f, 0.20f, 0.20f, 0.50f);
-		style.Colors[ImGuiCol_Header]					= ImVec4(0.71f, 0.39f, 0.39f, 0.54f);
-		style.Colors[ImGuiCol_HeaderHovered]			= ImVec4(0.84f, 0.66f, 0.66f, 0.65f);
-		style.Colors[ImGuiCol_HeaderActive]				= ImVec4(0.84f, 0.66f, 0.66f, 0.00f);
-		style.Colors[ImGuiCol_Separator]				= ImVec4(0.43f, 0.43f, 0.50f, 0.50f);
-		style.Colors[ImGuiCol_SeparatorHovered]			= ImVec4(0.71f, 0.39f, 0.39f, 0.54f);
-		style.Colors[ImGuiCol_SeparatorActive]			= ImVec4(0.71f, 0.39f, 0.39f, 0.54f);
 		style.Colors[ImGuiCol_ResizeGrip]				= ImVec4(0.71f, 0.39f, 0.39f, 0.54f);
 		style.Colors[ImGuiCol_ResizeGripHovered]		= ImVec4(0.84f, 0.66f, 0.66f, 0.66f);
 		style.Colors[ImGuiCol_ResizeGripActive]			= ImVec4(0.84f, 0.66f, 0.66f, 0.66f);
-		style.Colors[ImGuiCol_Tab]						= ImVec4(0.71f, 0.39f, 0.39f, 0.24f);
-		style.Colors[ImGuiCol_TabHovered]				= ImVec4(0.84f, 0.66f, 0.66f, 0.66f);
-		style.Colors[ImGuiCol_TabActive]				= ImVec4(0.80f, 0.39f, 0.39f, 0.74f);
-		style.Colors[ImGuiCol_TabUnfocused]				= ImVec4(0.71f, 0.39f, 0.39f, 0.24f);
-		style.Colors[ImGuiCol_TabUnfocusedActive]		= ImVec4(0.80f, 0.39f, 0.39f, 0.74f);
+		style.Colors[ImGuiCol_Tab]						= ImVec4(0.71f, 0.39f, 0.39f, 0.24f); // also sets: TabUnfocused
 		style.Colors[ImGuiCol_DockingPreview]			= ImVec4(0.47f, 0.22f, 0.22f, 0.67f);
 		style.Colors[ImGuiCol_DockingEmptyBg]			= ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
 		style.Colors[ImGuiCol_PlotLines]				= ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
@@ -571,7 +484,7 @@ namespace Eos {
 		style.CellPadding								= ImVec2(4.0f, 2.0f);
 		style.ButtonTextAlign							= ImVec2(0.5f, 0.5f);
 		style.SelectableTextAlign						= ImVec2(0.0f, 0.0f);
-		style.WindowMenuButtonPosition					= ImGuiDir_Left;
+		style.WindowMenuButtonPosition					= ImGuiDir_Right;
 		style.ColorButtonPosition						= ImGuiDir_Right;
 		style.Alpha										= 1.0f;
 		style.DisabledAlpha								= 0.6f;
@@ -595,18 +508,14 @@ namespace Eos {
 
 		style.Colors[ImGuiCol_Text]						= ImVec4(0.95f, 0.96f, 0.98f, 1.00f);
 		style.Colors[ImGuiCol_TextDisabled]				= ImVec4(0.36f, 0.42f, 0.47f, 1.00f);
-		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
+		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.11f, 0.15f, 0.17f, 1.00f); // also sets: Header TabHovered, TabActive, TabUnfocusedActive
 		style.Colors[ImGuiCol_ChildBg]					= ImVec4(0.15f, 0.18f, 0.22f, 1.00f);
-		style.Colors[ImGuiCol_PopupBg]					= ImVec4(0.16f, 0.39f, 0.68f, 0.85f);
 		style.Colors[ImGuiCol_Border]					= ImVec4(0.08f, 0.10f, 0.12f, 1.00f);
 		style.Colors[ImGuiCol_BorderShadow]				= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		style.Colors[ImGuiCol_FrameBg]					= ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
 		style.Colors[ImGuiCol_FrameBgHovered]			= ImVec4(0.12f, 0.20f, 0.28f, 1.00f);
 		style.Colors[ImGuiCol_FrameBgActive]			= ImVec4(0.09f, 0.12f, 0.14f, 1.00f);
-		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.08f, 0.10f, 0.12f, 1.00f);
-		style.Colors[ImGuiCol_TitleBgActive]			= ImVec4(0.08f, 0.10f, 0.12f, 1.00f);
-		style.Colors[ImGuiCol_TitleBgCollapsed]			= ImVec4(0.00f, 0.00f, 0.00f, 0.51f);
-		style.Colors[ImGuiCol_MenuBarBg]				= ImVec4(0.15f, 0.18f, 0.22f, 1.00f);
+		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.08f, 0.10f, 0.12f, 1.00f); // also sets: TitleBgActive, TitleBgCollapsed, MenuBarBg, Separator, SeparatorHovered, SeparatorActive
 		style.Colors[ImGuiCol_ScrollbarBg]				= ImVec4(0.02f, 0.02f, 0.02f, 0.39f);
 		style.Colors[ImGuiCol_ScrollbarGrab]			= ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
 		style.Colors[ImGuiCol_ScrollbarGrabHovered]		= ImVec4(0.18f, 0.22f, 0.25f, 1.00f);
@@ -617,20 +526,10 @@ namespace Eos {
 		style.Colors[ImGuiCol_Button]					= ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
 		style.Colors[ImGuiCol_ButtonHovered]			= ImVec4(0.28f, 0.56f, 1.00f, 1.00f);
 		style.Colors[ImGuiCol_ButtonActive]				= ImVec4(0.06f, 0.53f, 0.98f, 1.00f);
-		style.Colors[ImGuiCol_Header]					= ImVec4(0.20f, 0.25f, 0.29f, 0.55f);
-		style.Colors[ImGuiCol_HeaderHovered]			= ImVec4(0.26f, 0.59f, 0.98f, 0.70f);
-		style.Colors[ImGuiCol_HeaderActive]				= ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
-		style.Colors[ImGuiCol_Separator]				= ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
-		style.Colors[ImGuiCol_SeparatorHovered]			= ImVec4(0.10f, 0.40f, 0.75f, 0.78f);
-		style.Colors[ImGuiCol_SeparatorActive]			= ImVec4(0.10f, 0.40f, 0.75f, 1.00f);
 		style.Colors[ImGuiCol_ResizeGrip]				= ImVec4(0.26f, 0.59f, 0.98f, 0.25f);
 		style.Colors[ImGuiCol_ResizeGripHovered]		= ImVec4(0.26f, 0.59f, 0.98f, 0.67f);
 		style.Colors[ImGuiCol_ResizeGripActive]			= ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
-		style.Colors[ImGuiCol_Tab]						= ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
-		style.Colors[ImGuiCol_TabHovered]				= ImVec4(0.26f, 0.59f, 0.98f, 0.70f);
-		style.Colors[ImGuiCol_TabActive]				= ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
-		style.Colors[ImGuiCol_TabUnfocused]				= ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
-		style.Colors[ImGuiCol_TabUnfocusedActive]		= ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
+		style.Colors[ImGuiCol_Tab]						= ImVec4(0.11f, 0.15f, 0.17f, 1.00f); // also sets: TabUnfocused
 		style.Colors[ImGuiCol_DockingPreview]			= ImVec4(0.26f, 0.59f, 0.98f, 0.70f);
 		style.Colors[ImGuiCol_DockingEmptyBg]			= ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
 		style.Colors[ImGuiCol_PlotLines]				= ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
@@ -650,7 +549,6 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 	}
 
-	// Photoshop Theme
 	static void SetPhotoshop()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
@@ -664,7 +562,7 @@ namespace Eos {
 		style.CellPadding								= ImVec2(4.0f, 2.0f);
 		style.ButtonTextAlign							= ImVec2(0.5f, 0.5f);
 		style.SelectableTextAlign						= ImVec2(0.0f, 0.0f);
-		style.WindowMenuButtonPosition					= ImGuiDir_Left;
+		style.WindowMenuButtonPosition					= ImGuiDir_Right;
 		style.ColorButtonPosition						= ImGuiDir_Right;
 		style.Alpha										= 1.0f;
 		style.DisabledAlpha								= 0.6f;
@@ -688,18 +586,14 @@ namespace Eos {
 
 		style.Colors[ImGuiCol_Text]						= ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 		style.Colors[ImGuiCol_TextDisabled]				= ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
-		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.17f, 0.17f, 0.17f, 1.00f);
+		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.17f, 0.17f, 0.17f, 1.00f); // also sets: Header TabHovered, TabActive, TabUnfocusedActive
 		style.Colors[ImGuiCol_ChildBg]					= ImVec4(0.27f, 0.27f, 0.27f, 0.00f);
-		style.Colors[ImGuiCol_PopupBg]					= ImVec4(0.30f, 0.30f, 0.30f, 1.00f);
 		style.Colors[ImGuiCol_Border]					= ImVec4(0.26f, 0.26f, 0.26f, 1.00f);
 		style.Colors[ImGuiCol_BorderShadow]				= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		style.Colors[ImGuiCol_FrameBg]					= ImVec4(0.15f, 0.15f, 0.15f, 1.00f);
 		style.Colors[ImGuiCol_FrameBgHovered]			= ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
 		style.Colors[ImGuiCol_FrameBgActive]			= ImVec4(0.27f, 0.27f, 0.27f, 1.00f);
-		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-		style.Colors[ImGuiCol_TitleBgActive]			= ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-		style.Colors[ImGuiCol_TitleBgCollapsed]			= ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-		style.Colors[ImGuiCol_MenuBarBg]				= ImVec4(0.19f, 0.19f, 0.19f, 1.00f);
+		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.14f, 0.14f, 0.14f, 1.00f); // also sets: TitleBgActive, TitleBgCollapsed, MenuBarBg, Separator, SeparatorHovered, SeparatorActive
 		style.Colors[ImGuiCol_ScrollbarBg]				= ImVec4(0.15f, 0.15f, 0.15f, 1.00f);
 		style.Colors[ImGuiCol_ScrollbarGrab]			= ImVec4(0.27f, 0.27f, 0.27f, 1.00f);
 		style.Colors[ImGuiCol_ScrollbarGrabHovered]		= ImVec4(0.29f, 0.29f, 0.29f, 1.00f);
@@ -710,20 +604,10 @@ namespace Eos {
 		style.Colors[ImGuiCol_Button]					= ImVec4(1.00f, 1.00f, 1.00f, 0.00f);
 		style.Colors[ImGuiCol_ButtonHovered]			= ImVec4(1.00f, 1.00f, 1.00f, 0.15f);
 		style.Colors[ImGuiCol_ButtonActive]				= ImVec4(1.00f, 1.00f, 1.00f, 0.39f);
-		style.Colors[ImGuiCol_Header]					= ImVec4(0.30f, 0.30f, 0.30f, 1.00f);
-		style.Colors[ImGuiCol_HeaderHovered]			= ImVec4(0.46f, 0.46f, 0.46f, 1.00f);
-		style.Colors[ImGuiCol_HeaderActive]				= ImVec4(0.46f, 0.46f, 0.46f, 1.00f);
-		style.Colors[ImGuiCol_Separator]				= ImVec4(0.26f, 0.26f, 0.26f, 1.00f);
-		style.Colors[ImGuiCol_SeparatorHovered]			= ImVec4(0.38f, 0.38f, 0.38f, 1.00f);
-		style.Colors[ImGuiCol_SeparatorActive]			= ImVec4(1.00f, 0.38f, 0.00f, 1.00f);
 		style.Colors[ImGuiCol_ResizeGrip]				= ImVec4(1.00f, 1.00f, 1.00f, 0.25f);
 		style.Colors[ImGuiCol_ResizeGripHovered]		= ImVec4(1.00f, 1.00f, 1.00f, 0.67f);
 		style.Colors[ImGuiCol_ResizeGripActive]			= ImVec4(1.00f, 0.38f, 0.00f, 1.00f);
-		style.Colors[ImGuiCol_Tab]						= ImVec4(0.09f, 0.09f, 0.09f, 1.00f);
-		style.Colors[ImGuiCol_TabHovered]				= ImVec4(0.34f, 0.34f, 0.34f, 1.00f);
-		style.Colors[ImGuiCol_TabActive]				= ImVec4(0.19f, 0.19f, 0.19f, 1.00f);
-		style.Colors[ImGuiCol_TabUnfocused]				= ImVec4(0.09f, 0.09f, 0.09f, 1.00f);
-		style.Colors[ImGuiCol_TabUnfocusedActive]		= ImVec4(0.19f, 0.19f, 0.19f, 1.00f);
+		style.Colors[ImGuiCol_Tab]						= ImVec4(0.09f, 0.09f, 0.09f, 1.00f); // also sets: TabUnfocused
 		style.Colors[ImGuiCol_DockingPreview]			= ImVec4(1.00f, 0.38f, 0.00f, 0.70f);
 		style.Colors[ImGuiCol_DockingEmptyBg]			= ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
 		style.Colors[ImGuiCol_PlotLines]				= ImVec4(0.46f, 0.46f, 0.46f, 1.00f);
@@ -743,7 +627,6 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.00f, 0.00f, 0.00f, 0.58f);
 	}
 
-	// Sonic Riders Theme
 	static void SetSonicRiders()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
@@ -757,7 +640,7 @@ namespace Eos {
 		style.CellPadding								= ImVec2(4.0f, 2.0f);
 		style.ButtonTextAlign							= ImVec2(0.5f, 0.5f);
 		style.SelectableTextAlign						= ImVec2(0.0f, 0.0f);
-		style.WindowMenuButtonPosition					= ImGuiDir_Left;
+		style.WindowMenuButtonPosition					= ImGuiDir_Right;
 		style.ColorButtonPosition						= ImGuiDir_Right;
 		style.Alpha										= 1.0f;
 		style.DisabledAlpha								= 0.6f;
@@ -781,18 +664,14 @@ namespace Eos {
 
 		style.Colors[ImGuiCol_Text]						= ImVec4(1.000f, 1.000f, 1.000f, 1.00f);
 		style.Colors[ImGuiCol_TextDisabled]				= ImVec4(0.729f, 0.749f, 0.737f, 1.00f);
-		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.086f, 0.086f, 0.086f, 1.00f);
+		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.086f, 0.086f, 0.086f, 1.00f); // also sets: Header TabHovered, TabActive, TabUnfocusedActive
 		style.Colors[ImGuiCol_ChildBg]					= ImVec4(0.000f, 0.000f, 0.000f, 0.00f);
-		style.Colors[ImGuiCol_PopupBg]					= ImVec4(0.509f, 0.188f, 0.188f, 0.90f);
 		style.Colors[ImGuiCol_Border]					= ImVec4(0.200f, 0.200f, 0.200f, 0.50f);
 		style.Colors[ImGuiCol_BorderShadow]				= ImVec4(0.000f, 0.000f, 0.000f, 0.00f);
 		style.Colors[ImGuiCol_FrameBg]					= ImVec4(0.709f, 0.388f, 0.388f, 0.54f);
 		style.Colors[ImGuiCol_FrameBgHovered]			= ImVec4(0.839f, 0.658f, 0.658f, 0.40f);
 		style.Colors[ImGuiCol_FrameBgActive]			= ImVec4(0.839f, 0.658f, 0.658f, 0.67f);
-		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.466f, 0.219f, 0.219f, 0.67f);
-		style.Colors[ImGuiCol_TitleBgActive]			= ImVec4(0.466f, 0.219f, 0.219f, 0.67f);
-		style.Colors[ImGuiCol_TitleBgCollapsed]			= ImVec4(0.466f, 0.219f, 0.219f, 0.67f);
-		style.Colors[ImGuiCol_MenuBarBg]				= ImVec4(0.337f, 0.156f, 0.156f, 1.00f);
+		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.466f, 0.219f, 0.219f, 0.67f); // also sets: TitleBgActive, TitleBgCollapsed, MenuBarBg, Separator, SeparatorHovered, SeparatorActive
 		style.Colors[ImGuiCol_ScrollbarBg]				= ImVec4(0.019f, 0.019f, 0.019f, 0.53f);
 		style.Colors[ImGuiCol_ScrollbarGrab]			= ImVec4(0.309f, 0.309f, 0.309f, 1.00f);
 		style.Colors[ImGuiCol_ScrollbarGrabHovered]		= ImVec4(0.407f, 0.407f, 0.407f, 1.00f);
@@ -803,20 +682,10 @@ namespace Eos {
 		style.Colors[ImGuiCol_Button]					= ImVec4(0.466f, 0.219f, 0.219f, 0.65f);
 		style.Colors[ImGuiCol_ButtonHovered]			= ImVec4(0.709f, 0.388f, 0.388f, 0.65f);
 		style.Colors[ImGuiCol_ButtonActive]				= ImVec4(0.200f, 0.200f, 0.200f, 0.50f);
-		style.Colors[ImGuiCol_Header]					= ImVec4(0.709f, 0.388f, 0.388f, 0.54f);
-		style.Colors[ImGuiCol_HeaderHovered]			= ImVec4(0.839f, 0.658f, 0.658f, 0.65f);
-		style.Colors[ImGuiCol_HeaderActive]				= ImVec4(0.839f, 0.658f, 0.658f, 0.00f);
-		style.Colors[ImGuiCol_Separator]				= ImVec4(0.427f, 0.427f, 0.498f, 0.50f);
-		style.Colors[ImGuiCol_SeparatorHovered]			= ImVec4(0.709f, 0.388f, 0.388f, 0.54f);
-		style.Colors[ImGuiCol_SeparatorActive]			= ImVec4(0.709f, 0.388f, 0.388f, 0.54f);
 		style.Colors[ImGuiCol_ResizeGrip]				= ImVec4(0.709f, 0.388f, 0.388f, 0.54f);
 		style.Colors[ImGuiCol_ResizeGripHovered]		= ImVec4(0.839f, 0.658f, 0.658f, 0.66f);
 		style.Colors[ImGuiCol_ResizeGripActive]			= ImVec4(0.839f, 0.658f, 0.658f, 0.66f);
-		style.Colors[ImGuiCol_Tab]						= ImVec4(0.709f, 0.388f, 0.388f, 0.54f);
-		style.Colors[ImGuiCol_TabHovered]				= ImVec4(0.839f, 0.658f, 0.658f, 0.66f);
-		style.Colors[ImGuiCol_TabActive]				= ImVec4(0.839f, 0.658f, 0.658f, 0.46f);
-		style.Colors[ImGuiCol_TabUnfocused]				= ImVec4(0.709f, 0.388f, 0.388f, 0.54f);
-		style.Colors[ImGuiCol_TabUnfocusedActive]		= ImVec4(0.839f, 0.658f, 0.658f, 0.46f);
+		style.Colors[ImGuiCol_Tab]						= ImVec4(0.709f, 0.388f, 0.388f, 0.54f); // also sets: TabUnfocused
 		style.Colors[ImGuiCol_DockingPreview]			= ImVec4(0.400f, 0.400f, 0.400f, 1.00f);
 		style.Colors[ImGuiCol_DockingEmptyBg]			= ImVec4(0.000f, 0.000f, 0.000f, 1.00f);
 		style.Colors[ImGuiCol_PlotLines]				= ImVec4(0.607f, 0.607f, 0.607f, 1.00f);
@@ -836,7 +705,6 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.800f, 0.800f, 0.800f, 0.35f);
 	}
 
-	// Unreal Theme
 	static void SetUnreal()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
@@ -850,7 +718,7 @@ namespace Eos {
 		style.CellPadding								= ImVec2(4.0f, 2.0f);
 		style.ButtonTextAlign							= ImVec2(0.5f, 0.5f);
 		style.SelectableTextAlign						= ImVec2(0.0f, 0.0f);
-		style.WindowMenuButtonPosition					= ImGuiDir_Left;
+		style.WindowMenuButtonPosition					= ImGuiDir_Right;
 		style.ColorButtonPosition						= ImGuiDir_Right;
 		style.Alpha										= 1.0f;
 		style.DisabledAlpha								= 0.6f;
@@ -874,18 +742,14 @@ namespace Eos {
 
 		style.Colors[ImGuiCol_Text]						= ImVec4(1.000f, 1.000f, 1.000f, 1.00f);
 		style.Colors[ImGuiCol_TextDisabled]				= ImVec4(0.498f, 0.498f, 0.498f, 1.00f);
-		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.058f, 0.058f, 0.058f, 1.00f);
+		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.058f, 0.058f, 0.058f, 1.00f); // also sets: Header TabHovered, TabActive, TabUnfocusedActive
 		style.Colors[ImGuiCol_ChildBg]					= ImVec4(1.000f, 1.000f, 1.000f, 0.00f);
-		style.Colors[ImGuiCol_PopupBg]					= ImVec4(0.078f, 0.078f, 0.078f, 0.93f);
 		style.Colors[ImGuiCol_Border]					= ImVec4(0.427f, 0.427f, 0.498f, 0.50f);
 		style.Colors[ImGuiCol_BorderShadow]				= ImVec4(0.000f, 0.000f, 0.000f, 0.00f);
 		style.Colors[ImGuiCol_FrameBg]					= ImVec4(0.200f, 0.207f, 0.219f, 0.54f);
 		style.Colors[ImGuiCol_FrameBgHovered]			= ImVec4(0.400f, 0.400f, 0.400f, 0.40f);
 		style.Colors[ImGuiCol_FrameBgActive]			= ImVec4(0.176f, 0.176f, 0.176f, 0.67f);
-		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.286f, 0.286f, 0.286f, 1.00f);
-		style.Colors[ImGuiCol_TitleBgActive]			= ImVec4(0.286f, 0.286f, 0.286f, 1.00f);
-		style.Colors[ImGuiCol_TitleBgCollapsed]			= ImVec4(0.000f, 0.000f, 0.000f, 0.51f);
-		style.Colors[ImGuiCol_MenuBarBg]				= ImVec4(0.137f, 0.137f, 0.137f, 1.00f);
+		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.286f, 0.286f, 0.286f, 1.00f); // also sets: TitleBgActive, TitleBgCollapsed, MenuBarBg, Separator, SeparatorHovered, SeparatorActive
 		style.Colors[ImGuiCol_ScrollbarBg]				= ImVec4(0.019f, 0.019f, 0.019f, 0.53f);
 		style.Colors[ImGuiCol_ScrollbarGrab]			= ImVec4(0.309f, 0.309f, 0.309f, 1.00f);
 		style.Colors[ImGuiCol_ScrollbarGrabHovered]		= ImVec4(0.407f, 0.407f, 0.407f, 1.00f);
@@ -896,20 +760,10 @@ namespace Eos {
 		style.Colors[ImGuiCol_Button]					= ImVec4(0.439f, 0.439f, 0.439f, 0.40f);
 		style.Colors[ImGuiCol_ButtonHovered]			= ImVec4(0.458f, 0.466f, 0.478f, 1.00f);
 		style.Colors[ImGuiCol_ButtonActive]				= ImVec4(0.419f, 0.419f, 0.419f, 1.00f);
-		style.Colors[ImGuiCol_Header]					= ImVec4(0.698f, 0.698f, 0.698f, 0.31f);
-		style.Colors[ImGuiCol_HeaderHovered]			= ImVec4(0.698f, 0.698f, 0.698f, 0.80f);
-		style.Colors[ImGuiCol_HeaderActive]				= ImVec4(0.478f, 0.498f, 0.517f, 1.00f);
-		style.Colors[ImGuiCol_Separator]				= ImVec4(0.427f, 0.427f, 0.498f, 0.50f);
-		style.Colors[ImGuiCol_SeparatorHovered]			= ImVec4(0.717f, 0.717f, 0.717f, 0.78f);
-		style.Colors[ImGuiCol_SeparatorActive]			= ImVec4(0.509f, 0.509f, 0.509f, 1.00f);
 		style.Colors[ImGuiCol_ResizeGrip]				= ImVec4(0.909f, 0.909f, 0.909f, 0.25f);
 		style.Colors[ImGuiCol_ResizeGripHovered]		= ImVec4(0.807f, 0.807f, 0.807f, 0.67f);
 		style.Colors[ImGuiCol_ResizeGripActive]			= ImVec4(0.458f, 0.458f, 0.458f, 0.95f);
-		style.Colors[ImGuiCol_Tab]						= ImVec4(0.176f, 0.349f, 0.576f, 0.86f);
-		style.Colors[ImGuiCol_TabHovered]				= ImVec4(0.258f, 0.588f, 0.976f, 0.80f);
-		style.Colors[ImGuiCol_TabActive]				= ImVec4(0.196f, 0.407f, 0.678f, 1.00f);
-		style.Colors[ImGuiCol_TabUnfocused]				= ImVec4(0.176f, 0.349f, 0.576f, 0.86f);
-		style.Colors[ImGuiCol_TabUnfocusedActive]		= ImVec4(0.196f, 0.407f, 0.678f, 1.00f);
+		style.Colors[ImGuiCol_Tab]						= ImVec4(0.176f, 0.349f, 0.576f, 0.86f); // also sets: TabUnfocused
 		style.Colors[ImGuiCol_DockingPreview]			= ImVec4(0.400f, 0.400f, 0.400f, 1.00f);
 		style.Colors[ImGuiCol_DockingEmptyBg]			= ImVec4(0.000f, 0.000f, 0.000f, 1.00f);
 		style.Colors[ImGuiCol_PlotLines]				= ImVec4(0.607f, 0.607f, 0.607f, 1.00f);
@@ -929,7 +783,6 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.800f, 0.800f, 0.800f, 0.35f);
 	}
 
-	// Visual Studio Theme
 	static void SetVisualStudio()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
@@ -943,7 +796,7 @@ namespace Eos {
 		style.CellPadding								= ImVec2(4.0f, 2.0f);
 		style.ButtonTextAlign							= ImVec2(0.5f, 0.5f);
 		style.SelectableTextAlign						= ImVec2(0.0f, 0.0f);
-		style.WindowMenuButtonPosition					= ImGuiDir_Left;
+		style.WindowMenuButtonPosition					= ImGuiDir_Right;
 		style.ColorButtonPosition						= ImGuiDir_Right;
 		style.Alpha										= 1.0f;
 		style.DisabledAlpha								= 0.6f;
@@ -967,18 +820,14 @@ namespace Eos {
 
 		style.Colors[ImGuiCol_Text]						= ImVec4(1.000f, 1.000f, 1.000f, 1.00f);
 		style.Colors[ImGuiCol_TextDisabled]				= ImVec4(0.592f, 0.592f, 0.592f, 1.00f);
-		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.145f, 0.145f, 0.149f, 1.00f);
+		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.145f, 0.145f, 0.149f, 1.00f); // also sets: Header TabHovered, TabActive, TabUnfocusedActive
 		style.Colors[ImGuiCol_ChildBg]					= ImVec4(0.145f, 0.145f, 0.149f, 1.00f);
-		style.Colors[ImGuiCol_PopupBg]					= ImVec4(0.145f, 0.145f, 0.149f, 1.00f);
 		style.Colors[ImGuiCol_Border]					= ImVec4(0.305f, 0.305f, 0.305f, 1.00f);
 		style.Colors[ImGuiCol_BorderShadow]				= ImVec4(0.305f, 0.305f, 0.305f, 1.00f);
 		style.Colors[ImGuiCol_FrameBg]					= ImVec4(0.200f, 0.200f, 0.215f, 1.00f);
 		style.Colors[ImGuiCol_FrameBgHovered]			= ImVec4(0.113f, 0.592f, 0.925f, 1.00f);
 		style.Colors[ImGuiCol_FrameBgActive]			= ImVec4(0.000f, 0.466f, 0.784f, 1.00f);
-		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.145f, 0.145f, 0.149f, 1.00f);
-		style.Colors[ImGuiCol_TitleBgActive]			= ImVec4(0.145f, 0.145f, 0.149f, 1.00f);
-		style.Colors[ImGuiCol_TitleBgCollapsed]			= ImVec4(0.145f, 0.145f, 0.149f, 1.00f);
-		style.Colors[ImGuiCol_MenuBarBg]				= ImVec4(0.200f, 0.200f, 0.215f, 1.00f);
+		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.145f, 0.145f, 0.149f, 1.00f); // also sets: TitleBgActive, TitleBgCollapsed, MenuBarBg, Separator, SeparatorHovered, SeparatorActive
 		style.Colors[ImGuiCol_ScrollbarBg]				= ImVec4(0.200f, 0.200f, 0.215f, 1.00f);
 		style.Colors[ImGuiCol_ScrollbarGrab]			= ImVec4(0.321f, 0.321f, 0.333f, 1.00f);
 		style.Colors[ImGuiCol_ScrollbarGrabHovered]		= ImVec4(0.352f, 0.352f, 0.372f, 1.00f);
@@ -989,20 +838,10 @@ namespace Eos {
 		style.Colors[ImGuiCol_Button]					= ImVec4(0.200f, 0.200f, 0.215f, 1.00f);
 		style.Colors[ImGuiCol_ButtonHovered]			= ImVec4(0.113f, 0.592f, 0.925f, 1.00f);
 		style.Colors[ImGuiCol_ButtonActive]				= ImVec4(0.113f, 0.592f, 0.925f, 1.00f);
-		style.Colors[ImGuiCol_Header]					= ImVec4(0.200f, 0.200f, 0.215f, 1.00f);
-		style.Colors[ImGuiCol_HeaderHovered]			= ImVec4(0.113f, 0.592f, 0.925f, 1.00f);
-		style.Colors[ImGuiCol_HeaderActive]				= ImVec4(0.000f, 0.466f, 0.784f, 1.00f);
-		style.Colors[ImGuiCol_Separator]				= ImVec4(0.305f, 0.305f, 0.305f, 1.00f);
-		style.Colors[ImGuiCol_SeparatorHovered]			= ImVec4(0.305f, 0.305f, 0.305f, 1.00f);
-		style.Colors[ImGuiCol_SeparatorActive]			= ImVec4(0.305f, 0.305f, 0.305f, 1.00f);
 		style.Colors[ImGuiCol_ResizeGrip]				= ImVec4(0.145f, 0.145f, 0.149f, 1.00f);
 		style.Colors[ImGuiCol_ResizeGripHovered]		= ImVec4(0.200f, 0.200f, 0.215f, 1.00f);
 		style.Colors[ImGuiCol_ResizeGripActive]			= ImVec4(0.321f, 0.321f, 0.333f, 1.00f);
-		style.Colors[ImGuiCol_Tab]						= ImVec4(0.145f, 0.145f, 0.149f, 1.00f);
-		style.Colors[ImGuiCol_TabHovered]				= ImVec4(0.113f, 0.592f, 0.925f, 1.00f);
-		style.Colors[ImGuiCol_TabActive]				= ImVec4(0.000f, 0.466f, 0.784f, 1.00f);
-		style.Colors[ImGuiCol_TabUnfocused]				= ImVec4(0.145f, 0.145f, 0.149f, 1.00f);
-		style.Colors[ImGuiCol_TabUnfocusedActive]		= ImVec4(0.000f, 0.466f, 0.784f, 1.00f);
+		style.Colors[ImGuiCol_Tab]						= ImVec4(0.145f, 0.145f, 0.149f, 1.00f); // also sets: TabUnfocused
 		style.Colors[ImGuiCol_DockingPreview]			= ImVec4(0.400f, 0.400f, 0.400f, 1.00f);
 		style.Colors[ImGuiCol_DockingEmptyBg]			= ImVec4(0.000f, 0.000f, 0.000f, 1.00f);
 		style.Colors[ImGuiCol_PlotLines]				= ImVec4(0.000f, 0.466f, 0.784f, 1.00f);
@@ -1022,7 +861,6 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.145f, 0.145f, 0.149f, 1.00f);
 	}
 
-	// Dark Ruda Theme
 	static void SetDarkRuda()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
@@ -1036,7 +874,7 @@ namespace Eos {
 		style.CellPadding								= ImVec2(4.0f, 2.0f);
 		style.ButtonTextAlign							= ImVec2(0.5f, 0.5f);
 		style.SelectableTextAlign						= ImVec2(0.0f, 0.0f);
-		style.WindowMenuButtonPosition					= ImGuiDir_Left;
+		style.WindowMenuButtonPosition					= ImGuiDir_Right;
 		style.ColorButtonPosition						= ImGuiDir_Right;
 		style.Alpha										= 1.0f;
 		style.DisabledAlpha								= 0.6f;
@@ -1060,18 +898,14 @@ namespace Eos {
 
 		style.Colors[ImGuiCol_Text]						= ImVec4(0.949f, 0.956f, 0.976f, 1.00f);
 		style.Colors[ImGuiCol_TextDisabled]				= ImVec4(0.356f, 0.419f, 0.466f, 1.00f);
-		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.109f, 0.149f, 0.168f, 1.00f);
+		style.Colors[ImGuiCol_WindowBg]					= ImVec4(0.109f, 0.149f, 0.168f, 1.00f); // also sets: Header TabHovered, TabActive, TabUnfocusedActive
 		style.Colors[ImGuiCol_ChildBg]					= ImVec4(0.149f, 0.176f, 0.219f, 1.00f);
-		style.Colors[ImGuiCol_PopupBg]					= ImVec4(0.078f, 0.078f, 0.078f, 0.93f);
 		style.Colors[ImGuiCol_Border]					= ImVec4(0.078f, 0.098f, 0.117f, 1.00f);
 		style.Colors[ImGuiCol_BorderShadow]				= ImVec4(0.000f, 0.000f, 0.000f, 0.00f);
 		style.Colors[ImGuiCol_FrameBg]					= ImVec4(0.200f, 0.247f, 0.286f, 1.00f);
 		style.Colors[ImGuiCol_FrameBgHovered]			= ImVec4(0.117f, 0.200f, 0.278f, 1.00f);
 		style.Colors[ImGuiCol_FrameBgActive]			= ImVec4(0.086f, 0.117f, 0.137f, 1.00f);
-		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.078f, 0.098f, 0.117f, 1.00f);
-		style.Colors[ImGuiCol_TitleBgActive]			= ImVec4(0.078f, 0.098f, 0.117f, 1.00f);
-		style.Colors[ImGuiCol_TitleBgCollapsed]			= ImVec4(0.000f, 0.000f, 0.000f, 0.50f);
-		style.Colors[ImGuiCol_MenuBarBg]				= ImVec4(0.149f, 0.176f, 0.219f, 1.00f);
+		style.Colors[ImGuiCol_TitleBg]					= ImVec4(0.078f, 0.098f, 0.117f, 1.00f); // also sets: TitleBgActive, TitleBgCollapsed, MenuBarBg, Separator, SeparatorHovered, SeparatorActive
 		style.Colors[ImGuiCol_ScrollbarBg]				= ImVec4(0.019f, 0.019f, 0.019f, 0.38f);
 		style.Colors[ImGuiCol_ScrollbarGrab]			= ImVec4(0.200f, 0.247f, 0.286f, 1.00f);
 		style.Colors[ImGuiCol_ScrollbarGrabHovered]		= ImVec4(0.176f, 0.219f, 0.247f, 1.00f);
@@ -1082,20 +916,10 @@ namespace Eos {
 		style.Colors[ImGuiCol_Button]					= ImVec4(0.200f, 0.247f, 0.286f, 1.00f);
 		style.Colors[ImGuiCol_ButtonHovered]			= ImVec4(0.278f, 0.556f, 1.000f, 1.00f);
 		style.Colors[ImGuiCol_ButtonActive]				= ImVec4(0.058f, 0.529f, 0.976f, 1.00f);
-		style.Colors[ImGuiCol_Header]					= ImVec4(0.200f, 0.247f, 0.286f, 0.55f);
-		style.Colors[ImGuiCol_HeaderHovered]			= ImVec4(0.258f, 0.588f, 0.976f, 0.80f);
-		style.Colors[ImGuiCol_HeaderActive]				= ImVec4(0.258f, 0.588f, 0.976f, 1.00f);
-		style.Colors[ImGuiCol_Separator]				= ImVec4(0.200f, 0.247f, 0.286f, 1.00f);
-		style.Colors[ImGuiCol_SeparatorHovered]			= ImVec4(0.098f, 0.400f, 0.749f, 0.77f);
-		style.Colors[ImGuiCol_SeparatorActive]			= ImVec4(0.098f, 0.400f, 0.749f, 1.00f);
 		style.Colors[ImGuiCol_ResizeGrip]				= ImVec4(0.258f, 0.588f, 0.976f, 0.25f);
 		style.Colors[ImGuiCol_ResizeGripHovered]		= ImVec4(0.258f, 0.588f, 0.976f, 0.67f);
 		style.Colors[ImGuiCol_ResizeGripActive]			= ImVec4(0.258f, 0.588f, 0.976f, 0.95f);
-		style.Colors[ImGuiCol_Tab]						= ImVec4(0.109f, 0.149f, 0.168f, 1.00f);
-		style.Colors[ImGuiCol_TabHovered]				= ImVec4(0.258f, 0.588f, 0.976f, 0.80f);
-		style.Colors[ImGuiCol_TabActive]				= ImVec4(0.200f, 0.247f, 0.286f, 1.00f);
-		style.Colors[ImGuiCol_TabUnfocused]				= ImVec4(0.109f, 0.149f, 0.168f, 1.00f);
-		style.Colors[ImGuiCol_TabUnfocusedActive]		= ImVec4(0.200f, 0.247f, 0.286f, 1.00f);
+		style.Colors[ImGuiCol_Tab]						= ImVec4(0.109f, 0.149f, 0.168f, 1.00f); // also sets: TabUnfocused
 		style.Colors[ImGuiCol_DockingPreview]			= ImVec4(0.400f, 0.400f, 0.400f, 1.00f);
 		style.Colors[ImGuiCol_DockingEmptyBg]			= ImVec4(0.000f, 0.000f, 0.000f, 1.00f);
 		style.Colors[ImGuiCol_PlotLines]				= ImVec4(0.607f, 0.607f, 0.607f, 1.00f);
@@ -1142,10 +966,14 @@ namespace Eos {
 			}
 		}
 
-		void SetFont(Font font)
+		ImFont* GetImGuiFont(Font font)
 		{
-			ImGuiIO& io = ImGui::GetIO();
-			io.FontDefault = io.Fonts->Fonts[(int)font];
+			return ImGui::GetIO().Fonts->Fonts[(int)font];
+		}
+
+		void SetDefaultFont(Font font)
+		{
+			ImGui::GetIO().FontDefault = GetImGuiFont(font);
 		}
 
 	}

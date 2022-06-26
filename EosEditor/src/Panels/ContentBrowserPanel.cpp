@@ -13,14 +13,14 @@ namespace Eos {
 	{
 		m_DirectoryIcon = Texture2D::Create("Resources/Icons/ContentBrowser/DirectoryIcon.png");
 		m_FileIcon = Texture2D::Create("Resources/Icons/ContentBrowser/FileIcon.png");
-		m_SearchIcon = Texture2D::Create("Resources/Icons/ContentBrowser/SearchIcon.png");
+		//m_SearchIcon = Texture2D::Create("Resources/Icons/ContentBrowser/SearchIcon.png");
 
 		std::memset(m_SearchBuffer, 0, sizeof(m_SearchBuffer));
 	}
 
 	void ContentBrowserPanel::OnImGuiRender()
 	{
-		ImGui::Begin("Content Browser");
+		ImGui::Begin("Browser");
 
 		bool searching = m_SearchBuffer[0];
 
@@ -86,9 +86,10 @@ namespace Eos {
 		std::string filenameString = path.filename().string();
 
 		ImGui::PushID(filenameString.c_str());
-		ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Button, { 0, 0, 0, 0 });
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 		Ref<Texture2D> icon = directoryEntry.is_directory() ? m_DirectoryIcon : GetFileIcon(directoryEntry.path());
 		ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)icon->GetRendererID()), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
+		ImGui::PopStyleColor();
 
 		if (!directoryEntry.is_directory() && ImGui::BeginDragDropSource())
 		{
@@ -97,7 +98,6 @@ namespace Eos {
 			ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t));
 			ImGui::EndDragDropSource();
 		}
-		ImGui::PopStyleColor();
 
 		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 			if (directoryEntry.is_directory())
