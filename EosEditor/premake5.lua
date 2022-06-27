@@ -15,6 +15,7 @@ project "EosEditor"
 
 	includedirs
 	{
+		"src",
 		"%{wks.location}/Eos/vendor/spdlog/include",
 		"%{wks.location}/Eos/src",
 		"%{wks.location}/Eos/vendor",

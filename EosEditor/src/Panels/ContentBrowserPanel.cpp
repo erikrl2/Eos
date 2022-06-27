@@ -1,5 +1,5 @@
 #include "eospch.h"
-#include "ContentBrowserPanel.h"
+#include "Panels/ContentBrowserPanel.h"
 
 #include <imgui/imgui.h>
 

@@ -1,6 +1,6 @@
-#include "SceneHierarchyPanel.h"
+#include "Panels/SceneHierarchyPanel.h"
 
-#include "../EditorStyle.h"
+#include "EditorStyle.h"
 
 #include "Eos/Scene/Components.h"
 

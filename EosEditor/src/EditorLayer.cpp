@@ -1,7 +1,7 @@
 #include "EditorLayer.h"
 
-#include "Eos/Scene/SceneSerializer.h"
 #include "EditorSerializer.h"
+#include "Eos/Scene/SceneSerializer.h"
 
 #include "Eos/Utils/PlatformUtils.h"
 
@@ -280,6 +280,8 @@ namespace Eos {
 
 	void EditorLayer::UI_Toolbar()
 	{
+		// TODO: Introduce Icon-Font
+
 		ImGui::BeginMenuBar();
 
 		static ImVec4 tintColor1 = ImVec4(1, 1, 1, 1);
@@ -291,10 +293,11 @@ namespace Eos {
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2());
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - size);
 		{
 			Ref<Texture2D> icon = (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate) ? m_IconPlay : m_IconStop;
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)icon->GetRendererID()), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0, 0, 0, 0), tintColor1)
-				|| ImGui::Button("Play"))
+			ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)icon->GetRendererID()), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0, 0, 0, 0), tintColor1);
+			if (ImGui::Button("Play"))
 			{
 				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate)
 					OnScenePlay();
@@ -306,8 +309,8 @@ namespace Eos {
 		ImGui::SameLine(0, 25);
 		{
 			Ref<Texture2D> icon = (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play) ? m_IconSimulate : m_IconStop;
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)icon->GetRendererID()), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), tintColor2)
-				|| ImGui::Button("Simulate"))
+			ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)icon->GetRendererID()), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), tintColor2);
+			if (ImGui::Button("Simulate"))
 			{
 				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play)
 					OnSceneSimulate();
@@ -448,6 +451,14 @@ namespace Eos {
 	void EditorLayer::UI_RendererStats()
 	{
 		ImGui::Begin("Stats");
+
+		static float lastFrameTime = 0.0f;
+		float time = ImGui::GetTime();
+		float delta = time - lastFrameTime;
+		lastFrameTime = time;
+		ImGui::Text("FPS: %.0f", 1.0f / delta);
+		ImGui::Text("Uptime: %ds", (int)time);
+
 		const char* entityTag = "None";
 		if (m_HoveredEntity) entityTag = m_HoveredEntity.GetComponent<TagComponent>().Tag.c_str();
 		ImGui::Text("Hovered Entity: %s", entityTag);
@@ -457,6 +468,7 @@ namespace Eos {
 		ImGui::Text("Quads: %d", stats.QuadCount);
 		ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
 		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+
 		ImGui::End();
 	}
 

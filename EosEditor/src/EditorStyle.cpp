@@ -74,7 +74,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_TableRowBg]				= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		style.Colors[ImGuiCol_TableRowBgAlt]			= ImVec4(1.00f, 1.00f, 1.00f, 0.05f);
 		style.Colors[ImGuiCol_TextSelectedBg]			= ImVec4(1.00f, 1.00f, 1.00f, 0.15f);
-		style.Colors[ImGuiCol_DragDropTarget]			= ImVec4(1.00f, 1.00f, 1.00f, 1.00f); // TODO: change to fitting color on every theme
+		style.Colors[ImGuiCol_DragDropTarget]			= ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 		style.Colors[ImGuiCol_NavHighlight]				= ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
 		style.Colors[ImGuiCol_NavWindowingHighlight]	= ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
 		style.Colors[ImGuiCol_NavWindowingDimBg]		= ImVec4(0.00f, 0.00f, 0.00f, 0.58f);
@@ -230,7 +230,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_TableRowBg]				= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		style.Colors[ImGuiCol_TableRowBgAlt]			= ImVec4(1.00f, 1.00f, 1.00f, 0.07f);
 		style.Colors[ImGuiCol_TextSelectedBg]			= ImVec4(0.26f, 0.59f, 0.98f, 0.35f);
-		style.Colors[ImGuiCol_DragDropTarget]			= ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
+		style.Colors[ImGuiCol_DragDropTarget]			= ImVec4(1.00f, 1.00f, 1.00f, 0.90f);
 		style.Colors[ImGuiCol_NavHighlight]				= ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
 		style.Colors[ImGuiCol_NavWindowingHighlight]	= ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
 		style.Colors[ImGuiCol_NavWindowingDimBg]		= ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
@@ -308,7 +308,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_TableRowBg]				= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		style.Colors[ImGuiCol_TableRowBgAlt]			= ImVec4(1.00f, 1.00f, 1.00f, 0.07f);
 		style.Colors[ImGuiCol_TextSelectedBg]			= ImVec4(0.26f, 0.59f, 0.98f, 0.35f);
-		style.Colors[ImGuiCol_DragDropTarget]			= ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
+		style.Colors[ImGuiCol_DragDropTarget]			= ImVec4(0.13f, 0.75f, 0.75f, 0.90f);
 		style.Colors[ImGuiCol_NavHighlight]				= ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
 		style.Colors[ImGuiCol_NavWindowingHighlight]	= ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
 		style.Colors[ImGuiCol_NavWindowingDimBg]		= ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
@@ -464,7 +464,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_TableRowBg]				= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		style.Colors[ImGuiCol_TableRowBgAlt]			= ImVec4(1.00f, 1.00f, 1.00f, 0.05f);
 		style.Colors[ImGuiCol_TextSelectedBg]			= ImVec4(0.26f, 0.59f, 0.98f, 0.35f);
-		style.Colors[ImGuiCol_DragDropTarget]			= ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
+		style.Colors[ImGuiCol_DragDropTarget]			= ImVec4(1.0f, 1.0f, 1.0f, 0.90f);
 		style.Colors[ImGuiCol_NavHighlight]				= ImVec4(0.41f, 0.41f, 0.41f, 1.00f);
 		style.Colors[ImGuiCol_NavWindowingHighlight]	= ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
 		style.Colors[ImGuiCol_NavWindowingDimBg]		= ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
@@ -542,7 +542,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_TableRowBg]				= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		style.Colors[ImGuiCol_TableRowBgAlt]			= ImVec4(1.00f, 1.00f, 1.00f, 0.05f);
 		style.Colors[ImGuiCol_TextSelectedBg]			= ImVec4(0.26f, 0.59f, 0.98f, 0.35f);
-		style.Colors[ImGuiCol_DragDropTarget]			= ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
+		style.Colors[ImGuiCol_DragDropTarget]			= ImVec4(0.28f, 0.56f, 1.00f, 0.90f);
 		style.Colors[ImGuiCol_NavHighlight]				= ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
 		style.Colors[ImGuiCol_NavWindowingHighlight]	= ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
 		style.Colors[ImGuiCol_NavWindowingDimBg]		= ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
@@ -763,7 +763,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_ResizeGrip]				= ImVec4(0.909f, 0.909f, 0.909f, 0.25f);
 		style.Colors[ImGuiCol_ResizeGripHovered]		= ImVec4(0.807f, 0.807f, 0.807f, 0.67f);
 		style.Colors[ImGuiCol_ResizeGripActive]			= ImVec4(0.458f, 0.458f, 0.458f, 0.95f);
-		style.Colors[ImGuiCol_Tab]						= ImVec4(0.176f, 0.349f, 0.576f, 0.86f); // also sets: TabUnfocused
+		style.Colors[ImGuiCol_Tab]						= ImVec4(0.286f, 0.286f, 0.286f, 1.00f); // also sets: TabUnfocused
 		style.Colors[ImGuiCol_DockingPreview]			= ImVec4(0.400f, 0.400f, 0.400f, 1.00f);
 		style.Colors[ImGuiCol_DockingEmptyBg]			= ImVec4(0.000f, 0.000f, 0.000f, 1.00f);
 		style.Colors[ImGuiCol_PlotLines]				= ImVec4(0.607f, 0.607f, 0.607f, 1.00f);
@@ -776,7 +776,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_TableRowBg]				= ImVec4(0.000f, 0.000f, 0.000f, 0.00f);
 		style.Colors[ImGuiCol_TableRowBgAlt]			= ImVec4(1.000f, 1.000f, 1.000f, 0.06f);
 		style.Colors[ImGuiCol_TextSelectedBg]			= ImVec4(0.866f, 0.866f, 0.866f, 0.35f);
-		style.Colors[ImGuiCol_DragDropTarget]			= ImVec4(1.000f, 1.000f, 0.000f, 0.89f);
+		style.Colors[ImGuiCol_DragDropTarget]			= ImVec4(0.176f, 0.349f, 0.876f, 0.90f);
 		style.Colors[ImGuiCol_NavHighlight]				= ImVec4(0.600f, 0.600f, 0.600f, 1.00f);
 		style.Colors[ImGuiCol_NavWindowingHighlight]	= ImVec4(1.000f, 1.000f, 1.000f, 0.69f);
 		style.Colors[ImGuiCol_NavWindowingDimBg]		= ImVec4(0.800f, 0.800f, 0.800f, 0.20f);
@@ -854,7 +854,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_TableRowBg]				= ImVec4(0.000f, 0.000f, 0.000f, 0.00f);
 		style.Colors[ImGuiCol_TableRowBgAlt]			= ImVec4(1.000f, 1.000f, 1.000f, 0.05f);
 		style.Colors[ImGuiCol_TextSelectedBg]			= ImVec4(0.000f, 0.466f, 0.784f, 1.00f);
-		style.Colors[ImGuiCol_DragDropTarget]			= ImVec4(0.145f, 0.145f, 0.149f, 1.00f);
+		style.Colors[ImGuiCol_DragDropTarget]			= ImVec4(1.000f, 1.000f, 1.000f, 0.90f);
 		style.Colors[ImGuiCol_NavHighlight]				= ImVec4(0.145f, 0.145f, 0.149f, 1.00f);
 		style.Colors[ImGuiCol_NavWindowingHighlight]	= ImVec4(1.000f, 1.000f, 1.000f, 0.69f);
 		style.Colors[ImGuiCol_NavWindowingDimBg]		= ImVec4(0.800f, 0.800f, 0.800f, 0.20f);
