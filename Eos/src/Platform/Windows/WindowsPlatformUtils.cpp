@@ -53,4 +53,10 @@ namespace Eos {
 		return std::string();
 	}
 
+
+	float Time::GetTime()
+	{
+		return glfwGetTime();
+	}
+
 }
