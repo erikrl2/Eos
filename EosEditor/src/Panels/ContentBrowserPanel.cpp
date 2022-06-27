@@ -21,7 +21,7 @@ namespace Eos {
 	{
 		ImGui::Begin(ICON_FA_FOLDER "  Browser");
 
-		bool searching = m_SearchBuffer[0];
+		const bool& searching = (bool&)m_SearchBuffer[0];
 
 		if (m_CurrentDirectory != std::filesystem::path(g_AssetPath))
 		{

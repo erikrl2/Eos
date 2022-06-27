@@ -28,7 +28,6 @@ namespace Eos {
 	{
 		EOS_PROFILE_FUNCTION();
 
-		// TODO: Do on different thread?
 		Style::LoadFonts();
 		LoadEditorSettings();
 
@@ -281,6 +280,7 @@ namespace Eos {
 		ImGui::BeginMenuBar();
 
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 0.5f));
 		{
 			static const char* labelPlay = ICON_FA_PLAY "  Play";
@@ -318,7 +318,7 @@ namespace Eos {
 			}
 		}
 		ImGui::PopStyleVar();
-		ImGui::PopStyleColor();
+		ImGui::PopStyleColor(2);
 
 		ImGui::EndMenuBar();
 	}
