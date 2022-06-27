@@ -15,9 +15,11 @@ project "EosEditor"
 
 	includedirs
 	{
-		"%{wks.location}/Eos/vendor/spdlog/include",
+		"src",
+		"vendor/IconFontCppHeaders",
 		"%{wks.location}/Eos/src",
 		"%{wks.location}/Eos/vendor",
+		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.entt}"

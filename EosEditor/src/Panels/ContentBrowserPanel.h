@@ -27,7 +27,7 @@ namespace Eos {
 		std::unordered_map<std::filesystem::path, Ref<Texture2D>> m_ImageIcons;
 
 		Ref<Texture2D> m_SearchIcon;
-		char m_SearchBuffer[128];
+		char m_SearchBuffer[128] = {};
 	};
 
 }

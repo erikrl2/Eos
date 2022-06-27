@@ -1,5 +1,9 @@
 #pragma once
 
+#include <imgui/imgui.h>
+
+#include "IconsFontAwesome5.h"
+
 namespace Eos::Style {
 
 	enum class Theme : int
@@ -11,10 +15,15 @@ namespace Eos::Style {
 
 	enum class Font : int
 	{
-		OpenSansRegular, OpenSansBold, RobotoMedium, RudaRegular, RudaBold
+		ImGuiDefault, OpenSansRegular, OpenSansBold, RobotoMedium, RudaRegular
 	};
 
 	void SetTheme(Theme theme);
-	void SetFont(Font font);
+
+	ImFont* GetImGuiFont(Font font);
+	void SetDefaultFont(Font font);
+
+	// to be called once at program start
+	void LoadFonts();
 
 }

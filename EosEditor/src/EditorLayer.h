@@ -62,9 +62,9 @@ namespace Eos {
 
 		// UI Panels
 		void UI_MenuBar();
+		void UI_Toolbar();
 		void UI_Viewport();
 		void UI_Gizmos();
-		void UI_Toolbar();
 		void UI_Settings();
 		void UI_RendererStats();
 	private:

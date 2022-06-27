@@ -29,15 +29,11 @@ namespace Eos {
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable | ImGuiConfigFlags_NavNoCaptureKeyboard;
 
-		io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Regular.ttf", Window::s_HighDPIScaleFactor * 17.0f);
-		io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Bold.ttf", Window::s_HighDPIScaleFactor * 17.0f);
-		io.Fonts->AddFontFromFileTTF("assets/fonts/Roboto/Roboto-Medium.ttf", Window::s_HighDPIScaleFactor * 16.0f);
-		io.Fonts->AddFontFromFileTTF("assets/fonts/Ruda/Ruda-Regular.ttf", Window::s_HighDPIScaleFactor * 16.0f);
-		io.Fonts->AddFontFromFileTTF("assets/fonts/Ruda/Ruda-Bold.ttf", Window::s_HighDPIScaleFactor * 16.0f);
-
-		ImGui::GetStyle().ScaleAllSizes(Window::s_HighDPIScaleFactor);
+		io.Fonts->AddFontDefault();
 
 		ImGui::StyleColorsDark();
+
+		//ImGui::GetStyle().ScaleAllSizes(Window::s_HighDPIScaleFactor);
 
 		GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 

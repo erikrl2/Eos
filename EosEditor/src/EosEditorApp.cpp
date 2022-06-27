@@ -9,7 +9,7 @@ namespace Eos {
 	{
 	public:
 		EosEditor(ApplicationCommandLineArgs args)
-			: Application("EosEditor", args)
+			: Application({ "EosEditor", 1280, 720 }, args)
 		{
 			PushLayer(new EditorLayer());
 		}
@@ -20,8 +20,10 @@ namespace Eos {
 
 	Application* CreateApplication(ApplicationCommandLineArgs args)
 	{
-		//args.Args[1] = "assets/scenes/Test.eos";
-		//args.Count++;
+		// for testing
+		args.Args[1] = "assets/scenes/Test.eos";
+		args.Count++;
+
 		return new EosEditor(args);
 	}
 

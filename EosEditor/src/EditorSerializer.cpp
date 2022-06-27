@@ -56,10 +56,8 @@ namespace Eos {
 		switch (font)
 		{
 			case Style::Font::OpenSansRegular:		return "OpenSans-Regular";
-			case Style::Font::OpenSansBold:			return "OpenSans-Bold";
 			case Style::Font::RobotoMedium:			return "Roboto-Medium";
 			case Style::Font::RudaRegular:			return "Ruda-Regular";
-			case Style::Font::RudaBold:				return "Ruda-Bold";
 		}
 
 		EOS_CORE_ASSERT(false, "Unknown body type");
@@ -69,10 +67,8 @@ namespace Eos {
 	static Style::Font FontTypeFromString(const std::string& fontString)
 	{
 		if (fontString == "OpenSans-Regular")		return Style::Font::OpenSansRegular;
-		if (fontString == "OpenSans-Bold")			return Style::Font::OpenSansBold;
 		if (fontString == "Roboto-Medium")			return Style::Font::RobotoMedium;
 		if (fontString == "Ruda-Regular")			return Style::Font::RudaRegular;
-		if (fontString == "Ruda-Bold")				return Style::Font::RudaBold;
 
 		EOS_CORE_WARN("Unknown body type");
 		return Style::Font::OpenSansRegular;

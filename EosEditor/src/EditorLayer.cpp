@@ -1,7 +1,7 @@
 #include "EditorLayer.h"
 
-#include "Eos/Scene/SceneSerializer.h"
 #include "EditorSerializer.h"
+#include "Eos/Scene/SceneSerializer.h"
 
 #include "Eos/Utils/PlatformUtils.h"
 
@@ -28,6 +28,7 @@ namespace Eos {
 	{
 		EOS_PROFILE_FUNCTION();
 
+		Style::LoadFonts();
 		LoadEditorSettings();
 
 		m_IconPlay = Texture2D::Create("Resources/Icons/PlayButton.png");
@@ -80,7 +81,7 @@ namespace Eos {
 		Renderer2D::ResetStats();
 		m_Framebuffer->Bind();
 
-		RenderCommand::SetClearColor({ 0.07f, 0.07f, 0.07f, 1.0f });
+		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		RenderCommand::Clear();
 
 		m_Framebuffer->ClearAttachment(1, -1);
@@ -143,14 +144,16 @@ namespace Eos {
 
 		ImGuiStyle& style = ImGui::GetStyle();
 		ImVec2 minWinSize = style.WindowMinSize;
-		style.WindowMinSize = { 350.0f, 50.0f };
+		style.WindowMinSize = { 350.0f, 150.0f };
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12.0f, 5.0f));
 		ImGui::DockSpace(ImGui::GetID("MyDockSpace"));
+		ImGui::PopStyleVar();
 		style.WindowMinSize = minWinSize;
 
 		// Child panels
 		UI_MenuBar();
-		UI_Viewport();
 		UI_Toolbar();
+		UI_Viewport();
 		UI_RendererStats();
 		UI_Settings();
 		m_SceneHierarchyPanel.OnImGuiRender();
@@ -161,20 +164,21 @@ namespace Eos {
 
 	void EditorLayer::UI_MenuBar()
 	{
-		ImGui::BeginMenuBar(); // TODO: Custom window with more padding/height
+		static bool renamingScene = false;
 
-		if (ImGui::BeginMenu("File"))
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		ImGui::BeginMainMenuBar();
+		ImGui::PopStyleVar();
+
+		if (ImGui::BeginMenu(ICON_FA_FILE_ALT "  File "))
 		{
-			if (ImGui::MenuItem("New", "Ctrl+N"))
+			if (ImGui::MenuItem(ICON_FA_FILE "   New", "Ctrl+N"))
 				NewScene();
-
-			if (ImGui::MenuItem("Open..", "Ctrl+O"))
+			if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN "  Open..", "Ctrl+O"))
 				OpenScene();
-
-			if (ImGui::MenuItem("Save", "Ctrl+S"))
+			if (ImGui::MenuItem(ICON_FA_SAVE "   Save", "Ctrl+S"))
 				SaveScene();
-
-			if (ImGui::MenuItem("Save As..", "Ctrl+Shift+S"))
+			if (ImGui::MenuItem(ICON_FA_SAVE "   Save As..", "Ctrl+Shift+S"))
 				SaveSceneAs();
 
 			ImGui::Separator();
@@ -185,16 +189,14 @@ namespace Eos {
 			ImGui::EndMenu();
 		}
 
-		static bool renamingScene = false;
-
-		if (ImGui::BeginMenu("Edit"))
+		if (ImGui::BeginMenu(ICON_FA_EDIT "  Edit "))
 		{
-			if (ImGui::MenuItem("Rename Scene"))
+			if (ImGui::MenuItem(ICON_FA_PEN "  Rename Scene"))
 				renamingScene = true;
 
 			ImGui::Separator();
 
-			if (ImGui::BeginMenu("Themes"))
+			if (ImGui::BeginMenu(ICON_FA_PALETTE "  Themes"))
 			{
 				using namespace Eos::Style;
 
@@ -237,44 +239,27 @@ namespace Eos {
 				ImGui::EndMenu();
 			}
 
-			if (ImGui::BeginMenu("Fonts"))
+			if (ImGui::BeginMenu(ICON_FA_FONT "   Fonts"))
 			{
 				if (ImGui::MenuItem("OpenSans-Regular", 0, m_FontSelection[(int)Style::Font::OpenSansRegular]))
 					SetEditorFont(Style::Font::OpenSansRegular);
-				if (ImGui::MenuItem("OpenSans-Bold", 0, m_FontSelection[(int)Style::Font::OpenSansBold]))
-					SetEditorFont(Style::Font::OpenSansBold);
 				if (ImGui::MenuItem("Roboto-Medium", 0, m_FontSelection[(int)Style::Font::RobotoMedium]))
 					SetEditorFont(Style::Font::RobotoMedium);
 				if (ImGui::MenuItem("Ruda-Regular", 0, m_FontSelection[(int)Style::Font::RudaRegular]))
 					SetEditorFont(Style::Font::RudaRegular);
-				if (ImGui::MenuItem("Ruda-Bold", 0, m_FontSelection[(int)Style::Font::RudaBold]))
-					SetEditorFont(Style::Font::RudaBold);
 				ImGui::EndMenu();
 			}
 			ImGui::EndMenu();
 		}
 
-		//if (ImGui::BeginMenu("Help"))
-		//{
-		//	// TODO
-		//	if (ImGui::MenuItem("Shortcuts"))
-		//	{
-		//	}
-
-		//	if (ImGui::MenuItem("About"))
-		//	{
-		//	}
-
-		//	ImGui::EndMenu();
-		//}
-
-		ImGui::EndMenuBar();
+		ImGui::EndMainMenuBar();
 
 		if (renamingScene)
 		{
+			ImGui::Begin("Rename Scene", &renamingScene, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings);
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(6.0f, 6.0f));
 			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.25f, 0.25f, 0.25f, 1.0f));
-			ImGui::Begin("Rename Scene", &renamingScene, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings);
+
 			char sceneName[64];
 			strncpy_s(sceneName, m_EditorScene->GetName().c_str(), sizeof(sceneName));
 			if (ImGui::InputText("##RenameInput", sceneName, sizeof(sceneName), ImGuiInputTextFlags_EnterReturnsTrue))
@@ -283,16 +268,66 @@ namespace Eos {
 				SyncWindowTitle();
 				renamingScene = false;
 			}
-			ImGui::End();
+
 			ImGui::PopStyleVar();
 			ImGui::PopStyleColor();
+			ImGui::End();
 		}
+	}
+
+	void EditorLayer::UI_Toolbar()
+	{
+		ImGui::BeginMenuBar();
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
+		ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 0.5f));
+		{
+			static const char* labelPlay = ICON_FA_PLAY "  Play";
+			static const char* labelSim = ICON_FA_PLAY_CIRCLE "  Simulate";
+
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - 100.0f);
+			if (ImGui::Button(labelPlay, ImVec2(60, 0)))
+			{
+				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate)
+				{
+					OnScenePlay();
+					labelPlay = ICON_FA_STOP "  Stop";
+					labelSim = ICON_FA_PLAY_CIRCLE "  Simulate";
+				}
+				else if (m_SceneState == SceneState::Play)
+				{
+					OnSceneStop();
+					labelPlay = ICON_FA_PLAY "  Play";
+				}
+			}
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - 20.0f);
+			if (ImGui::Button(labelSim, ImVec2(90, 0)))
+			{
+				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play)
+				{
+					OnSceneSimulate();
+					labelSim = ICON_FA_STOP_CIRCLE "  Stop";
+					labelPlay = ICON_FA_PLAY "  Play";
+				}
+				else if (m_SceneState == SceneState::Simulate)
+				{
+					OnSceneStop();
+					labelSim = ICON_FA_PLAY_CIRCLE "  Simulate";
+				}
+			}
+		}
+		ImGui::PopStyleVar();
+		ImGui::PopStyleColor(2);
+
+		ImGui::EndMenuBar();
 	}
 
 	void EditorLayer::UI_Viewport()
 	{
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
-		ImGui::Begin("Viewport");
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4.5f, 4.5f));
+		ImGui::Begin(ICON_FA_GLOBE "  Scene");
+		ImGui::PopStyleVar();
 		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
 		auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
 		auto viewportOffset = ImGui::GetWindowPos();
@@ -305,7 +340,7 @@ namespace Eos {
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 		uint64_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
-		ImGui::Image(reinterpret_cast<void*>(textureID), viewportPanelSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		ImGui::Image(reinterpret_cast<void*>(textureID), viewportPanelSize, ImVec2(0, 1), ImVec2(1, 0));
 
 		if (ImGui::BeginDragDropTarget())
 		{
@@ -337,7 +372,6 @@ namespace Eos {
 		UI_Gizmos();
 
 		ImGui::End();
-		ImGui::PopStyleVar();
 
 		// Camera preview window
 		if (m_ShowCameraPreview && m_SceneState == SceneState::Edit)
@@ -399,52 +433,9 @@ namespace Eos {
 		}
 	}
 
-	void EditorLayer::UI_Toolbar()
-	{
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
-		static ImVec4 tintColor1 = { 0.9f, 0.9f, 0.9f, 1.0f };
-		static ImVec4 tintColor2 = { 0.9f, 0.9f, 0.9f, 1.0f };
-
-		ImGui::Begin("Toolbar", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-
-		float size = ImGui::GetContentRegionAvail().y - 4.0f;
-		{
-			Ref<Texture2D> icon = (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate) ? m_IconPlay : m_IconStop;
-			ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - size);
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)icon->GetRendererID()), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0, 0, 0, 0), tintColor1))
-			{
-				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate)
-					OnScenePlay();
-				else if (m_SceneState == SceneState::Play)
-					OnSceneStop();
-			}
-			tintColor1 = ImGui::IsItemHovered() ? ImGui::IsItemActive() ? ImVec4(0.6f, 0.6f, 0.6f, 1.0f) : ImVec4(1, 1, 1, 1) : ImVec4(0.8f, 0.8f, 0.8f, 1.0f);
-		}
-		ImGui::SameLine();
-		{
-			Ref<Texture2D> icon = (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play) ? m_IconSimulate : m_IconStop;
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)icon->GetRendererID()), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), tintColor2))
-			{
-				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play)
-					OnSceneSimulate();
-				else if (m_SceneState == SceneState::Simulate)
-					OnSceneStop();
-			}
-			tintColor2 = ImGui::IsItemHovered() ? ImGui::IsItemActive() ? ImVec4(0.6f, 0.6f, 0.6f, 1.0f) : ImVec4(1, 1, 1, 1) : ImVec4(0.8f, 0.8f, 0.8f, 1.0f);
-		}
-		ImGui::PopStyleVar(2);
-		ImGui::PopStyleColor(3);
-
-		ImGui::End();
-	}
-
 	void EditorLayer::UI_Settings()
 	{
-		ImGui::Begin("Settings");
+		ImGui::Begin(ICON_FA_WRENCH "  Settings");
 		ImGui::Checkbox("2D editor camera", &EditorCamera::s_RotationLocked);
 		ImGui::Checkbox("Highlight selection", &m_ShowEntityOutline);
 		ImGui::SameLine();
@@ -457,7 +448,15 @@ namespace Eos {
 
 	void EditorLayer::UI_RendererStats()
 	{
-		ImGui::Begin("Stats");
+		ImGui::Begin(ICON_FA_INFO "  Stats");
+
+		static float lastFrameTime = 0.0f;
+		float time = (float)ImGui::GetTime();
+		float delta = time - lastFrameTime;
+		lastFrameTime = time;
+		ImGui::Text("FPS: %.0f", 1.0f / delta);
+		ImGui::Text("Uptime: %ds", (int)time);
+
 		const char* entityTag = "None";
 		if (m_HoveredEntity) entityTag = m_HoveredEntity.GetComponent<TagComponent>().Tag.c_str();
 		ImGui::Text("Hovered Entity: %s", entityTag);
@@ -467,6 +466,7 @@ namespace Eos {
 		ImGui::Text("Quads: %d", stats.QuadCount);
 		ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
 		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+
 		ImGui::End();
 	}
 
@@ -835,13 +835,34 @@ namespace Eos {
 			m_ThemeSelection[(int)theme] = true;
 			m_Settings.Theme = theme;
 		}
+
+		// General color adjustments
+		ImVec4* colors = ImGui::GetStyle().Colors;
+		ImVec4& bg = colors[ImGuiCol_WindowBg];
+		ImVec4 bg_light = ImVec4(bg.x + 0.1f, bg.y + 0.1f, bg.z + 0.1f, 0.9f);
+		ImVec4 titleBg = colors[ImGuiCol_TitleBg];
+
+		colors[ImGuiCol_PopupBg]				= bg_light;
+		colors[ImGuiCol_HeaderActive]			= bg_light;
+		colors[ImGuiCol_HeaderHovered]			= bg;
+		colors[ImGuiCol_Header]					= bg;
+		colors[ImGuiCol_TitleBgActive]			= titleBg;
+		colors[ImGuiCol_TitleBgCollapsed]		= titleBg;
+		colors[ImGuiCol_MenuBarBg]				= titleBg;
+		colors[ImGuiCol_SeparatorActive]		= titleBg;
+		colors[ImGuiCol_SeparatorHovered]		= titleBg;
+		colors[ImGuiCol_Separator]				= titleBg;
+		colors[ImGuiCol_TabHovered]				= bg;
+		colors[ImGuiCol_TabActive]				= bg;
+		colors[ImGuiCol_TabUnfocusedActive]		= bg;
+		colors[ImGuiCol_TabUnfocused]			= colors[ImGuiCol_Tab];
 	}
 
 	void EditorLayer::SetEditorFont(Style::Font font)
 	{
 		if (!m_FontSelection[(int)font])
 		{
-			Style::SetFont(font);
+			Style::SetDefaultFont(font);
 			m_FontSelection[(int)m_Settings.Font] = false;
 			m_FontSelection[(int)font] = true;
 			m_Settings.Font = font;

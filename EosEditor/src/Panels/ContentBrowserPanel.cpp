@@ -1,5 +1,7 @@
 #include "eospch.h"
-#include "ContentBrowserPanel.h"
+#include "Panels/ContentBrowserPanel.h"
+
+#include "IconsFontAwesome5.h"
 
 #include <imgui/imgui.h>
 
@@ -11,22 +13,19 @@ namespace Eos {
 	ContentBrowserPanel::ContentBrowserPanel()
 		: m_CurrentDirectory(g_AssetPath)
 	{
-		m_DirectoryIcon = Texture2D::Create("Resources/Icons/ContentBrowser/DirectoryIcon.png");
-		m_FileIcon = Texture2D::Create("Resources/Icons/ContentBrowser/FileIcon.png");
-		m_SearchIcon = Texture2D::Create("Resources/Icons/ContentBrowser/SearchIcon.png");
-
-		std::memset(m_SearchBuffer, 0, sizeof(m_SearchBuffer));
+		m_DirectoryIcon = Texture2D::Create("Resources/Icons/DirectoryIcon.png");
+		m_FileIcon = Texture2D::Create("Resources/Icons/FileIcon.png");
 	}
 
 	void ContentBrowserPanel::OnImGuiRender()
 	{
-		ImGui::Begin("Content Browser");
+		ImGui::Begin(ICON_FA_FOLDER "  Browser");
 
-		bool searching = m_SearchBuffer[0];
+		const bool& searching = (bool&)m_SearchBuffer[0];
 
 		if (m_CurrentDirectory != std::filesystem::path(g_AssetPath))
 		{
-			if (ImGui::Button("back"))
+			if (ImGui::Button(ICON_FA_ARROW_LEFT "  back"))
 			{
 				if (searching)
 					std::memset(m_SearchBuffer, 0, sizeof(m_SearchBuffer));
@@ -86,9 +85,10 @@ namespace Eos {
 		std::string filenameString = path.filename().string();
 
 		ImGui::PushID(filenameString.c_str());
-		ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Button, { 0, 0, 0, 0 });
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 		Ref<Texture2D> icon = directoryEntry.is_directory() ? m_DirectoryIcon : GetFileIcon(directoryEntry.path());
 		ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)icon->GetRendererID()), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
+		ImGui::PopStyleColor();
 
 		if (!directoryEntry.is_directory() && ImGui::BeginDragDropSource())
 		{
@@ -97,7 +97,6 @@ namespace Eos {
 			ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t));
 			ImGui::EndDragDropSource();
 		}
-		ImGui::PopStyleColor();
 
 		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 			if (directoryEntry.is_directory())
@@ -136,14 +135,7 @@ namespace Eos {
 	{
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - 124.0f);
 		ImGui::SetNextItemWidth(130.0f);
-		ImGui::InputTextWithHint("##Search", "Search...", m_SearchBuffer, sizeof(m_SearchBuffer));
-		//ImGui::SameLine(ImGui::GetWindowWidth() / 2.0f + 10.0f, 0);
-		//ImVec4& buttonColor = ImGui::GetStyle().Colors[ImGuiCol_FrameBg];
-		//ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
-		//ImGui::PushStyleColor(ImGuiCol_ButtonHovered, buttonColor);
-		//ImGui::PushStyleColor(ImGuiCol_ButtonActive, buttonColor);
-		//ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)m_SearchIcon->GetRendererID()), { 17, 17 }, { 0, 1 }, { 1, 0 }, -1, { 0, 0, 0, 0 }, { 0.6f, 0.6f, 0.6f, 1.0f });
-		//ImGui::PopStyleColor(3);
+		ImGui::InputTextWithHint("##Search", ICON_FA_SEARCH "  Search...", m_SearchBuffer, sizeof(m_SearchBuffer));
 		DrawClearSearchbarButton();
 		ImGui::Separator();
 	}

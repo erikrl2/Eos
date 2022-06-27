@@ -13,7 +13,7 @@ namespace Eos {
 
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application(const std::string& name, ApplicationCommandLineArgs args)
+	Application::Application(WindowProps properties, ApplicationCommandLineArgs args)
 		: m_CommandLineArgs(args)
 	{
 		EOS_PROFILE_FUNCTION();
@@ -21,7 +21,7 @@ namespace Eos {
 		EOS_CORE_ASSERT(!s_Instance, "Application already exists!")
 		Application::s_Instance = this;
 
-		m_Window = Window::Create(WindowProps(name));
+		m_Window = Window::Create(properties);
 		m_Window->SetEventCallback(EOS_BIND_EVENT_FN(Application::OnEvent));
 
 		Renderer::Init();
