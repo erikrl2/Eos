@@ -26,7 +26,7 @@ namespace Eos {
 
 	void SceneHierarchyPanel::OnImGuiRender()
 	{
-		ImGui::Begin("Hierarachy");
+		ImGui::Begin(ICON_FA_LIST "  Hierarachy");
 
 		if (m_Context)
 		{
@@ -40,9 +40,6 @@ namespace Eos {
 			ImGui::PopStyleColor(2);
 			ImGui::PopStyleVar();
 
-			//if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
-			//	m_SelectionContext = {};
-
 			// Right-click on blank space
 			if (ImGui::BeginPopupContextWindow(0, 1, false))
 			{
@@ -55,7 +52,7 @@ namespace Eos {
 
 		ImGui::End();
 
-		ImGui::Begin("Inspector");
+		ImGui::Begin(ICON_FA_INFO_CIRCLE "  Inspector");
 		if (m_SelectionContext)
 		{
 			DrawComponents(m_SelectionContext);
@@ -130,22 +127,30 @@ namespace Eos {
 		}
 	}
 
+	static void DrawLabelLeft(const char* label, float nextCursorPosX = 105.0f)
+	{
+		ImGui::Text(label);
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(nextCursorPosX);
+		float itemWidth = ImGui::GetContentRegionAvail().x;
+		ImGui::SetNextItemWidth(itemWidth);
+	}
+
 	static void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 70.0f)
 	{
 		ImFont* boldFont = Style::GetImGuiFont(Style::Font::OpenSansBold);
 
 		ImGui::PushID(label.c_str());
 
-		ImGui::Columns(2);
-		ImGui::SetColumnWidth(0, columnWidth);
 		ImGui::Text(label.c_str());
-		ImGui::NextColumn();
-
-		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(2, 3));
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(105.0f);
 
 		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-		ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
+		ImVec2 buttonSize = { lineHeight, lineHeight };
+		float dragFloatWidth = (ImGui::GetContentRegionAvail().x / 3.0f) - lineHeight - 3.0f;
+
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(2, 3));
 
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.82f, 0.16f, 0.12f, 1.0f));
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.92f, 0.26f, 0.22f, 1.0f));
@@ -157,8 +162,8 @@ namespace Eos {
 		ImGui::PopStyleColor(3);
 
 		ImGui::SameLine();
+		ImGui::SetNextItemWidth(dragFloatWidth);
 		ImGui::DragFloat("##X", &values.x, 0.05f, 0.0f, 0.0f, "%.2f");
-		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.60f, 0.58f, 0.18f, 1.0f));
@@ -171,8 +176,8 @@ namespace Eos {
 		ImGui::PopStyleColor(3);
 
 		ImGui::SameLine();
+		ImGui::SetNextItemWidth(dragFloatWidth);
 		ImGui::DragFloat("##Y", &values.y, 0.05f, 0.0f, 0.0f, "%.2f");
-		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.25f, 0.52f, 0.53f, 1.0f));
@@ -185,33 +190,17 @@ namespace Eos {
 		ImGui::PopStyleColor(3);
 
 		ImGui::SameLine();
+		ImGui::SetNextItemWidth(dragFloatWidth);
 		ImGui::DragFloat("##Z", &values.z, 0.05f, 0.0f, 0.0f, "%.2f");
-		ImGui::PopItemWidth();
 
 		ImGui::PopStyleVar();
 
-		ImGui::Columns(1);
-
 		ImGui::PopID();
-	}
-
-	static void DrawLabelLeft(const char* label, float nextCursorPosX = 105.0f)
-	{
-		//ImGui::Separator();
-		//ImGui::SetCursorPosX(20.0f);
-		ImGui::Text(label);
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(nextCursorPosX);
-		//float itemWidth = std::min(ImGui::GetContentRegionAvail().x - 2.0f, 355.0f - nextCursorPosX);
-		float itemWidth = ImGui::GetContentRegionAvail().x;
-		ImGui::SetNextItemWidth(itemWidth);
 	}
 
 	template<typename T, typename UIFunction>
 	static void DrawComponent(const std::string& name, Entity entity, UIFunction uiFunction)
 	{
-		static Ref<Texture2D> settingsIcon = Texture2D::Create("Resources/Icons/Hierarchy/SettingsIcon.png");
-
 		const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
 		if (entity.HasComponent<T>())
 		{
@@ -222,23 +211,18 @@ namespace Eos {
 			auto& component = entity.GetComponent<T>();
 			ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
 
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
 			float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
 			ImGui::Separator();
 			bool open = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, name.c_str());
 			ImGui::PopStyleVar();
 
-			ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
+			ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.70f);
 
-			static ImVec4 iconTintColor = { 0.6f, 0.6f, 0.6f, 1.0f };
-			ImVec4& buttonColor = ImGui::GetStyle().Colors[ImGuiCol_Header]; // TODO: change to bg color
-			ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, buttonColor);
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, buttonColor);
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)settingsIcon->GetRendererID()), { lineHeight, lineHeight }, { 0, 1 }, { 1, 0 }, 0, { 0, 0, 0, 0 }, iconTintColor))
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+			if (ImGui::Button(ICON_FA_ELLIPSIS_V, ImVec2(lineHeight, lineHeight)))
 				ImGui::OpenPopup("ComponentSettings");
-			iconTintColor = ImGui::IsItemHovered() ? ImVec4{ 1.0f, 1.0f, 1.0f, 1.0f } : ImVec4{ 0.6f, 0.6f, 0.6f, 1.0f };
-			ImGui::PopStyleColor(3);
+			ImGui::PopStyleColor();
 
 			bool removeComponent = false;
 			if (ImGui::BeginPopup("ComponentSettings"))
@@ -273,35 +257,12 @@ namespace Eos {
 			char buffer[128];
 			memset(buffer, 0, sizeof(buffer));
 			strcpy_s(buffer, tag.c_str());
-			//ImGui::SetNextItemWidth(std::min(ImGui::GetWindowWidth() - 140.0f, 210.0f));
 			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
 			{
 				tag = std::string(buffer);
 			}
 		}
-
-		/*
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 127.0f);
-		//static Ref<Texture2D> addIcon = Texture2D::Create("Resources/Icons/Hierarchy/AddIcon.png");
-		//if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)addIcon->GetRendererID()), { 17, 17 }, { 0, 1 }, { 1, 0 }, -1, { 0, 0, 0, 0 }, { 0.7f, 0.7f, 0.7f, 1.0f }))
-		if (ImGui::Button("Add Component"))
-			ImGui::OpenPopup("AddComponent");
-
-		if (ImGui::BeginPopup("AddComponent"))
-		{
-			DisplayAddComponentEntry<TransformComponent>("Transform");
-			DisplayAddComponentEntry<CameraComponent>("Camera");
-			DisplayAddComponentEntry<SpriteRendererComponent>("Sprite Renderer");
-			DisplayAddComponentEntry<CircleRendererComponent>("Circle Renderer");
-			DisplayAddComponentEntry<Rigidbody2DComponent>("Rigidbody 2D");
-			DisplayAddComponentEntry<BoxCollider2DComponent>("Box Collider 2D");
-			DisplayAddComponentEntry<CircleCollider2DComponent>("Circle Collider 2D");
-
-			ImGui::EndPopup();
-		}
-		*/
 
 		DrawComponent<TransformComponent>("Transform", entity, [](auto& component)
 			{
@@ -385,7 +346,7 @@ namespace Eos {
 				glm::vec4& color = component.Color;
 				ImGui::ColorEdit4("##Color", glm::value_ptr(color));
 
-				static Ref<Texture2D> checkerboard = Texture2D::Create("Resources/Icons/Hierarchy/Checkerboard.png");
+				static Ref<Texture2D> checkerboard = Texture2D::Create("Resources/Icons/Checkerboard.png");
 
 				uint32_t textureID = component.Texture ? component.Texture->GetRendererID() : checkerboard->GetRendererID();
 				ImVec4 tintColor = component.Texture ? ImVec4{ color.x, color.y, color.z, color.a } : ImVec4{ 1, 1, 1, 1 };
@@ -409,12 +370,11 @@ namespace Eos {
 
 				if (component.Texture)
 				{
-					if (ImGui::BeginPopupContextItem("TexRemove"))
-					{
-						if (ImGui::MenuItem("Remove"))
-							component.Texture = {};
-						ImGui::EndPopup();
-					}
+					ImGui::SameLine();
+					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+					if (ImGui::Button(ICON_FA_TRASH))
+						component.Texture = {};
+					ImGui::PopStyleColor();
 
 					ImGui::SameLine(0.0f, 30.0f);
 					ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3.0f);
@@ -521,8 +481,8 @@ namespace Eos {
 
 		ImGui::Separator();
 		ImGui::SetCursorPos(ImVec2(ImGui::GetWindowWidth() / 2.0f - 65.0f, ImGui::GetCursorPos().y + 5.0f));
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 6.0f));
-		if (ImGui::Button("Add Component", ImVec2(130.0f, 0.0f)))
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12.0f, 7.0f));
+		if (ImGui::Button(ICON_FA_PLUS "  Add Component"))
 			ImGui::OpenPopup("AddComponent");
 		ImGui::PopStyleVar();
 

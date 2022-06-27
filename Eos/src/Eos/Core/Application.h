@@ -30,7 +30,7 @@ namespace Eos {
 	class Application
 	{
 	public:
-		Application(const std::string& name = "Eos App", ApplicationCommandLineArgs args = ApplicationCommandLineArgs());
+		Application(WindowProps properties, ApplicationCommandLineArgs args = ApplicationCommandLineArgs());
 		virtual ~Application();
 
 		void OnEvent(Event& e);

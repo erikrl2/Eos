@@ -28,6 +28,8 @@ namespace Eos {
 	{
 		EOS_PROFILE_FUNCTION();
 
+		// TODO: Do on different thread?
+		Style::LoadFonts();
 		LoadEditorSettings();
 
 		m_IconPlay = Texture2D::Create("Resources/Icons/PlayButton.png");
@@ -80,7 +82,7 @@ namespace Eos {
 		Renderer2D::ResetStats();
 		m_Framebuffer->Bind();
 
-		RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		RenderCommand::Clear();
 
 		m_Framebuffer->ClearAttachment(1, -1);
@@ -169,15 +171,15 @@ namespace Eos {
 		ImGui::BeginMainMenuBar();
 		ImGui::PopStyleVar();
 
-		if (ImGui::BeginMenu("File"))
+		if (ImGui::BeginMenu(ICON_FA_FILE_ALT "  File "))
 		{
-			if (ImGui::MenuItem("New", "Ctrl+N"))
+			if (ImGui::MenuItem(ICON_FA_FILE "   New", "Ctrl+N"))
 				NewScene();
-			if (ImGui::MenuItem("Open..", "Ctrl+O"))
+			if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN "  Open..", "Ctrl+O"))
 				OpenScene();
-			if (ImGui::MenuItem("Save", "Ctrl+S"))
+			if (ImGui::MenuItem(ICON_FA_SAVE "   Save", "Ctrl+S"))
 				SaveScene();
-			if (ImGui::MenuItem("Save As..", "Ctrl+Shift+S"))
+			if (ImGui::MenuItem(ICON_FA_SAVE "   Save As..", "Ctrl+Shift+S"))
 				SaveSceneAs();
 
 			ImGui::Separator();
@@ -188,14 +190,14 @@ namespace Eos {
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Edit"))
+		if (ImGui::BeginMenu(ICON_FA_EDIT "  Edit "))
 		{
-			if (ImGui::MenuItem("Rename Scene"))
+			if (ImGui::MenuItem(ICON_FA_PEN "  Rename Scene"))
 				renamingScene = true;
 
 			ImGui::Separator();
 
-			if (ImGui::BeginMenu("Themes"))
+			if (ImGui::BeginMenu(ICON_FA_PALETTE "  Themes"))
 			{
 				using namespace Eos::Style;
 
@@ -238,18 +240,14 @@ namespace Eos {
 				ImGui::EndMenu();
 			}
 
-			if (ImGui::BeginMenu("Fonts"))
+			if (ImGui::BeginMenu(ICON_FA_FONT "   Fonts"))
 			{
 				if (ImGui::MenuItem("OpenSans-Regular", 0, m_FontSelection[(int)Style::Font::OpenSansRegular]))
 					SetEditorFont(Style::Font::OpenSansRegular);
-				if (ImGui::MenuItem("OpenSans-Bold", 0, m_FontSelection[(int)Style::Font::OpenSansBold]))
-					SetEditorFont(Style::Font::OpenSansBold);
 				if (ImGui::MenuItem("Roboto-Medium", 0, m_FontSelection[(int)Style::Font::RobotoMedium]))
 					SetEditorFont(Style::Font::RobotoMedium);
 				if (ImGui::MenuItem("Ruda-Regular", 0, m_FontSelection[(int)Style::Font::RudaRegular]))
 					SetEditorFont(Style::Font::RudaRegular);
-				if (ImGui::MenuItem("Ruda-Bold", 0, m_FontSelection[(int)Style::Font::RudaBold]))
-					SetEditorFont(Style::Font::RudaBold);
 				ImGui::EndMenu();
 			}
 			ImGui::EndMenu();
@@ -280,47 +278,47 @@ namespace Eos {
 
 	void EditorLayer::UI_Toolbar()
 	{
-		// TODO: Introduce Icon-Font
-
 		ImGui::BeginMenuBar();
 
-		static ImVec4 tintColor1 = ImVec4(1, 1, 1, 1);
-		static ImVec4 tintColor2 = ImVec4(1, 1, 1, 1);
-		float size = ImGui::GetFrameHeight();
-
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2());
-		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - size);
+		ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 0.5f));
 		{
-			Ref<Texture2D> icon = (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate) ? m_IconPlay : m_IconStop;
-			ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)icon->GetRendererID()), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0, 0, 0, 0), tintColor1);
-			if (ImGui::Button("Play"))
+			static const char* labelPlay = ICON_FA_PLAY "  Play";
+			static const char* labelSim = ICON_FA_PLAY_CIRCLE "  Simulate";
+
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - 100.0f);
+			if (ImGui::Button(labelPlay, ImVec2(60, 0)))
 			{
 				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate)
+				{
 					OnScenePlay();
+					labelPlay = ICON_FA_STOP "  Stop";
+					labelSim = ICON_FA_PLAY_CIRCLE "  Simulate";
+				}
 				else if (m_SceneState == SceneState::Play)
+				{
 					OnSceneStop();
+					labelPlay = ICON_FA_PLAY "  Play";
+				}
 			}
-			tintColor1 = ImGui::IsItemActive() ? ImVec4(0.6f, 0.6f, 0.6f, 1.0f) : ImVec4(1, 1, 1, 1);
-		}
-		ImGui::SameLine(0, 25);
-		{
-			Ref<Texture2D> icon = (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play) ? m_IconSimulate : m_IconStop;
-			ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)icon->GetRendererID()), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), tintColor2);
-			if (ImGui::Button("Simulate"))
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - 20.0f);
+			if (ImGui::Button(labelSim, ImVec2(90, 0)))
 			{
 				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play)
+				{
 					OnSceneSimulate();
+					labelSim = ICON_FA_STOP_CIRCLE "  Stop";
+					labelPlay = ICON_FA_PLAY "  Play";
+				}
 				else if (m_SceneState == SceneState::Simulate)
+				{
 					OnSceneStop();
+					labelSim = ICON_FA_PLAY_CIRCLE "  Simulate";
+				}
 			}
-			tintColor2 = ImGui::IsItemActive() ? ImVec4(0.6f, 0.6f, 0.6f, 1.0f) : ImVec4(1, 1, 1, 1);
 		}
-		ImGui::PopStyleVar(2);
-		ImGui::PopStyleColor(3);
+		ImGui::PopStyleVar();
+		ImGui::PopStyleColor();
 
 		ImGui::EndMenuBar();
 	}
@@ -328,7 +326,7 @@ namespace Eos {
 	void EditorLayer::UI_Viewport()
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4.5f, 4.5f));
-		ImGui::Begin("Scene");
+		ImGui::Begin(ICON_FA_GLOBE "  Scene");
 		ImGui::PopStyleVar();
 		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
 		auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
@@ -437,7 +435,7 @@ namespace Eos {
 
 	void EditorLayer::UI_Settings()
 	{
-		ImGui::Begin("Settings");
+		ImGui::Begin(ICON_FA_WRENCH "  Settings");
 		ImGui::Checkbox("2D editor camera", &EditorCamera::s_RotationLocked);
 		ImGui::Checkbox("Highlight selection", &m_ShowEntityOutline);
 		ImGui::SameLine();
@@ -450,10 +448,10 @@ namespace Eos {
 
 	void EditorLayer::UI_RendererStats()
 	{
-		ImGui::Begin("Stats");
+		ImGui::Begin(ICON_FA_INFO "  Stats");
 
 		static float lastFrameTime = 0.0f;
-		float time = ImGui::GetTime();
+		float time = (float)ImGui::GetTime();
 		float delta = time - lastFrameTime;
 		lastFrameTime = time;
 		ImGui::Text("FPS: %.0f", 1.0f / delta);

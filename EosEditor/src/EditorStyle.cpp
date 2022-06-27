@@ -8,7 +8,7 @@ namespace Eos {
 		ImGuiStyle& style = ImGui::GetStyle();
 
 		style.WindowPadding								= ImVec2(7.0f, 7.0f);
-		style.WindowMinSize								= ImVec2(300.0f, 200.0f);
+		style.WindowMinSize								= ImVec2(200.0f, 40.0f);
 		style.WindowTitleAlign							= ImVec2(0.5f, 0.5f);
 		style.FramePadding								= ImVec2(4.0f, 4.0f);
 		style.ItemSpacing								= ImVec2(8.0f, 4.0f);
@@ -16,7 +16,7 @@ namespace Eos {
 		style.CellPadding								= ImVec2(4.0f, 2.0f);
 		style.ButtonTextAlign							= ImVec2(0.5f, 0.5f);
 		style.SelectableTextAlign						= ImVec2(0.0f, 0.0f);
-		style.WindowMenuButtonPosition					= ImGuiDir_Right;
+		style.WindowMenuButtonPosition					= ImGuiDir_None;
 		style.ColorButtonPosition						= ImGuiDir_Right;
 		style.Alpha										= 1.0f;
 		style.DisabledAlpha								= 0.60f;
@@ -974,6 +974,26 @@ namespace Eos {
 		void SetDefaultFont(Font font)
 		{
 			ImGui::GetIO().FontDefault = GetImGuiFont(font);
+		}
+
+		static void LoadFontWithIcons(const char* filepath, float fontsize)
+		{
+			ImGuiIO& io = ImGui::GetIO();
+			io.Fonts->AddFontFromFileTTF(filepath, fontsize);
+
+			// merge in icons from Font Awesome
+			static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
+			ImFontConfig icons_config; icons_config.MergeMode = true; icons_config.PixelSnapH = true;
+			io.Fonts->AddFontFromFileTTF("assets/fonts/fontawesome/" FONT_ICON_FILE_NAME_FAS, 13.0f, &icons_config, icons_ranges);
+		}
+
+		void LoadFonts()
+		{
+			LoadFontWithIcons("assets/fonts/opensans/OpenSans-Regular.ttf", 17.0f);
+			ImGui::GetIO().Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Bold.ttf", 17.0f);
+
+			LoadFontWithIcons("assets/fonts/Roboto/Roboto-Medium.ttf", 16.0f);
+			LoadFontWithIcons("assets/fonts/Ruda/Ruda-Regular.ttf", 16.0f);
 		}
 
 	}
