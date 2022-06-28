@@ -15,7 +15,7 @@ namespace Eos::Style {
 
 	enum class Font : int
 	{
-		ImGuiDefault, OpenSansRegular, OpenSansBold, RobotoMedium, RudaRegular
+		OpenSansRegular = 1, OpenSansBold, RobotoMedium, RudaRegular
 	};
 
 	void SetTheme(Theme theme);

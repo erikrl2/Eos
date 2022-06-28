@@ -12,8 +12,8 @@ namespace Eos {
 
 	struct EditorSettings
 	{
-		Style::Theme Theme = {};
-		Style::Font Font = {};
+		Style::Theme Theme = Style::Theme::Dark1;
+		Style::Font Font = Style::Font::RobotoMedium;
 	};
 
 	class EditorLayer : public Layer
