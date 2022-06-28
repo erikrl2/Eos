@@ -9,7 +9,7 @@ namespace Eos {
 	{
 	public:
 		EosEditor(ApplicationCommandLineArgs args)
-			: Application({ "EosEditor", 1280, 720 }, args)
+			: Application({ "EosEditor", 1280, 720, true }, args)
 		{
 			PushLayer(new EditorLayer());
 		}

@@ -72,7 +72,8 @@ namespace Eos {
 			m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, props.Title.c_str(), nullptr, nullptr);
 			++s_GLFWWindowCount;
 
-			glfwMaximizeWindow(m_Window);
+			if (props.Maximized)
+				glfwMaximizeWindow(m_Window);
 		}
 
 		m_Context = GraphicsContext::Create(m_Window);
