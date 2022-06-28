@@ -3,7 +3,62 @@
 
 namespace Eos {
 
-	static void SetEosDark1()
+
+		void Style::SetTheme(Theme theme)
+		{
+			static ImGuiStyle imguiStyle = ImGui::GetStyle(); // Backup of original style
+
+			switch (theme)
+			{
+				case Theme::Dark1:			SetEosDark1(); break;
+				case Theme::Dark2:			SetEosDark2(); break;
+				case Theme::Dark3:			SetEosDark3(); break;
+				case Theme::Dark4:			SetEosDark4(); break;
+				case Theme::Dark5:			SetEosDark5(); break;
+				case Theme::Dark6:			SetEosDark6(); break;
+				case Theme::Dark7:			SetEosDark7(); break;
+				case Theme::Photoshop:		SetPhotoshop(); break;
+				case Theme::SonicRiders:	SetSonicRiders(); break;
+				case Theme::Unreal:			SetUnreal(); break;
+				case Theme::VisualStudio:	SetVisualStudio(); break;
+				case Theme::DarkRuda:		SetDarkRuda(); break;
+				case Theme::ImGuiClassic:	ImGui::GetStyle() = imguiStyle; ImGui::StyleColorsClassic(); break;
+				case Theme::ImGuiDark:		ImGui::GetStyle() = imguiStyle; ImGui::StyleColorsDark(); break;
+				case Theme::ImGuiLight:		ImGui::GetStyle() = imguiStyle; ImGui::StyleColorsLight(); break;
+			}
+		}
+
+		ImFont* Style::GetImGuiFont(Font font)
+		{
+			return ImGui::GetIO().Fonts->Fonts[(int)font];
+		}
+
+		void Style::SetDefaultFont(Font font)
+		{
+			ImGui::GetIO().FontDefault = GetImGuiFont(font);
+		}
+
+		void Style::LoadFonts()
+		{
+			LoadFontWithIcons("assets/fonts/opensans/OpenSans-Regular.ttf", 17.0f);
+			ImGui::GetIO().Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Bold.ttf", 17.0f);
+
+			LoadFontWithIcons("assets/fonts/Roboto/Roboto-Medium.ttf", 16.0f);
+			LoadFontWithIcons("assets/fonts/Ruda/Ruda-Regular.ttf", 16.0f);
+		}
+
+		void Style::LoadFontWithIcons(const char* filepath, float fontsize)
+		{
+			ImGuiIO& io = ImGui::GetIO();
+			io.Fonts->AddFontFromFileTTF(filepath, fontsize);
+
+			// merge in icons from Font Awesome
+			static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
+			ImFontConfig icons_config; icons_config.MergeMode = true; icons_config.PixelSnapH = true;
+			io.Fonts->AddFontFromFileTTF("assets/fonts/fontawesome/" FONT_ICON_FILE_NAME_FAS, 13.0f, &icons_config, icons_ranges);
+		}
+
+	void Style::SetEosDark1()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -81,7 +136,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.00f, 0.00f, 0.00f, 0.58f);
 	}
 
-	static void SetEosDark2()
+	void Style::SetEosDark2()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -159,7 +214,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(1.00f, 0.00f, 0.00f, 0.35f);
 	}
 
-	static void SetEosDark3()
+	void Style::SetEosDark3()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -237,7 +292,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 	}
 
-	static void SetEosDark4()
+	void Style::SetEosDark4()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -315,7 +370,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 	}
 
-	static void SetEosDark5()
+	void Style::SetEosDark5()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -393,7 +448,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 	}
 
-	static void SetEosDark6()
+	void Style::SetEosDark6()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -471,7 +526,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 	}
 
-	static void SetEosDark7()
+	void Style::SetEosDark7()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -549,7 +604,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 	}
 
-	static void SetPhotoshop()
+	void Style::SetPhotoshop()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -627,7 +682,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.00f, 0.00f, 0.00f, 0.58f);
 	}
 
-	static void SetSonicRiders()
+	void Style::SetSonicRiders()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -705,7 +760,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.800f, 0.800f, 0.800f, 0.35f);
 	}
 
-	static void SetUnreal()
+	void Style::SetUnreal()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -783,7 +838,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.800f, 0.800f, 0.800f, 0.35f);
 	}
 
-	static void SetVisualStudio()
+	void Style::SetVisualStudio()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -861,7 +916,7 @@ namespace Eos {
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.145f, 0.145f, 0.149f, 1.00f);
 	}
 
-	static void SetDarkRuda()
+	void Style::SetDarkRuda()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -938,64 +993,4 @@ namespace Eos {
 		style.Colors[ImGuiCol_NavWindowingDimBg]		= ImVec4(0.800f, 0.800f, 0.800f, 0.20f);
 		style.Colors[ImGuiCol_ModalWindowDimBg]			= ImVec4(0.800f, 0.800f, 0.800f, 0.35f);
 	}
-
-
-	namespace Style {
-
-		void SetTheme(Theme theme)
-		{
-			static ImGuiStyle imguiStyle = ImGui::GetStyle(); // Backup of original style
-
-			switch (theme)
-			{
-				case Theme::Dark1:			SetEosDark1(); break;
-				case Theme::Dark2:			SetEosDark2(); break;
-				case Theme::Dark3:			SetEosDark3(); break;
-				case Theme::Dark4:			SetEosDark4(); break;
-				case Theme::Dark5:			SetEosDark5(); break;
-				case Theme::Dark6:			SetEosDark6(); break;
-				case Theme::Dark7:			SetEosDark7(); break;
-				case Theme::Photoshop:		SetPhotoshop(); break;
-				case Theme::SonicRiders:	SetSonicRiders(); break;
-				case Theme::Unreal:			SetUnreal(); break;
-				case Theme::VisualStudio:	SetVisualStudio(); break;
-				case Theme::DarkRuda:		SetDarkRuda(); break;
-				case Theme::ImGuiClassic:	ImGui::GetStyle() = imguiStyle; ImGui::StyleColorsClassic(); break;
-				case Theme::ImGuiDark:		ImGui::GetStyle() = imguiStyle; ImGui::StyleColorsDark(); break;
-				case Theme::ImGuiLight:		ImGui::GetStyle() = imguiStyle; ImGui::StyleColorsLight(); break;
-			}
-		}
-
-		ImFont* GetImGuiFont(Font font)
-		{
-			return ImGui::GetIO().Fonts->Fonts[(int)font];
-		}
-
-		void SetDefaultFont(Font font)
-		{
-			ImGui::GetIO().FontDefault = GetImGuiFont(font);
-		}
-
-		static void LoadFontWithIcons(const char* filepath, float fontsize)
-		{
-			ImGuiIO& io = ImGui::GetIO();
-			io.Fonts->AddFontFromFileTTF(filepath, fontsize);
-
-			// merge in icons from Font Awesome
-			static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
-			ImFontConfig icons_config; icons_config.MergeMode = true; icons_config.PixelSnapH = true;
-			io.Fonts->AddFontFromFileTTF("assets/fonts/fontawesome/" FONT_ICON_FILE_NAME_FAS, 13.0f, &icons_config, icons_ranges);
-		}
-
-		void LoadFonts()
-		{
-			LoadFontWithIcons("assets/fonts/opensans/OpenSans-Regular.ttf", 17.0f);
-			ImGui::GetIO().Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Bold.ttf", 17.0f);
-
-			LoadFontWithIcons("assets/fonts/Roboto/Roboto-Medium.ttf", 16.0f);
-			LoadFontWithIcons("assets/fonts/Ruda/Ruda-Regular.ttf", 16.0f);
-		}
-
-	}
-
 }
