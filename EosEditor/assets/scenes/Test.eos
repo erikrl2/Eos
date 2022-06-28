@@ -18,13 +18,13 @@ Entities:
         OrthographicFar: 1
       Primary: true
       FixedAspectRatio: false
-  - Entity: 13212592765570762552
+  - Entity: 18436033612340246646
     TagComponent:
-      Tag: Entity 1
+      Tag: Bottom
     TransformComponent:
-      Translation: [0, -1.20000005, 0]
+      Translation: [0, -3.14717865, 0]
       Rotation: [0, 0, 0]
-      Scale: [6.5, 0.5, 1]
+      Scale: [4, 0.5, 1]
     SpriteRendererComponent:
       Color: [0.4911246, 0.786290288, 0.291688323, 1]
     Rigidbody2DComponent:
@@ -40,9 +40,9 @@ Entities:
       RestitutionThreshold: 100
   - Entity: 11619259828702573690
     TagComponent:
-      Tag: Entity 2
+      Tag: Player
     TransformComponent:
-      Translation: [0, 1.39999998, 0]
+      Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     CircleRendererComponent:
@@ -57,5 +57,5 @@ Entities:
       Radius: 0.5
       Density: 1
       Friction: 0.5
-      Restitution: 0.980000019
-      RestitutionThreshold: 1
+      Restitution: 0.850000024
+      RestitutionThreshold: 1.39999998

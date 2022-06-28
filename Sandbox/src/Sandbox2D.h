@@ -17,6 +17,4 @@ public:
 	bool Sandbox2D::OnWindowResize(Eos::WindowResizeEvent& e);
 private:
 	Eos::Ref<Eos::Scene> m_Scene;
-
-	Eos::Entity m_Player;
 };

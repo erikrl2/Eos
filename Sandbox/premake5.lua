@@ -15,11 +15,13 @@ project "Sandbox"
 
 	includedirs
 	{
-		"%{wks.location}/Eos/vendor/spdlog/include",
+		"src",
 		"%{wks.location}/Eos/src",
 		"%{wks.location}/Eos/vendor",
+		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.Box2D}"
 	}
 
 	links
