@@ -73,6 +73,8 @@ namespace Eos {
 
 			stbi_image_free(data);
 		}
+		else
+			EOS_CORE_ERROR("Could not load texture {0}", path);
 	}
 
 	OpenGLTexture2D::~OpenGLTexture2D()

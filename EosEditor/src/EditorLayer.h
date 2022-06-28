@@ -101,9 +101,6 @@ namespace Eos {
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 		ContentBrowserPanel m_ContentBrowserPanel;
 
-		// Editor resources
-		Ref<Texture2D> m_IconPlay, m_IconSimulate, m_IconStop;
-
 		EditorSettings m_Settings;
 		bool m_ThemeSelection[16] = {};
 		bool m_FontSelection[16] = {};
