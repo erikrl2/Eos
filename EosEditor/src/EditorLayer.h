@@ -70,7 +70,7 @@ namespace Eos {
 	private:
 		EditorCamera m_EditorCamera;
 
-		Ref<Framebuffer> m_Framebuffer;
+		Ref<Framebuffer> m_MainFramebuffer;
 		Ref<Framebuffer> m_CameraPreviewFramebuffer;
 
 		Ref<Scene> m_ActiveScene;
@@ -101,9 +101,13 @@ namespace Eos {
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 		ContentBrowserPanel m_ContentBrowserPanel;
 
+		// Settings
 		EditorSettings m_Settings;
 		bool m_ThemeSelection[16] = {};
 		bool m_FontSelection[16] = {};
+
+		const char* m_ImGuiConfigFilepath = "config/eos.ini";
+		const char* m_UserConfigFilepath = "config/user.ini";
 	};
 
 }

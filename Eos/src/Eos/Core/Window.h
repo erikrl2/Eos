@@ -12,10 +12,9 @@ namespace Eos {
 		std::string Title;
 		uint32_t Width;
 		uint32_t Height;
-		bool Maximized;
 
 		WindowProps(const std::string& title = "Eos Engine", uint32_t width = 1280, uint32_t height = 720, bool maximized = false)
-			: Title(title), Width(width), Height(height), Maximized(maximized)
+			: Title(title), Width(width), Height(height)
 		{
 		}
 	};
@@ -38,6 +37,7 @@ namespace Eos {
 		virtual void SetVSync(bool enabled) = 0;
 		virtual bool IsVSync() const = 0;
 
+		virtual void MaximizeWindow() = 0;
 		virtual void SetTitle(const std::string& title) = 0;
 
 		virtual void* GetNativeWindow() const = 0;

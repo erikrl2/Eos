@@ -30,24 +30,22 @@ namespace Eos {
 
 		Style::LoadFonts();
 		LoadEditorSettings();
+		ImGui::GetIO().IniFilename = m_ImGuiConfigFilepath;
 
-		FramebufferSpecification fbSpec;
-		fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
-		fbSpec.Width = 1280;
-		fbSpec.Height = 720;
-		m_Framebuffer = Framebuffer::Create(fbSpec);
-
-		m_CameraPreviewFramebuffer = Framebuffer::Create({ 1280, 720, {FramebufferTextureFormat::RGBA8,  FramebufferTextureFormat::Depth} });
-
-		Application::Get().GetImGuiLayer()->BlockEvents(false);
+		Application& app = Application::Get();
+		app.GetWindow().MaximizeWindow();
+		app.GetImGuiLayer()->BlockEvents(false);
 
 		bool sceneLoaded = false;
-		auto commandLineArgs = Application::Get().GetCommandLineArgs();
+		auto commandLineArgs = app.GetCommandLineArgs();
 		if (commandLineArgs.Count > 1)
 			sceneLoaded = OpenScene(commandLineArgs[1]);
 
 		if (!sceneLoaded)
 			NewScene();
+
+		m_MainFramebuffer =	Framebuffer::Create({ 1280, 720, {FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth} });
+		m_CameraPreviewFramebuffer = Framebuffer::Create({ 1280, 720, {FramebufferTextureFormat::RGBA8,  FramebufferTextureFormat::Depth} });
 
 		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 	}
@@ -64,23 +62,23 @@ namespace Eos {
 		EOS_PROFILE_FUNCTION();
 
 		// Resize
-		if (Eos::FramebufferSpecification spec = m_Framebuffer->GetSpecification();
+		if (Eos::FramebufferSpecification spec = m_MainFramebuffer->GetSpecification();
 			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&
 			(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
 		{
-			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_MainFramebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
 
 		// Render
 		Renderer2D::ResetStats();
-		m_Framebuffer->Bind();
+		m_MainFramebuffer->Bind();
 
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		RenderCommand::Clear();
 
-		m_Framebuffer->ClearAttachment(1, -1);
+		m_MainFramebuffer->ClearAttachment(1, -1);
 
 		switch (m_SceneState)
 		{
@@ -113,14 +111,14 @@ namespace Eos {
 		int mouseY = (int)my;
 		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)m_ViewportSize.x && mouseY < (int)m_ViewportSize.y)
 		{
-			int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
+			int pixelData = m_MainFramebuffer->ReadPixel(1, mouseX, mouseY);
 			m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, *m_ActiveScene);
 		}
 		else m_HoveredEntity = Entity();
 
 		OnOverlayRender();
 
-		m_Framebuffer->Unbind();
+		m_MainFramebuffer->Unbind();
 	}
 
 	void EditorLayer::OnImGuiRender()
@@ -194,42 +192,40 @@ namespace Eos {
 
 			if (ImGui::BeginMenu(ICON_FA_PALETTE "  Themes"))
 			{
-				using namespace Eos::Style;
+				if (ImGui::MenuItem("Eos Dark 1", 0, m_ThemeSelection[(int)Style::Theme::Dark1]))
+					SetEditorTheme(Style::Theme::Dark1);
+				if (ImGui::MenuItem("Eos Dark 2", 0, m_ThemeSelection[(int)Style::Theme::Dark2]))
+					SetEditorTheme(Style::Theme::Dark2);
+				if (ImGui::MenuItem("Eos Dark 3", 0, m_ThemeSelection[(int)Style::Theme::Dark3]))
+					SetEditorTheme(Style::Theme::Dark3);
+				if (ImGui::MenuItem("Eos Dark 4", 0, m_ThemeSelection[(int)Style::Theme::Dark4]))
+					SetEditorTheme(Style::Theme::Dark4);
+				if (ImGui::MenuItem("Eos Dark 5", 0, m_ThemeSelection[(int)Style::Theme::Dark5]))
+					SetEditorTheme(Style::Theme::Dark5);
+				if (ImGui::MenuItem("Eos Dark 6", 0, m_ThemeSelection[(int)Style::Theme::Dark6]))
+					SetEditorTheme(Style::Theme::Dark6);
+				if (ImGui::MenuItem("Eos Dark 7", 0, m_ThemeSelection[(int)Style::Theme::Dark7]))
+					SetEditorTheme(Style::Theme::Dark7);
 
-				if (ImGui::MenuItem("Eos Dark 1", 0, m_ThemeSelection[(int)Theme::Dark1]))
-					SetEditorTheme(Theme::Dark1);
-				if (ImGui::MenuItem("Eos Dark 2", 0, m_ThemeSelection[(int)Theme::Dark2]))
-					SetEditorTheme(Theme::Dark2);
-				if (ImGui::MenuItem("Eos Dark 3", 0, m_ThemeSelection[(int)Theme::Dark3]))
-					SetEditorTheme(Theme::Dark3);
-				if (ImGui::MenuItem("Eos Dark 4", 0, m_ThemeSelection[(int)Theme::Dark4]))
-					SetEditorTheme(Theme::Dark4);
-				if (ImGui::MenuItem("Eos Dark 5", 0, m_ThemeSelection[(int)Theme::Dark5]))
-					SetEditorTheme(Theme::Dark5);
-				if (ImGui::MenuItem("Eos Dark 6", 0, m_ThemeSelection[(int)Theme::Dark6]))
-					SetEditorTheme(Theme::Dark6);
-				if (ImGui::MenuItem("Eos Dark 7", 0, m_ThemeSelection[(int)Theme::Dark7]))
-					SetEditorTheme(Theme::Dark7);
-
-				if (ImGui::MenuItem("Unreal", 0, m_ThemeSelection[(int)Theme::Unreal]))
-					SetEditorTheme(Theme::Unreal);
-				if (ImGui::MenuItem("Visual Studio", 0, m_ThemeSelection[(int)Theme::VisualStudio]))
-					SetEditorTheme(Theme::VisualStudio);
-				if (ImGui::MenuItem("Photoshop", 0, m_ThemeSelection[(int)Theme::Photoshop]))
-					SetEditorTheme(Theme::Photoshop);
-				if (ImGui::MenuItem("Sonic Riders", 0, m_ThemeSelection[(int)Theme::SonicRiders]))
-					SetEditorTheme(Theme::SonicRiders);
-				if (ImGui::MenuItem("Dark Ruda", 0, m_ThemeSelection[(int)Theme::DarkRuda]))
-					SetEditorTheme(Theme::DarkRuda);
+				if (ImGui::MenuItem("Unreal", 0, m_ThemeSelection[(int)Style::Theme::Unreal]))
+					SetEditorTheme(Style::Theme::Unreal);
+				if (ImGui::MenuItem("Visual Studio", 0, m_ThemeSelection[(int)Style::Theme::VisualStudio]))
+					SetEditorTheme(Style::Theme::VisualStudio);
+				if (ImGui::MenuItem("Photoshop", 0, m_ThemeSelection[(int)Style::Theme::Photoshop]))
+					SetEditorTheme(Style::Theme::Photoshop);
+				if (ImGui::MenuItem("Sonic Riders", 0, m_ThemeSelection[(int)Style::Theme::SonicRiders]))
+					SetEditorTheme(Style::Theme::SonicRiders);
+				if (ImGui::MenuItem("Dark Ruda", 0, m_ThemeSelection[(int)Style::Theme::DarkRuda]))
+					SetEditorTheme(Style::Theme::DarkRuda);
 
 				if (ImGui::BeginMenu("Dear ImGui"))
 				{
-					if (ImGui::MenuItem("Classic", 0, m_ThemeSelection[(int)Theme::ImGuiClassic]))
-						SetEditorTheme(Theme::ImGuiClassic);
-					if (ImGui::MenuItem("Dark", 0, m_ThemeSelection[(int)Theme::ImGuiDark]))
-						SetEditorTheme(Theme::ImGuiDark);
-					if (ImGui::MenuItem("Light", 0, m_ThemeSelection[(int)Theme::ImGuiLight]))
-						SetEditorTheme(Theme::ImGuiLight);
+					if (ImGui::MenuItem("Classic", 0, m_ThemeSelection[(int)Style::Theme::ImGuiClassic]))
+						SetEditorTheme(Style::Theme::ImGuiClassic);
+					if (ImGui::MenuItem("Dark", 0, m_ThemeSelection[(int)Style::Theme::ImGuiDark]))
+						SetEditorTheme(Style::Theme::ImGuiDark);
+					if (ImGui::MenuItem("Light", 0, m_ThemeSelection[(int)Style::Theme::ImGuiLight]))
+						SetEditorTheme(Style::Theme::ImGuiLight);
 					ImGui::EndMenu();
 				}
 				ImGui::EndMenu();
@@ -335,7 +331,7 @@ namespace Eos {
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
-		uint64_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
+		uint64_t textureID = m_MainFramebuffer->GetColorAttachmentRendererID();
 		ImGui::Image(reinterpret_cast<void*>(textureID), viewportPanelSize, ImVec2(0, 1), ImVec2(1, 0));
 
 		if (ImGui::BeginDragDropTarget())
@@ -867,18 +863,16 @@ namespace Eos {
 
 	void EditorLayer::SaveEditorSettings()
 	{
-		std::filesystem::path filepath = "EosEditor.ini";
 		EditorSerializer serializer(&m_Settings);
-		serializer.Serialize(filepath);
+		serializer.Serialize(m_UserConfigFilepath);
 	}
 
 	void EditorLayer::LoadEditorSettings()
 	{
-		std::filesystem::path filepath = "EosEditor.ini";
-		if (std::filesystem::exists(filepath))
+		if (std::filesystem::exists(m_UserConfigFilepath))
 		{
 			EditorSerializer serializer(&m_Settings);
-			serializer.Deserialize(filepath);
+			serializer.Deserialize(m_UserConfigFilepath);
 		}
 		SetEditorTheme(m_Settings.Theme);
 		SetEditorFont(m_Settings.Font);

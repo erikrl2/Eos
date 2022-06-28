@@ -55,15 +55,15 @@ namespace Eos {
 		{
 			EOS_PROFILE_SCOPE("glfwCreateWindow");
 
-			GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-			float xscale, yscale;
-			glfwGetMonitorContentScale(monitor, &xscale, &yscale);
+			//GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+			//float xscale, yscale;
+			//glfwGetMonitorContentScale(monitor, &xscale, &yscale);
 
-			if (xscale > 1.0f || yscale > 1.0f)
-			{
-				s_HighDPIScaleFactor = yscale;
-				glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
-			}
+			//if (xscale > 1.0f || yscale > 1.0f)
+			//{
+			//	s_HighDPIScaleFactor = yscale;
+			//	glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
+			//}
 
 		#if defined(EOS_DEBUG)
 			if (Renderer::GetAPI() == RendererAPI::API::OpenGL)
@@ -71,9 +71,6 @@ namespace Eos {
 		#endif
 			m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, props.Title.c_str(), nullptr, nullptr);
 			++s_GLFWWindowCount;
-
-			if (props.Maximized)
-				glfwMaximizeWindow(m_Window);
 		}
 
 		m_Context = GraphicsContext::Create(m_Window);
@@ -207,6 +204,11 @@ namespace Eos {
 	bool WindowsWindow::IsVSync() const
 	{
 		return m_Data.VSync;
+	}
+
+	void WindowsWindow::MaximizeWindow()
+	{
+		glfwMaximizeWindow(m_Window);
 	}
 
 	void WindowsWindow::SetTitle(const std::string& title)
