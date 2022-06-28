@@ -100,7 +100,7 @@ namespace Eos {
 		template<typename T, typename... Args>
 		NativeScriptComponent& Bind(Args... args)
 		{
-			InstantiateScripts.try_emplace(entt::type_id<T>().seq(), [args...](Entity entity)->std::shared_ptr<NativeScript> { return std::make_shared<T>(entity, args...); });
+			InstantiateScripts.try_emplace(entt::type_id<T>().hash(), [args...](Entity entity)->std::shared_ptr<NativeScript> { return std::make_shared<T>(entity, args...); });
 			return *this;
 		}
 

@@ -57,5 +57,5 @@ Entities:
       Radius: 0.5
       Density: 1
       Friction: 0.5
-      Restitution: 0.959999979
-      RestitutionThreshold: 5.61999989
+      Restitution: 0.980000019
+      RestitutionThreshold: 1

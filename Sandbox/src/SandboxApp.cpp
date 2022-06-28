@@ -7,7 +7,7 @@ class Sandbox : public Eos::Application
 {
 public:
 	Sandbox(Eos::ApplicationCommandLineArgs args)
-		: Application({ "Sandbox" }, args)
+		: Application({ "Sandbox", 1280, 720 }, args)
 	{
 		PushLayer(new Sandbox2D());
 	}
