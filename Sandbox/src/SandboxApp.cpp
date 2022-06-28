@@ -6,7 +6,8 @@
 class Sandbox : public Eos::Application
 {
 public:
-	Sandbox()
+	Sandbox(Eos::ApplicationCommandLineArgs args)
+		: Application({ "Sandbox" }, args)
 	{
 		PushLayer(new Sandbox2D());
 	}
@@ -15,7 +16,7 @@ public:
 	}
 };
 
-Eos::Application* Eos::CreateApplication(ApplicationCommandLineArgs args)
+Eos::Application* Eos::CreateApplication(Eos::ApplicationCommandLineArgs args)
 {
-	return new Sandbox();
+	return new Sandbox(args);
 }
