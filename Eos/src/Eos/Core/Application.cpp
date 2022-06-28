@@ -82,7 +82,7 @@ namespace Eos {
 		{ 
 			EOS_PROFILE_SCOPE("RunLoop");
 
-			float time = Time::GetTime(); // Platform::GetTime()
+			float time = Time::GetTime();
 			Timestep timestep = time - m_LastFrameTime;
 			m_LastFrameTime = time;
 

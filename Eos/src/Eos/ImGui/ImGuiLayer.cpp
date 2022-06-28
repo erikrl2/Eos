@@ -29,6 +29,8 @@ namespace Eos {
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable | ImGuiConfigFlags_NavNoCaptureKeyboard;
 
+		io.IniFilename = NULL; // Do not save settings by default
+
 		io.Fonts->AddFontDefault();
 
 		ImGui::StyleColorsDark();

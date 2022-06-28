@@ -46,15 +46,15 @@ inline OStream& operator<<(OStream& os, glm::qua<T, Q> quaternion)
 }
 
 // Core log macros
-#define EOS_CORE_TRACE(...) ::Eos::Log::GetCoreLogger()->trace(__VA_ARGS__)
-#define EOS_CORE_INFO(...)  ::Eos::Log::GetCoreLogger()->info(__VA_ARGS__)
-#define EOS_CORE_WARN(...)  ::Eos::Log::GetCoreLogger()->warn(__VA_ARGS__)
-#define EOS_CORE_ERROR(...) ::Eos::Log::GetCoreLogger()->error(__VA_ARGS__)
-#define EOS_CORE_CRITICAL(...) ::Eos::Log::GetCoreLogger()->critical(__VA_ARGS__)
+#define EOS_CORE_TRACE(...)		::Eos::Log::GetCoreLogger()->trace(__VA_ARGS__)
+#define EOS_CORE_INFO(...)		::Eos::Log::GetCoreLogger()->info(__VA_ARGS__)
+#define EOS_CORE_WARN(...)		::Eos::Log::GetCoreLogger()->warn(__VA_ARGS__)
+#define EOS_CORE_ERROR(...)		::Eos::Log::GetCoreLogger()->error(__VA_ARGS__)
+#define EOS_CORE_CRITICAL(...)	::Eos::Log::GetCoreLogger()->critical(__VA_ARGS__)
 
 // Client log macros
-#define EOS_TRACE(...)      ::Eos::Log::GetClientLogger()->trace(__VA_ARGS__)
-#define EOS_INFO(...)       ::Eos::Log::GetClientLogger()->info(__VA_ARGS__)
-#define EOS_WARN(...)       ::Eos::Log::GetClientLogger()->warn(__VA_ARGS__)
-#define EOS_ERROR(...)      ::Eos::Log::GetClientLogger()->error(__VA_ARGS__)
-#define EOS_CRITICAL(...)      ::Eos::Log::GetClientLogger()->critical(__VA_ARGS__)
+#define EOS_TRACE(...)			::Eos::Log::GetClientLogger()->trace(__VA_ARGS__)
+#define EOS_INFO(...)			::Eos::Log::GetClientLogger()->info(__VA_ARGS__)
+#define EOS_WARN(...)			::Eos::Log::GetClientLogger()->warn(__VA_ARGS__)
+#define EOS_ERROR(...)			::Eos::Log::GetClientLogger()->error(__VA_ARGS__)
+#define EOS_CRITICAL(...)		::Eos::Log::GetClientLogger()->critical(__VA_ARGS__)
