@@ -18,10 +18,16 @@ class PlayerScript;
 
 void Sandbox2D::OnAttach()
 {
+	std::string_view scenePath = "assets/scenes/Test.eos";
+	if (!std::filesystem::exists(scenePath))
+	{
+		EOS_ERROR("Scene file {0} not found!", scenePath);
+		Eos::Application::Get().Close();
+	}
+
 	m_Scene = Eos::CreateRef<Eos::Scene>();
 	Eos::SceneSerializer serializer(m_Scene);
-	if (!serializer.Deserialize("assets/scenes/Test.eos"))
-		EOS_ASSERT(false);
+	serializer.Deserialize(scenePath);
 
 	Eos::Application::Get().GetWindow().MaximizeWindow();
 

@@ -190,6 +190,7 @@ namespace Eos {
 		}
 		catch (YAML::ParserException e)
 		{
+			EOS_CORE_ERROR("Failed to load .eos file '{0}'\n	{1}", filepath, e.what());
 			return false;
 		}
 		
