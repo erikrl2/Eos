@@ -511,7 +511,7 @@ namespace Eos {
 			// Scene Commands
 			case Key::D:
 			{
-				if (control && editing)
+				if (m_SceneState == SceneState::Edit)
 					DuplicateEntity();
 				break;
 			}
@@ -695,7 +695,7 @@ namespace Eos {
 	void EditorLayer::NewScene()
 	{
 		if (m_SceneState != SceneState::Edit)
-			return;
+			return; // OnSceneStop(); // causes Play/Simulate button to show incorrectly
 
 		Ref<Scene> newScene = CreateRef<Scene>();
 		SetEditorScene(newScene);
