@@ -41,15 +41,25 @@ namespace Eos {
 			ImGui::PopStyleVar();
 
 			// Right-click on blank space
-			if (ImGui::BeginPopupContextWindow(0, 1, false))
+			if (ImGui::BeginPopupContextWindow(0, ImGuiMouseButton_Right, false))
 			{
 				if (ImGui::MenuItem("Create Empty"))
 					m_SelectionContext = m_Context->CreateEntity();
+				else if (ImGui::MenuItem("Create Camera"))
+				{
+					m_SelectionContext = m_Context->CreateEntity("Camera");
+					m_SelectionContext.AddComponent<CameraComponent>();
+				}
+				else if (ImGui::MenuItem("Create Sprite"))
+				{
+					m_SelectionContext = m_Context->CreateEntity("Sprite");
+					m_SelectionContext.AddComponent<SpriteRendererComponent>();
+				}
 
 				ImGui::EndPopup();
 			}
+			ImGui::InvisibleButton("##EmptySpace", ImVec2(1, 50));
 		}
-
 		ImGui::End();
 
 		ImGui::Begin(ICON_FA_INFO_CIRCLE "  Inspector");
@@ -57,7 +67,6 @@ namespace Eos {
 		{
 			DrawComponents(m_SelectionContext);
 		}
-
 		ImGui::End();
 	}
 
@@ -79,18 +88,12 @@ namespace Eos {
 
 			// TODO: Add move up/down MenuItem
 
-			if (ImGui::MenuItem("Create Empty"))
-				m_SelectionContext = m_Context->CreateEntity();
+			//if (ImGui::MenuItem("Create Empty Child"))
+			//{
+			//	// TODO: Add child entity
+			//}
 
-			if (ImGui::MenuItem("Create Empty Child"))
-			{
-				// TODO: Add child entity
-			}
-
-			ImGui::Separator();
-
-			if (ImGui::MenuItem("Rename"))
-				tagComponent.renaming = true;
+			//ImGui::Separator();
 
 			if (ImGui::MenuItem("Duplicate"))
 				m_Context->DuplicateEntity(entity);
@@ -102,22 +105,8 @@ namespace Eos {
 			ImGui::EndPopup();
 		}
 
-		if (tagComponent.renaming)
-		{
-			char buffer[128];
-			memset(buffer, 0, sizeof(buffer));
-			strncpy_s(buffer, tag.c_str(), sizeof(buffer));
-			if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
-				tag = buffer;
-
-			if ((ImGui::IsMouseClicked(0) && ImGui::IsWindowHovered()) || ImGui::IsKeyPressed(ImGuiKey_Enter, false))
-				tagComponent.renaming = false;
-		}
-
 		if (opened)
-		{
 			ImGui::TreePop();
-		}
 
 		if (entityDeleted)
 		{

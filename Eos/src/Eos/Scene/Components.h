@@ -29,7 +29,6 @@ namespace Eos {
 	struct TagComponent
 	{
 		std::string Tag;
-		bool renaming = false;
 
 		TagComponent() = default;
 		TagComponent(const TagComponent&) = default;
