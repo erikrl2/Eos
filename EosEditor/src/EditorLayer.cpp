@@ -366,12 +366,13 @@ namespace Eos {
 		ImGui::End();
 
 		// Camera preview window
-		if (m_ShowCameraPreview && m_SceneState == SceneState::Edit)
+		if (m_SceneState == SceneState::Edit && m_ShowCameraPreview)
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(0.0f, 0.0f));
 			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1, 1, 1, 1));
+			ImGui::SetNextWindowBgAlpha(0.9f);
 			ImGui::SetNextWindowPos(ImVec2(m_ViewportBounds[0].x, m_ViewportBounds[0].y));
 			ImGui::Begin("CameraPreview", 0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoSavedSettings);
 			ImGui::PopStyleVar(3);
@@ -429,6 +430,7 @@ namespace Eos {
 	{
 		ImGui::Begin(ICON_FA_WRENCH "  Settings");
 		ImGui::Checkbox("2D editor camera", &EditorCamera::s_RotationLocked);
+		ImGui::Checkbox("Show primary camera view", &m_ShowCameraPreview);
 		ImGui::Checkbox("Highlight selection", &m_ShowEntityOutline);
 		ImGui::SameLine();
 		ImGui::ColorEdit3("##Ouline", glm::value_ptr(m_EntityOutlineColor), ImGuiColorEditFlags_NoInputs);
@@ -579,29 +581,24 @@ namespace Eos {
 		else
 		{
 			Renderer2D::BeginScene(m_EditorCamera);
-
-			m_ShowCameraPreview = false;
 		}
 
 		// Hightlight selected entity
-		Entity selection = m_SceneHierarchyPanel.GetSelectedEntity();
-		if (m_ShowEntityOutline && selection)
+		if (Entity selection = m_SceneHierarchyPanel.GetSelectedEntity(); selection && m_ShowEntityOutline)
 		{
-			Renderer2D::SetLineWidth(3.0f);
+			//Renderer2D::SetLineWidth(3.0f);
 
 			if (selection.HasComponent<TransformComponent>())
 			{
-				// Calculate z index for translation
 				float zIndex = 0.001f;
 				glm::vec3 cameraForwardDirection = m_EditorCamera.GetForwardDirection();
 				glm::vec3 projectionCollider = cameraForwardDirection * glm::vec3(zIndex);
 
 				auto& tc = selection.GetComponent<TransformComponent>();
-				glm::mat4 transform = tc.GetTransform();
 
 				if (selection.HasComponent<SpriteRendererComponent>())
 				{
-					transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -projectionCollider.z)) * transform;
+					glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -projectionCollider.z)) * tc.GetTransform();
 					Renderer2D::DrawRect(transform, m_EntityOutlineColor);
 				}
 
@@ -612,38 +609,21 @@ namespace Eos {
 						* glm::scale(glm::mat4(1.0f), tc.Scale + 0.03f);
 					Renderer2D::DrawCircle(transform, m_EntityOutlineColor, 0.03f);
 				}
-
-				// Camera preview
-				if (selection.HasComponent<CameraComponent>() && m_SceneState == SceneState::Edit)
-				{
-					auto& camera = selection.GetComponent<CameraComponent>().Camera;
-					camera.SetViewportSize(1280, 720);
-
-					m_CameraPreviewFramebuffer->Bind();
-					RenderCommand::SetClearColor({ 0.11f, 0.11f, 0.11f, 1.0f });
-					RenderCommand::Clear(); // TODO: Fix Program/shader state performance warning
-					m_EditorScene->RenderScene(camera, transform);
-					m_CameraPreviewFramebuffer->Unbind();
-
-					camera.SetViewportSize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-					m_ShowCameraPreview = true;
-				}
 			}
 		}
 
 		if (m_ShowPhysicsColliders)
 		{
-			if (Renderer2D::GetLineWidth() != -2.0f)
-			{
-				Renderer2D::Flush();
-				Renderer2D::SetLineWidth(2.0f);
-			}
+			//if (Renderer2D::GetLineWidth() != 2.0f)
+			//{
+			//	Renderer2D::Flush();
+			//	Renderer2D::SetLineWidth(2.0f);
+			//}
 
 			// Box Colliders
 			{
 				auto view = m_ActiveScene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
 
-				// Calculate z index for translation
 				float zIndex = 0.001f;
 				glm::vec3 cameraForwardDirection = m_EditorCamera.GetForwardDirection();
 				glm::vec3 projectionCollider = cameraForwardDirection * glm::vec3(zIndex);
@@ -668,7 +648,6 @@ namespace Eos {
 			{
 				auto view = m_ActiveScene->GetAllEntitiesWith<TransformComponent, CircleCollider2DComponent>();
 
-				// Calculate z index for translation
 				float zIndex = 0.001f;
 				glm::vec3 cameraForwardDirection = m_EditorCamera.GetForwardDirection();
 				glm::vec3 projectionCollider = cameraForwardDirection * glm::vec3(zIndex);
@@ -690,12 +669,30 @@ namespace Eos {
 		}
 
 		Renderer2D::EndScene();
+
+		// Camera Preview
+		if (m_SceneState == SceneState::Edit && m_ShowCameraPreview)
+		{
+			if (Entity ce = m_EditorScene->GetPrimaryCameraEntity(); ce && ce.HasComponent<TransformComponent>())
+			{
+				auto& camera = ce.GetComponent<CameraComponent>().Camera;
+				camera.SetViewportSize(16, 9);
+
+				m_CameraPreviewFramebuffer->Bind();
+				RenderCommand::SetClearColor({ 0, 0, 0, 0 });
+				RenderCommand::Clear(); // TODO: Fix Program/shader state performance warning
+				m_EditorScene->RenderScene(camera, ce.GetComponent<TransformComponent>().GetTransform());
+				m_CameraPreviewFramebuffer->Unbind();
+
+				camera.SetViewportSize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			}
+		}
 	}
 
 	void EditorLayer::NewScene()
 	{
 		if (m_SceneState != SceneState::Edit)
-			return; // OnSceneStop(); // causes Play/Simulate button to show incorrectly
+			return;
 
 		Ref<Scene> newScene = CreateRef<Scene>();
 		SetEditorScene(newScene);

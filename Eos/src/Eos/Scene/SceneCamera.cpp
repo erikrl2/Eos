@@ -30,9 +30,8 @@ namespace Eos {
 
 	void SceneCamera::SetViewportSize(uint32_t width, uint32_t height)
 	{
-		//EOS_CORE_ASSERT(width > 0 && height > 0);
 		if (height) // to prevent deviding by 0
-			m_AspectRatio = (float)width / (float)height; // aspect ratio defaults to 1
+			m_AspectRatio = (float)width / (float)height;
 		RecalculateProjection();
 	}
 
