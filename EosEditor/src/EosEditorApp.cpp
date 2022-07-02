@@ -8,8 +8,8 @@ namespace Eos {
 	class EosEditor : public Application
 	{
 	public:
-		EosEditor(ApplicationCommandLineArgs args)
-			: Application({ "EosEditor", 1280, 720 }, args)
+		EosEditor(WindowProps props, ApplicationCommandLineArgs args)
+			: Application(props, args)
 		{
 			PushLayer(new EditorLayer());
 		}
@@ -20,11 +20,16 @@ namespace Eos {
 
 	Application* CreateApplication(ApplicationCommandLineArgs args)
 	{
-		// for testing
+		// for debugging
 		args.Args[1] = "assets/scenes/Test.eos";
 		args.Count++;
 
-		return new EosEditor(args);
+		WindowProps properties;
+		properties.Title = "EosEditor";
+		properties.Width = 1280;
+		properties.Height = 720;
+
+		return new EosEditor(properties, args);
 	}
 
 }
