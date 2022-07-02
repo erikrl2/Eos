@@ -22,7 +22,6 @@ void Sandbox2D::OnAttach()
 	if (!std::filesystem::exists(scenePath))
 	{
 		EOS_ERROR("Scene file {0} not found!", scenePath);
-		Eos::Application::Get().Close();
 	}
 
 	m_Scene = Eos::CreateRef<Eos::Scene>();

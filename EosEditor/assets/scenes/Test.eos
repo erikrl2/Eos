@@ -18,13 +18,13 @@ Entities:
         OrthographicFar: 1
       Primary: true
       FixedAspectRatio: false
-  - Entity: 18436033612340246646
+  - Entity: 816125737303481923
     TagComponent:
-      Tag: Bottom
+      Tag: Top
     TransformComponent:
-      Translation: [0, -3.14717865, 0]
+      Translation: [0, 4.50151825, 0]
       Rotation: [0, 0, 0]
-      Scale: [4, 0.5, 1]
+      Scale: [15, 0.5, 1]
     SpriteRendererComponent:
       Color: [0.4911246, 0.786290288, 0.291688323, 1]
     Rigidbody2DComponent:
@@ -45,6 +45,12 @@ Entities:
       Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]
+      TexturePath: assets\textures\ball.png
+      FlipXY: [0, 0]
+      TilingFactor: 1
+      Atlas: false
     CircleRendererComponent:
       Color: [0.239057645, 0.381765336, 0.681451619, 1]
       Thickness: 1
@@ -54,8 +60,68 @@ Entities:
       FixedRotation: false
     CircleCollider2DComponent:
       Offset: [0, 0]
-      Radius: 0.5
+      Radius: 0.437000006
       Density: 1
       Friction: 0.5
-      Restitution: 0.850000024
-      RestitutionThreshold: 1.39999998
+      Restitution: 0.8
+      RestitutionThreshold: 1
+  - Entity: 9102294587500526096
+    TagComponent:
+      Tag: Right
+    TransformComponent:
+      Translation: [7.75227451, -0.241560563, -6.10352872e-05]
+      Rotation: [0, 0, 1.57079637]
+      Scale: [9.99858189, 0.499908775, 1]
+    SpriteRendererComponent:
+      Color: [0.4911246, 0.786290288, 0.291688323, 1]
+    Rigidbody2DComponent:
+      BodyType: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Rotation: 0
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 100
+  - Entity: 15069452170718100441
+    TagComponent:
+      Tag: Left
+    TransformComponent:
+      Translation: [-7.73841858, -0.241559744, -6.10352872e-05]
+      Rotation: [0, 0, 1.57079637]
+      Scale: [9.99902534, 0.499922633, 1]
+    SpriteRendererComponent:
+      Color: [0.4911246, 0.786290288, 0.291688323, 1]
+    Rigidbody2DComponent:
+      BodyType: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Rotation: 0
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 100
+  - Entity: 18436033612340246646
+    TagComponent:
+      Tag: Bottom
+    TransformComponent:
+      Translation: [0, -5, 0]
+      Rotation: [0, 0, 0]
+      Scale: [15, 0.5, 1]
+    SpriteRendererComponent:
+      Color: [0.4911246, 0.786290288, 0.291688323, 1]
+    Rigidbody2DComponent:
+      BodyType: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Rotation: 0
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 100
