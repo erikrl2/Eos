@@ -81,12 +81,10 @@ namespace Eos {
 
 	void EditorSerializer::Serialize(const std::filesystem::path& filepath)
 	{
-		EditorSettings& settings = *m_Settings;
-
 		YAML::Emitter out;
 		out << YAML::BeginMap;
-		out << YAML::Key << "Theme" << YAML::Value << ThemeTypeToString(settings.Theme);
-		out << YAML::Key << "Font" << YAML::Value << FontTypeToString(settings.Font);
+		out << YAML::Key << "Theme" << YAML::Value << ThemeTypeToString(m_Settings->Theme);
+		out << YAML::Key << "Font" << YAML::Value << FontTypeToString(m_Settings->Font);
 		out << YAML::EndMap;
 
 		std::ofstream fout(filepath);
@@ -105,15 +103,13 @@ namespace Eos {
 			return false;
 		}
 
-		EditorSettings& settings = *m_Settings;
-
 		auto theme = data["Theme"];
 		if (theme)
-			settings.Theme = ThemeTypeFromString(theme.as<std::string>());
+			m_Settings->Theme = ThemeTypeFromString(theme.as<std::string>());
 
 		auto font = data["Font"];
 		if (font)
-			settings.Font = FontTypeFromString(font.as<std::string>());
+			m_Settings->Font = FontTypeFromString(font.as<std::string>());
 
 		return true;
 	}

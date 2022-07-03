@@ -54,7 +54,7 @@ namespace Eos {
 	}
 
 
-	float Time::GetTime()
+	float Platform::GetTime()
 	{
 		return (float)glfwGetTime();
 	}

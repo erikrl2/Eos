@@ -11,7 +11,7 @@ namespace Eos {
 		static std::string SaveFile(const char* filter);
 	};
 
-	class Time
+	class Platform
 	{
 	public:
 		static float GetTime();
