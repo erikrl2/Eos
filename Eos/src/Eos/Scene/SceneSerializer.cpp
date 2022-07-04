@@ -345,8 +345,9 @@ namespace Eos {
 			if (auto& texture = src.Texture)
 			{
 				out << YAML::Key << "TexturePath" << YAML::Value << texture->GetPath();
-				out << YAML::Key << "FlipXY" << YAML::Value << glm::vec2(src.FlipX, src.FlipY);
+				out << YAML::Key << "FlipXY" << YAML::Value << glm::vec2(src.FlipX, src.FlipY); // TEMP
 				out << YAML::Key << "TilingFactor" << YAML::Value << src.TilingFactor;
+				// ------ TEMP -------
 				out << YAML::Key << "Atlas" << YAML::Value << src.Atlas;
 				if (src.Atlas)
 				{
@@ -354,6 +355,7 @@ namespace Eos {
 					out << YAML::Key << "CellSize" << YAML::Value << src.CellSize;
 					out << YAML::Key << "SpriteSize" << YAML::Value << src.SpriteSize;
 				}
+				// ------ TEMP -------
 			}
 
 			out << YAML::EndMap;
@@ -374,16 +376,18 @@ namespace Eos {
 					std::filesystem::exists(textureFilePath))
 				{
 					src.Texture = Texture2D::Create(textureFilePath);
-					glm::vec2 flipXY = spriteRendererComponent["FlipXY"].as<glm::vec2>();
+					glm::vec2 flipXY = spriteRendererComponent["FlipXY"].as<glm::vec2>(); // TEMP
 					src.FlipX = (bool)flipXY.x;
 					src.FlipY = (bool)flipXY.y;
 					src.TilingFactor = spriteRendererComponent["TilingFactor"].as<float>();
+					// ------ TEMP -------
 					if (src.Atlas = spriteRendererComponent["Atlas"].as<bool>())
 					{
 						src.Coords = spriteRendererComponent["Coords"].as<glm::vec2>();
 						src.CellSize = spriteRendererComponent["CellSize"].as<glm::vec2>();
 						src.SpriteSize = spriteRendererComponent["SpriteSize"].as<glm::vec2>();
 					}
+					// ------ TEMP -------
 				}
 				else
 					EOS_CORE_ERROR("Texture '{0}' was not found", textureFilePath);

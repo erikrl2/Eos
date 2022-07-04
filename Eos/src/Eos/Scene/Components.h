@@ -58,11 +58,14 @@ namespace Eos {
 		glm::vec4 Color = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
 		Ref<Texture2D> Texture;
 		float TilingFactor = 1.0f;
+
+		// ------ TEMP -------
 		bool FlipX = false, FlipY = false;
 		bool Atlas = false;
 		glm::vec2 Coords = { 0, 0 };
 		glm::vec2 CellSize = { 32, 32 };
 		glm::vec2 SpriteSize = { 1, 1 };
+		// ------ TEMP -------
 
 		SpriteRendererComponent() = default;
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;

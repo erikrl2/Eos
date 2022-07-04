@@ -13,9 +13,6 @@ namespace Eos {
 		{
 			PushLayer(new EditorLayer());
 		}
-		~EosEditor()
-		{
-		}
 	};
 
 	Application* CreateApplication(ApplicationCommandLineArgs args)
@@ -26,8 +23,6 @@ namespace Eos {
 
 		ApplicationSpecification spec;
 		spec.Name = "EosEditor";
-		spec.Width = 1280;
-		spec.Height = 720;
 		spec.CommandLineArgs = args;
 
 		return new EosEditor(spec);
