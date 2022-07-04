@@ -273,7 +273,7 @@ namespace Eos {
 		auto transformComponent = entity["TransformComponent"];
 		if (transformComponent)
 		{
-			auto& tc = deserializedEntity.GetComponent<TransformComponent>();
+			auto& tc = deserializedEntity.AddComponent<TransformComponent>().GetComponent<TransformComponent>();
 			tc.Translation = transformComponent["Translation"].as<glm::vec3>();
 			tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
 			tc.Scale = transformComponent["Scale"].as<glm::vec3>();

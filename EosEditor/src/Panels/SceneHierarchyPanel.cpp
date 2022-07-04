@@ -44,16 +44,19 @@ namespace Eos {
 			if (ImGui::BeginPopupContextWindow(0, ImGuiMouseButton_Right, false))
 			{
 				if (ImGui::MenuItem("Create Empty"))
+				{
 					m_SelectionContext = m_Context->CreateEntity();
+					m_SelectionContext.AddComponent<TransformComponent>();
+				}
 				else if (ImGui::MenuItem("Create Camera"))
 				{
 					m_SelectionContext = m_Context->CreateEntity("Camera");
-					m_SelectionContext.AddComponent<CameraComponent>();
+					m_SelectionContext.AddComponent<TransformComponent>().AddComponent<CameraComponent>();
 				}
 				else if (ImGui::MenuItem("Create Sprite"))
 				{
 					m_SelectionContext = m_Context->CreateEntity("Sprite");
-					m_SelectionContext.AddComponent<SpriteRendererComponent>();
+					m_SelectionContext.AddComponent<TransformComponent>().AddComponent<SpriteRendererComponent>();
 				}
 
 				ImGui::EndPopup();

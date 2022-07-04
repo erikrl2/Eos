@@ -39,14 +39,13 @@ namespace Eos {
 	{
 		([&]()
 			{
-				auto view = src.view<Component>();
-				for (auto it = view.rbegin(); it != view.rend(); it++)
+				for (auto e : src.view<Component>())
 				{
-					UID uid = src.get<IDComponent>(*it).ID;
+					UID uid = src.get<IDComponent>(e).ID;
 					EOS_CORE_ASSERT(enttMap.find(uid) != enttMap.end());
 					entt::entity dstEnttID = enttMap.at(uid);
 
-					auto& component = src.get<Component>(*it);
+					auto& component = src.get<Component>(e);
 					dst.emplace_or_replace<Component>(dstEnttID, component);
 				}
 			}(), ...);
@@ -86,10 +85,8 @@ namespace Eos {
 		std::unordered_map<UID, entt::entity> enttMap;
 
 		// Create entities in new scene
-		auto idView = srcSceneRegistry.view<IDComponent>();
-		for (auto it = idView.rbegin(); it != idView.rend(); it++)
+		for (auto e : srcSceneRegistry.view<IDComponent>())
 		{
-			entt::entity e = *it;
 			UID uid = srcSceneRegistry.get<IDComponent>(e).ID;
 			const auto& name = srcSceneRegistry.get<TagComponent>(e).Tag;
 			Entity newEntity = newScene->CreateEntityWithUID(uid, name);
@@ -110,7 +107,7 @@ namespace Eos {
 	Entity Scene::CreateEntityWithUID(UID uid, const std::string_view name)
 	{
 		Entity entity = { m_Registry.create(), *this };
-		entity.AddComponent<IDComponent>(uid).AddComponent<TransformComponent>().AddComponent<TagComponent>()
+		entity.AddComponent<IDComponent>(uid).AddComponent<TagComponent>()
 			.GetComponent<TagComponent>().Tag = name.empty() ? "GameObject" : name;
 		return entity;
 	}
@@ -149,7 +146,7 @@ namespace Eos {
 	{
 		// Update scripts
 		{
-			for (auto&& [entity, nsc] : m_Registry.view<NativeScriptComponent>().each())
+			for (auto [entity, nsc] : m_Registry.view<NativeScriptComponent>().each())
 			{
 				// TODO: Move to Scene::OnScenePlay
 				if (nsc.Instances.empty())
@@ -167,11 +164,9 @@ namespace Eos {
 			m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
 
 			// Retrieve transform from Box2D
-			for (auto e : m_Registry.view<Rigidbody2DComponent>())
+			for (auto [e, transform, rb2d] : m_Registry.view<TransformComponent, Rigidbody2DComponent>().each())
 			{
 				Entity entity = { e, *this };
-				auto& transform = entity.GetComponent<TransformComponent>();
-				auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
 
 				b2Body* body = (b2Body*)rb2d.RuntimeBody;
 				const auto& position = body->GetPosition();
@@ -185,7 +180,7 @@ namespace Eos {
 		Camera* mainCamera = nullptr;
 		glm::mat4 cameraTransform;
 		{
-			for (auto&& [entity, transform, camera] : m_Registry.view<TransformComponent, CameraComponent>().each())
+			for (auto [entity, transform, camera] : m_Registry.view<TransformComponent, CameraComponent>().each())
 			{
 				if (camera.Primary)
 				{
@@ -211,11 +206,9 @@ namespace Eos {
 			m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
 
 			// Retrieve transform from Box2D
-			for (auto e : m_Registry.view<Rigidbody2DComponent>())
+			for (auto [e, transform, rb2d] : m_Registry.view<TransformComponent, Rigidbody2DComponent>().each())
 			{
 				Entity entity = { e, *this };
-				auto& transform = entity.GetComponent<TransformComponent>();
-				auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
 
 				b2Body* body = (b2Body*)rb2d.RuntimeBody;
 				const auto& position = body->GetPosition();
@@ -240,7 +233,7 @@ namespace Eos {
 		m_ViewportWidth = width;
 		m_ViewportHeight = height;
 
-		for (auto&& [entity, camera] : m_Registry.view<CameraComponent>().each())
+		for (auto [entity, camera] : m_Registry.view<CameraComponent>().each())
 		{
 			if (!camera.FixedAspectRatio)
 				camera.Camera.SetViewportSize(width, height);
@@ -258,7 +251,7 @@ namespace Eos {
 	}
 
 	Entity Scene::GetPrimaryCameraEntity()	{
-		for (auto&& [entity, camera] : m_Registry.view<CameraComponent>().each())
+		for (auto [entity, camera] : m_Registry.view<CameraComponent>().each())
 		{
 			if (camera.Primary)
 				return Entity{ entity, *this };
@@ -275,11 +268,9 @@ namespace Eos {
 	{
 		m_PhysicsWorld = new b2World({ 0.0f, -9.8f }); // TODO: expose
 
-		for (auto e : m_Registry.view<Rigidbody2DComponent>())
+		for (auto [e, transform, rb2d] : m_Registry.view<TransformComponent, Rigidbody2DComponent>().each())
 		{
 			Entity entity = { e, *this };
-			auto& transform = entity.GetComponent<TransformComponent>();
-			auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
 
 			b2BodyDef bodyDef;
 			bodyDef.type = Rigidbody2DTypeToBox2DBody(rb2d.Type);
@@ -338,7 +329,7 @@ namespace Eos {
 
 		// Draw sprites
 		{
-			for (auto&& [entity, transform, sprite] : m_Registry.view<TransformComponent, SpriteRendererComponent>().each())
+			for (auto [entity, transform, sprite] : m_Registry.view<TransformComponent, SpriteRendererComponent>().each())
 			{
 				Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
 			}
@@ -346,7 +337,7 @@ namespace Eos {
 
 		// Draw circles
 		{
-			for (auto&& [entity, transform, circle] : m_Registry.view<TransformComponent, CircleRendererComponent>().each())
+			for (auto [entity, transform, circle] : m_Registry.view<TransformComponent, CircleRendererComponent>().each())
 			{
 				Renderer2D::DrawCircle(transform.GetTransform(), circle.Color, circle.Thickness, circle.Fade, (int)entity);
 			}
@@ -363,7 +354,7 @@ namespace Eos {
 
 		// Draw sprites
 		{
-			for (auto&& [entity, transform, sprite] : m_Registry.view<TransformComponent, SpriteRendererComponent>().each())
+			for (auto [entity, transform, sprite] : m_Registry.view<TransformComponent, SpriteRendererComponent>().each())
 			{
 				Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
 			}
@@ -371,7 +362,7 @@ namespace Eos {
 
 		// Draw circles
 		{
-			for (auto&& [entity, transform, circle] : m_Registry.view<TransformComponent, CircleRendererComponent>().each())
+			for (auto [entity, transform, circle] : m_Registry.view<TransformComponent, CircleRendererComponent>().each())
 			{
 				Renderer2D::DrawCircle(transform.GetTransform(), circle.Color, circle.Thickness, circle.Fade, (int)entity);
 			}
