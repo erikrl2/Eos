@@ -6,8 +6,8 @@
 class Sandbox : public Eos::Application
 {
 public:
-	Sandbox(Eos::ApplicationCommandLineArgs args)
-		: Application({ "Sandbox", 1280, 720 }, args)
+	Sandbox(const Eos::ApplicationSpecification& specification)
+		: Application(specification)
 	{
 		PushLayer(new Sandbox2D());
 	}
@@ -18,5 +18,12 @@ public:
 
 Eos::Application* Eos::CreateApplication(Eos::ApplicationCommandLineArgs args)
 {
-	return new Sandbox(args);
+	Eos::ApplicationSpecification spec;
+	spec.Name = "Sandbox";
+	spec.CommandLineArgs = args;
+#ifdef EOS_DEBUG // and release?
+	spec.WorkingDirectory = "../EosEditor";
+#endif
+
+	return new Sandbox(spec);
 }

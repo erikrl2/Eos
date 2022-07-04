@@ -17,7 +17,7 @@
 
 namespace Eos {
 
-	extern const std::filesystem::path g_AssetPath; // Serialize?
+	extern const std::filesystem::path g_AssetPath;
 
 	EditorLayer::EditorLayer()
 		: Layer("EditorLayer")
@@ -37,7 +37,7 @@ namespace Eos {
 		app.GetImGuiLayer()->BlockEvents(false);
 
 		bool sceneLoaded = false;
-		auto commandLineArgs = app.GetCommandLineArgs();
+		auto commandLineArgs = app.GetSpecification().CommandLineArgs;
 		if (commandLineArgs.Count > 1)
 			sceneLoaded = OpenScene(commandLineArgs[1]);
 
