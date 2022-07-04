@@ -48,6 +48,8 @@ namespace Eos {
 		m_CameraPreviewFramebuffer = Framebuffer::Create({ 1280, 720, {FramebufferTextureFormat::RGBA8,  FramebufferTextureFormat::Depth} });
 
 		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
+
+		Renderer2D::SetLineWidth(3.0f);
 	}
 
 	void EditorLayer::OnDetach()
@@ -431,9 +433,7 @@ namespace Eos {
 		ImGui::Begin(ICON_FA_WRENCH "  Settings");
 		ImGui::Checkbox("2D editor camera", &EditorCamera::s_RotationLocked);
 		ImGui::Checkbox("Show primary camera view", &m_ShowCameraPreview);
-		ImGui::Checkbox("Highlight selection", &m_ShowEntityOutline);
-		ImGui::SameLine();
-		ImGui::ColorEdit3("##Ouline", glm::value_ptr(m_EntityOutlineColor), ImGuiColorEditFlags_NoInputs);
+		ImGui::ColorEdit3("Selected entity outline color", glm::value_ptr(m_EntityOutlineColor), ImGuiColorEditFlags_NoInputs);
 		ImGui::Checkbox("Show physics colliders", &m_ShowPhysicsColliders);
 		ImGui::SameLine();
 		ImGui::ColorEdit3("##PhysicsVisualization", glm::value_ptr(m_PhysicsVisualizationColor), ImGuiColorEditFlags_NoInputs);
@@ -583,89 +583,41 @@ namespace Eos {
 			Renderer2D::BeginScene(m_EditorCamera);
 		}
 
-		// Hightlight selected entity
-		if (Entity selection = m_SceneHierarchyPanel.GetSelectedEntity(); selection && m_ShowEntityOutline)
-		{
-			//Renderer2D::SetLineWidth(3.0f);
-
-			if (selection.HasComponent<TransformComponent>())
-			{
-				float zIndex = 0.001f;
-				glm::vec3 cameraForwardDirection = m_EditorCamera.GetForwardDirection();
-				glm::vec3 projectionCollider = cameraForwardDirection * glm::vec3(zIndex);
-
-				auto& tc = selection.GetComponent<TransformComponent>();
-
-				if (selection.HasComponent<SpriteRendererComponent>())
-				{
-					glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -projectionCollider.z)) * tc.GetTransform();
-					Renderer2D::DrawRect(transform, m_EntityOutlineColor);
-				}
-
-				if (selection.HasComponent<CircleRendererComponent>())
-				{
-					glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(tc.Translation.x, tc.Translation.y, tc.Translation.z - projectionCollider.z))
-						* glm::toMat4(glm::quat(tc.Rotation))
-						* glm::scale(glm::mat4(1.0f), tc.Scale + 0.03f);
-					Renderer2D::DrawCircle(transform, m_EntityOutlineColor, 0.03f);
-				}
-			}
-		}
-
 		if (m_ShowPhysicsColliders)
 		{
-			//if (Renderer2D::GetLineWidth() != 2.0f)
-			//{
-			//	Renderer2D::Flush();
-			//	Renderer2D::SetLineWidth(2.0f);
-			//}
+			glm::vec3 forwardDir = m_EditorCamera.GetForwardDirection() * glm::vec3(0.001f);
 
 			// Box Colliders
+			for (auto [e, tc, bc2d] : m_ActiveScene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>().each())
 			{
-				auto view = m_ActiveScene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
+				glm::vec3 scale = tc.Scale * glm::vec3(bc2d.Size * 2.0f, 1.0f);
+				glm::mat4 transform = glm::translate(glm::mat4(1.0f), tc.Translation)
+					* glm::rotate(glm::mat4(1.0f), tc.Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f))
+					* glm::translate(glm::mat4(1.0f), glm::vec3(bc2d.Offset, -forwardDir.z))
+					* glm::rotate(glm::mat4(1.0f), bc2d.Rotation, glm::vec3(0.0f, 0.0f, 1.0f))
+					* glm::scale(glm::mat4(1.0f), scale);
 
-				float zIndex = 0.001f;
-				glm::vec3 cameraForwardDirection = m_EditorCamera.GetForwardDirection();
-				glm::vec3 projectionCollider = cameraForwardDirection * glm::vec3(zIndex);
-
-				for (auto entity : view)
-				{
-					auto [tc, bc2d] = view.get<TransformComponent, BoxCollider2DComponent>(entity);
-
-					glm::vec3 scale = tc.Scale * glm::vec3(bc2d.Size * 2.0f, 1.0f);
-
-					glm::mat4 transform = glm::translate(glm::mat4(1.0f), tc.Translation)
-						* glm::rotate(glm::mat4(1.0f), tc.Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f))
-						* glm::translate(glm::mat4(1.0f), glm::vec3(bc2d.Offset, -projectionCollider.z))
-						* glm::rotate(glm::mat4(1.0f), bc2d.Rotation, glm::vec3(0.0f, 0.0f, 1.0f))
-						* glm::scale(glm::mat4(1.0f), scale);
-
-					Renderer2D::DrawRect(transform, m_PhysicsVisualizationColor);
-				}
+				Renderer2D::DrawRect(transform, m_PhysicsVisualizationColor);
 			}
 
 			// Circle Colliders
+			for (auto [e, tc, cc2d] : m_ActiveScene->GetAllEntitiesWith<TransformComponent, CircleCollider2DComponent>().each())
 			{
-				auto view = m_ActiveScene->GetAllEntitiesWith<TransformComponent, CircleCollider2DComponent>();
+				glm::vec3 scale = tc.Scale * glm::vec3(cc2d.Radius * 2.0f);
+				glm::mat4 transform = glm::translate(glm::mat4(1.0f), tc.Translation)
+					* glm::rotate(glm::mat4(1.0f), tc.Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f))
+					* glm::translate(glm::mat4(1.0f), glm::vec3(cc2d.Offset, -forwardDir.z))
+					* glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.x, scale.z));
 
-				float zIndex = 0.001f;
-				glm::vec3 cameraForwardDirection = m_EditorCamera.GetForwardDirection();
-				glm::vec3 projectionCollider = cameraForwardDirection * glm::vec3(zIndex);
-
-				for (auto entity : view)
-				{
-					auto [tc, cc2d] = view.get<TransformComponent, CircleCollider2DComponent>(entity);
-
-					glm::vec3 scale = tc.Scale * glm::vec3(cc2d.Radius * 2.0f);
-
-					glm::mat4 transform = glm::translate(glm::mat4(1.0f), tc.Translation)
-						* glm::rotate(glm::mat4(1.0f), tc.Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f))
-						* glm::translate(glm::mat4(1.0f), glm::vec3(cc2d.Offset, -projectionCollider.z))
-						* glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.x, scale.z));
-
-					Renderer2D::DrawCircle(transform, m_PhysicsVisualizationColor, 0.02f);
-				}
+				Renderer2D::DrawCircle(transform, m_PhysicsVisualizationColor, 0.02f);
 			}
+		}
+
+		// Selected entity outline 
+		if (Entity selection = m_SceneHierarchyPanel.GetSelectedEntity(); selection && selection.HasComponent<TransformComponent>()) {
+			glm::vec3 forwardDir = m_EditorCamera.GetForwardDirection() * glm::vec3(0.002f);
+			glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -forwardDir.z)) * selection.GetComponent<TransformComponent>().GetTransform();
+			Renderer2D::DrawRect(transform, m_EntityOutlineColor);
 		}
 
 		Renderer2D::EndScene();

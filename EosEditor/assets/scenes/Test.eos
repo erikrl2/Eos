@@ -51,10 +51,6 @@ Entities:
       FlipXY: [0, 0]
       TilingFactor: 1
       Atlas: false
-    CircleRendererComponent:
-      Color: [0.239057645, 0.381765336, 0.681451619, 1]
-      Thickness: 1
-      Fade: 0.0260000005
     Rigidbody2DComponent:
       BodyType: Dynamic
       FixedRotation: false
@@ -63,7 +59,7 @@ Entities:
       Radius: 0.437000006
       Density: 1
       Friction: 0.5
-      Restitution: 0.8
+      Restitution: 0.800000012
       RestitutionThreshold: 1
   - Entity: 9102294587500526096
     TagComponent:

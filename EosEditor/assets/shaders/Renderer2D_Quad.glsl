@@ -60,6 +60,9 @@ void main()
 {
 	vec4 texColor = Input.Color * texture(u_Textures[int(v_TexIndex)], Input.TexCoord * Input.TilingFactor);
 
+	if (texColor.a == 0.0)
+		discard;
+
 	o_Color = texColor;
 	o_EntityID = v_EntityID;
 }
