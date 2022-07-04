@@ -829,12 +829,8 @@ namespace Eos {
 
 	void EditorLayer::DuplicateEntity()
 	{
-		//if (m_SceneState != SceneState::Edit)
-		//	return;
-
-		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
-		if (selectedEntity)
-			m_EditorScene->DuplicateEntity(selectedEntity);
+		if (Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity())
+			m_SceneHierarchyPanel.SetSelectedEntity(m_EditorScene->DuplicateEntity(selectedEntity));
 	}
 
 }
