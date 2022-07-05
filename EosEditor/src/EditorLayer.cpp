@@ -449,7 +449,7 @@ namespace Eos {
 		float delta = time - lastFrameTime;
 		lastFrameTime = time;
 		ImGui::Text("FPS: %.0f", 1.0f / delta);
-		ImGui::Text("Uptime: %ds", (int)time);
+		ImGui::Text("Uptime: %dmin", (int)time / 60);
 
 		const char* entityTag = "None";
 		if (m_HoveredEntity) entityTag = m_HoveredEntity.GetComponent<TagComponent>().Tag.c_str();
