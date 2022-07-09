@@ -40,7 +40,7 @@ class VulkanConfiguration:
         print(f"Correct Vulkan SDK located at {vulkanSDK}")
 
         try: 
-            os.remove("bin/VulkanSDK-Installer.exe") 
+            os.remove(f"bin/VulkanSDK-{cls.installVulkanVersion}-Installer.exe") 
         except OSError as error:
             pass
 
@@ -50,7 +50,7 @@ class VulkanConfiguration:
     def __InstallVulkanSDK(cls):
         permissionGranted = False
         while not permissionGranted:
-            reply = str(input("Would you like to install the latest VulkanSDK version? [Y/N]: ".format(cls.installVulkanVersion))).lower().strip()[:1]
+            reply = str(input("Would you like to install VulkanSDK {0:s}? [Y/N]: ".format(cls.installVulkanVersion))).lower().strip()[:1]
             if reply == 'n':
                 return
             permissionGranted = (reply == 'y')
