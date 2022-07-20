@@ -40,6 +40,7 @@ project "Eos"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
+		"%{IncludeDir.mono}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.VulkanSDK}"
@@ -51,7 +52,9 @@ project "Eos"
 		"GLFW",
 		"Glad",
 		"Imgui",
-		"yaml-cpp"
+		"yaml-cpp",
+
+		"%{Library.mono}"
 	}
 
 	filter "files:vendor/ImGuizmo/**.cpp"
@@ -63,6 +66,14 @@ project "Eos"
 
 		defines
 		{
+		}
+
+		links
+		{
+			"%{Library.WinSock}",
+			"%{Library.WinMM}",
+			"%{Library.WinVersion}",
+			"%{Library.BCrypt}",
 		}
 
 	filter "configurations:Debug"

@@ -33,6 +33,15 @@ group "Dependencies"
 	include "Eos/vendor/yaml-cpp"
 group ""
 
-include "Eos"
-include "Sandbox"
-include "EosEditor"
+group "Core"
+	include "Eos"
+	-- include "Eos-ScriptCore"
+group ""
+
+group "Tools"
+	include "EosEditor"
+group ""
+
+group "Misc"
+	include "Sandbox"
+group ""
