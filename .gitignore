@@ -3,16 +3,21 @@
 bin-int/
 Intermediates/
 
+*.exe
+*.lib
+*.dll
+*.pdb
+
 # Eos files
-**.log
-EosEditor/EosEditor.ini
+*.log
+EosEditor/config/eos.ini
 
 # Visual Studio files and folder
 .vs/
-**.sln
-**.vcxproj*
-**.csproj*
+*.sln
+*.vcxproj*
+*.csproj*
 
-# Directories
-EosEditor/assets/cache
-scripts/__pycache__
+# Other directories
+EosEditor/assets/cache/
+scripts/__pycache__/

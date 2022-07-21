@@ -42,7 +42,7 @@ namespace Eos {
 
 		std::streampos end = stream.tellg();
 		stream.seekg(0, std::ios::beg);
-		uint32_t size = end - stream.tellg();
+		uint32_t size = uint32_t(end - stream.tellg());
 
 		if (size == 0)
 		{
@@ -116,7 +116,7 @@ namespace Eos {
 		mono_domain_set(s_Data->AppDomain, true);
 
 		// Move this maybe
-		s_Data->CoreAssembly = LoadCSharpAssembly("Resources/Scripts/Eos-ScriptCore.dll");
+		s_Data->CoreAssembly = LoadCSharpAssembly("resources/scripts/Eos-ScriptCore.dll");
 		PrintAssemblyTypes(s_Data->CoreAssembly);
 
 		MonoImage* assemblyImage = mono_assembly_get_image(s_Data->CoreAssembly);
@@ -151,14 +151,10 @@ namespace Eos {
 		MonoMethod* printCustomMessageFunc = mono_class_get_method_from_name(monoClass, "PrintCustomMessage", 1);
 		void* stringParam = monoString;
 		mono_runtime_invoke(printCustomMessageFunc, instance, &stringParam, nullptr);
-
-		// HZ_CORE_ASSERT(false);
 	}
 
 	void ScriptEngine::ShutdownMono()
 	{
-		// NOTE(Yan): mono is a little confusing to shutdown, so maybe come back to this
-
 		// mono_domain_unload(s_Data->AppDomain);
 		s_Data->AppDomain = nullptr;
 
