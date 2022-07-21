@@ -35,7 +35,7 @@ group ""
 
 group "Core"
 	include "Eos"
-	-- include "Eos-ScriptCore"
+	include "Eos-ScriptCore"
 group ""
 
 group "Tools"

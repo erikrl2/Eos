@@ -4,6 +4,7 @@
 #include "Eos/Core/Log.h"
 
 #include "Eos/Renderer/Renderer.h"
+#include "Eos/Scripting/ScriptEngine.h"
 
 #include "Eos/Core/Input.h"
 
@@ -28,6 +29,7 @@ namespace Eos {
 		m_Window->SetEventCallback(EOS_BIND_EVENT_FN(Application::OnEvent));
 
 		Renderer::Init();
+		ScriptEngine::Init();
 
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
@@ -37,6 +39,7 @@ namespace Eos {
 	{
 		EOS_PROFILE_FUNCTION();
 
+		ScriptEngine::Shutdown();
 		Renderer::Shutdown();
 	}
 

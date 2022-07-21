@@ -1,6 +1,7 @@
 # Binaries
 **/bin/
 bin-int/
+Intermediates/
 
 # Eos files
 **.log
@@ -10,6 +11,7 @@ EosEditor/EosEditor.ini
 .vs/
 **.sln
 **.vcxproj*
+**.csproj*
 
 # Directories
 EosEditor/assets/cache
