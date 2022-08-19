@@ -145,6 +145,6 @@ namespace Eos {
 		return glm::quat(glm::vec3(-m_Pitch, -m_Yaw, 0.0f));
 	}
 
-	bool EditorCamera::s_RotationLocked = true;
+	bool EditorCamera::s_RotationLocked = false;
 
 }

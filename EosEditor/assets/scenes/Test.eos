@@ -13,44 +13,28 @@ Entities:
         PerspectiveFOV: 0.785398185
         PerspectiveNear: 0.00999999978
         PerspectiveFar: 1000
-        OrthographicSize: 10
+        OrthographicSize: 4
         OrthographicNear: -1
         OrthographicFar: 1
       Primary: true
       FixedAspectRatio: false
-  - Entity: 816125737303481923
-    TagComponent:
-      Tag: Top
-    TransformComponent:
-      Translation: [0, 4.50151825, 0]
-      Rotation: [0, 0, 0]
-      Scale: [15, 0.5, 1]
-    SpriteRendererComponent:
-      Color: [0.4911246, 0.786290288, 0.291688323, 1]
-    Rigidbody2DComponent:
-      BodyType: Static
-      FixedRotation: false
-    BoxCollider2DComponent:
-      Offset: [0, 0]
-      Size: [0.5, 0.5]
-      Rotation: 0
-      Density: 1
-      Friction: 0.5
-      Restitution: 0
-      RestitutionThreshold: 100
+    ScriptComponent:
+      ClassName: Sandbox.Camera
   - Entity: 11619259828702573690
     TagComponent:
       Tag: Player
     TransformComponent:
-      Translation: [0, 0, 0]
+      Translation: [0, 1, 0]
       Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
+      Scale: [0.5, 0.5, 0.5]
     SpriteRendererComponent:
       Color: [1, 1, 1, 1]
       TexturePath: assets\textures\ball.png
       FlipXY: [0, 0]
       TilingFactor: 1
       Atlas: false
+    ScriptComponent:
+      ClassName: Sandbox.Player
     Rigidbody2DComponent:
       BodyType: Dynamic
       FixedRotation: false
@@ -61,55 +45,15 @@ Entities:
       Friction: 0.5
       Restitution: 0.800000012
       RestitutionThreshold: 1
-  - Entity: 9102294587500526096
+  - Entity: 15526091628486638286
     TagComponent:
-      Tag: Right
+      Tag: Sprite
     TransformComponent:
-      Translation: [7.75227451, -0.241560563, -6.10352872e-05]
-      Rotation: [0, 0, 1.57079637]
-      Scale: [9.99858189, 0.499908775, 1]
-    SpriteRendererComponent:
-      Color: [0.4911246, 0.786290288, 0.291688323, 1]
-    Rigidbody2DComponent:
-      BodyType: Static
-      FixedRotation: false
-    BoxCollider2DComponent:
-      Offset: [0, 0]
-      Size: [0.5, 0.5]
-      Rotation: 0
-      Density: 1
-      Friction: 0.5
-      Restitution: 0
-      RestitutionThreshold: 100
-  - Entity: 15069452170718100441
-    TagComponent:
-      Tag: Left
-    TransformComponent:
-      Translation: [-7.73841858, -0.241559744, -6.10352872e-05]
-      Rotation: [0, 0, 1.57079637]
-      Scale: [9.99902534, 0.499922633, 1]
-    SpriteRendererComponent:
-      Color: [0.4911246, 0.786290288, 0.291688323, 1]
-    Rigidbody2DComponent:
-      BodyType: Static
-      FixedRotation: false
-    BoxCollider2DComponent:
-      Offset: [0, 0]
-      Size: [0.5, 0.5]
-      Rotation: 0
-      Density: 1
-      Friction: 0.5
-      Restitution: 0
-      RestitutionThreshold: 100
-  - Entity: 18436033612340246646
-    TagComponent:
-      Tag: Bottom
-    TransformComponent:
-      Translation: [0, -5, 0]
+      Translation: [0, -1, 0]
       Rotation: [0, 0, 0]
-      Scale: [15, 0.5, 1]
+      Scale: [6.5, 0.25, 1]
     SpriteRendererComponent:
-      Color: [0.4911246, 0.786290288, 0.291688323, 1]
+      Color: [0.143007472, 0.494208515, 0.093498908, 1]
     Rigidbody2DComponent:
       BodyType: Static
       FixedRotation: false
@@ -120,4 +64,4 @@ Entities:
       Density: 1
       Friction: 0.5
       Restitution: 0
-      RestitutionThreshold: 100
+      RestitutionThreshold: 1

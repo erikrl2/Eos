@@ -4,8 +4,6 @@
 #include "Eos/Core/UID.h"
 #include "Eos/Renderer/Texture.h"
 
-#include "Eos/Scene/ScriptableEntity.h"
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -94,6 +92,16 @@ namespace Eos {
 		CameraComponent(const CameraComponent&) = default;
 	};
 
+	struct ScriptComponent
+	{
+		std::string ClassName;
+
+		ScriptComponent() = default;
+		ScriptComponent(const ScriptComponent&) = default;
+	};
+
+	class ScriptableEntity;
+
 	struct NativeScriptComponent
 	{
 		ScriptableEntity* Instance = nullptr;
@@ -162,6 +170,10 @@ namespace Eos {
 	template<typename... Component>
 	struct ComponentGroup {};
 
-	using AllComponents = ComponentGroup<TransformComponent, SpriteRendererComponent, CircleRendererComponent, CameraComponent, NativeScriptComponent, Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent>;
+	using AllComponents =
+		ComponentGroup<TransformComponent, SpriteRendererComponent,
+		CircleRendererComponent, CameraComponent, ScriptComponent,
+		NativeScriptComponent, Rigidbody2DComponent, BoxCollider2DComponent,
+		CircleCollider2DComponent>;
 
 }

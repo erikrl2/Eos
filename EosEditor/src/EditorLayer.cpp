@@ -114,7 +114,7 @@ namespace Eos {
 		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)m_ViewportSize.x && mouseY < (int)m_ViewportSize.y)
 		{
 			int pixelData = m_MainFramebuffer->ReadPixel(1, mouseX, mouseY);
-			m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, *m_ActiveScene);
+			m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
 		}
 		else m_HoveredEntity = Entity();
 
@@ -513,7 +513,7 @@ namespace Eos {
 			// Scene Commands
 			case Key::D:
 			{
-				if (m_SceneState == SceneState::Edit)
+				if (m_SceneState == SceneState::Edit && control)
 					DuplicateEntity();
 				break;
 			}

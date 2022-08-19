@@ -85,7 +85,7 @@ namespace Eos {
 		int m_GizmoType = -1;
 
 		glm::vec4 m_EntityOutlineColor = { 1, 1, 1, 1 };
-		bool m_ShowPhysicsColliders = false;
+		bool m_ShowPhysicsColliders = true;
 		glm::vec4 m_PhysicsVisualizationColor = { 0, 1, 0, 1 };
 
 		bool m_ShowCameraPreview = false;

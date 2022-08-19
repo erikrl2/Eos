@@ -1,7 +1,7 @@
 #include "eospch.h"
 #include "Eos/Scene/SceneSerializer.h"
 
-#include "Eos/Scene/Components.h"
+#include "Eos/Scene/Entity.h"
 
 #include <fstream>
 
@@ -162,7 +162,7 @@ namespace Eos {
 		auto idView = m_Scene->m_Registry.view<IDComponent>();
 		for (auto it = idView.rbegin(); it != idView.rend(); it++)
 		{
-			Entity entity = { *it, *m_Scene };
+			Entity entity = { *it, m_Scene.get() };
 			if (!entity)
 				return;
 
@@ -306,6 +306,31 @@ namespace Eos {
 			out << YAML::Key << "FixedAspectRatio" << YAML::Value << cameraComponent.FixedAspectRatio;
 
 			out << YAML::EndMap;
+		}
+	}
+
+	template<>
+	static void SerializeEntityComponent<ScriptComponent>(YAML::Emitter& out, Entity entity)
+	{
+		if (entity.HasComponent<ScriptComponent>())
+		{
+			auto& scriptComponent = entity.GetComponent<ScriptComponent>();
+
+			out << YAML::Key << "ScriptComponent";
+			out << YAML::BeginMap;
+			out << YAML::Key << "ClassName" << YAML::Value << scriptComponent.ClassName;
+			out << YAML::EndMap;
+		}
+	}
+
+	template<>
+	static void DeserializeEntityComponent<ScriptComponent>(YAML::detail::iterator_value& entity, Entity& deserializedEntity)
+	{
+		auto scriptComponent = entity["ScriptComponent"];
+		if (scriptComponent)
+		{
+			auto& sc = deserializedEntity.AddComponent<ScriptComponent>().GetComponent<ScriptComponent>();
+			sc.ClassName = scriptComponent["ClassName"].as<std::string>();
 		}
 	}
 

@@ -43,6 +43,8 @@ namespace Eos {
 
 		Entity DuplicateEntity(Entity entity);
 
+		Entity GetEntityByUID(UID uid);
+
 		Entity GetPrimaryCameraEntity();
 
 		template<typename... Components>
@@ -63,6 +65,8 @@ namespace Eos {
 		uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
 
 		b2World* m_PhysicsWorld = nullptr;
+
+		std::unordered_map<UID, entt::entity> m_EntityMap;
 
 		std::string m_Name = "Untitled";
 
