@@ -146,15 +146,18 @@ namespace Eos {
 	{
 		// Update scripts
 		{
-			for (auto [entity, nsc] : m_Registry.view<NativeScriptComponent>().each())
-			{
-				// TODO: Move to Scene::OnScenePlay
-				if (nsc.Instances.empty())
+			m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc)
 				{
-					nsc.Instantiate({ entity, *this });
-				}
-				nsc.OnUpdate(ts);
-			}
+					// TODO: Move to Scene::OnScenePlay
+					if (!nsc.Instance)
+					{
+						nsc.Instance = nsc.InstantiateScript();
+						nsc.Instance->m_Entity = Entity{ entity, *this };
+						nsc.Instance->OnCreate();
+					}
+
+					nsc.Instance->OnUpdate(ts);
+				});
 		}
 
 		// Physics

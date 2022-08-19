@@ -4,7 +4,7 @@
 #include "Eos/Core/UID.h"
 #include "Eos/Renderer/Texture.h"
 
-#include "Eos/Scene/NativeScript.h"
+#include "Eos/Scene/ScriptableEntity.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -96,37 +96,16 @@ namespace Eos {
 
 	struct NativeScriptComponent
 	{
-		std::unordered_map<entt::id_type, std::function<std::shared_ptr<NativeScript>(Entity entity)>> InstantiateScripts;
-		std::unordered_map<entt::id_type, std::shared_ptr<NativeScript>> Instances;
+		ScriptableEntity* Instance = nullptr;
 
-		template<typename T, typename... Args>
-		NativeScriptComponent& Bind(Args... args)
-		{
-			InstantiateScripts.try_emplace(entt::type_id<T>().hash(), [args...](Entity entity)->std::shared_ptr<NativeScript> { return std::make_shared<T>(entity, args...); });
-			return *this;
-		}
-
-		NativeScriptComponent& Instantiate(Entity entity)
-		{
-			for (const auto& [id, instantiateScript] : InstantiateScripts)
-			{
-				Instances.try_emplace(id, instantiateScript(entity));
-			}
-			return *this;
-		}
+		ScriptableEntity* (*InstantiateScript)();
+		void (*DestroyScript)(NativeScriptComponent*);
 
 		template<typename T>
-		T* GetInstance()
+		void Bind()
 		{
-			return Instances.at[entt::type_hash<T>];
-		}
-
-		void OnUpdate(Timestep ts)
-		{
-			for (auto& [id, instance] : Instances)
-			{
-				instance->OnUpdate(ts);
-			}
+			InstantiateScript = []() { return static_cast<ScriptableEntity*>(new T()); };
+			DestroyScript = [](NativeScriptComponent* nsc) { delete nsc->Instance; nsc->Instance = nullptr; };
 		}
 	};
 

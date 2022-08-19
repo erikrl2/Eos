@@ -19,7 +19,7 @@
 
 #include "Eos/Scene/Scene.h"
 #include "Eos/Scene/Entity.h"
-#include "Eos/Scene/NativeScript.h"
+#include "Eos/Scene/ScriptableEntity.h"
 #include "Eos/Scene/Components.h"
 
 // ---Renderer-----------------------
