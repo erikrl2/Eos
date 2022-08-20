@@ -17,9 +17,10 @@ namespace Eos {
 
 	Application* CreateApplication(ApplicationCommandLineArgs args)
 	{
-		// for debugging
-		args.Args[1] = "assets/scenes/Test.eos";
-		args.Count++;
+#if 1
+		//args.Args[1] = "assets/scenes/Test.eos";
+		//args.Count++;
+#endif
 
 		ApplicationSpecification spec;
 		spec.Name = "EosEditor";

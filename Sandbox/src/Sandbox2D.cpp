@@ -1,5 +1,7 @@
 #include "Sandbox2D.h"
 
+#include "Eos/Scene/SceneSerializer.h"
+
 Sandbox2D::Sandbox2D()
 	: Layer("Sandbox2D")
 {
@@ -8,12 +10,18 @@ Sandbox2D::Sandbox2D()
 void Sandbox2D::OnAttach()
 {
 	m_Scene = Eos::CreateRef<Eos::Scene>();
+	Eos::SceneSerializer serializer(m_Scene);
+	serializer.Deserialize("assets/scenes/Test.eos");
+
+	Eos::Window& window = Eos::Application::Get().GetWindow();
+	m_Scene->OnViewportResize(window.GetWidth(), window.GetHeight());
+
 	m_Scene->OnRuntimeStart();
 }
 
 void Sandbox2D::OnDetach()
 {
-	m_Scene->OnRuntimeStop();
+	//m_Scene->OnRuntimeStop(); // Causes crash...
 }
 
 void Sandbox2D::OnUpdate(Eos::Timestep ts)

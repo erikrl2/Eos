@@ -98,6 +98,8 @@ namespace Eos {
 
 		ScriptComponent() = default;
 		ScriptComponent(const ScriptComponent&) = default;
+		ScriptComponent(const std::string& className)
+			: ClassName(className) {}
 	};
 
 	class ScriptableEntity;
