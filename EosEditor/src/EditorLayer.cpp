@@ -194,42 +194,12 @@ namespace Eos {
 
 			if (ImGui::BeginMenu(ICON_FA_PALETTE "  Themes"))
 			{
-				if (ImGui::MenuItem("Eos Dark 1", 0, m_ThemeSelection[(int)Style::Theme::Dark1]))
+				if (ImGui::MenuItem("Eos Dark 1", 0, m_ThemeSelection[Style::Theme::Dark1]))
 					SetEditorTheme(Style::Theme::Dark1);
-				if (ImGui::MenuItem("Eos Dark 2", 0, m_ThemeSelection[(int)Style::Theme::Dark2]))
+				if (ImGui::MenuItem("Eos Dark 2", 0, m_ThemeSelection[Style::Theme::Dark2]))
 					SetEditorTheme(Style::Theme::Dark2);
-				if (ImGui::MenuItem("Eos Dark 3", 0, m_ThemeSelection[(int)Style::Theme::Dark3]))
+				if (ImGui::MenuItem("Eos Dark 3", 0, m_ThemeSelection[Style::Theme::Dark3]))
 					SetEditorTheme(Style::Theme::Dark3);
-				if (ImGui::MenuItem("Eos Dark 4", 0, m_ThemeSelection[(int)Style::Theme::Dark4]))
-					SetEditorTheme(Style::Theme::Dark4);
-				if (ImGui::MenuItem("Eos Dark 5", 0, m_ThemeSelection[(int)Style::Theme::Dark5]))
-					SetEditorTheme(Style::Theme::Dark5);
-				if (ImGui::MenuItem("Eos Dark 6", 0, m_ThemeSelection[(int)Style::Theme::Dark6]))
-					SetEditorTheme(Style::Theme::Dark6);
-				if (ImGui::MenuItem("Eos Dark 7", 0, m_ThemeSelection[(int)Style::Theme::Dark7]))
-					SetEditorTheme(Style::Theme::Dark7);
-
-				if (ImGui::MenuItem("Unreal", 0, m_ThemeSelection[(int)Style::Theme::Unreal]))
-					SetEditorTheme(Style::Theme::Unreal);
-				if (ImGui::MenuItem("Visual Studio", 0, m_ThemeSelection[(int)Style::Theme::VisualStudio]))
-					SetEditorTheme(Style::Theme::VisualStudio);
-				if (ImGui::MenuItem("Photoshop", 0, m_ThemeSelection[(int)Style::Theme::Photoshop]))
-					SetEditorTheme(Style::Theme::Photoshop);
-				if (ImGui::MenuItem("Sonic Riders", 0, m_ThemeSelection[(int)Style::Theme::SonicRiders]))
-					SetEditorTheme(Style::Theme::SonicRiders);
-				if (ImGui::MenuItem("Dark Ruda", 0, m_ThemeSelection[(int)Style::Theme::DarkRuda]))
-					SetEditorTheme(Style::Theme::DarkRuda);
-
-				if (ImGui::BeginMenu("Dear ImGui"))
-				{
-					if (ImGui::MenuItem("Classic", 0, m_ThemeSelection[(int)Style::Theme::ImGuiClassic]))
-						SetEditorTheme(Style::Theme::ImGuiClassic);
-					if (ImGui::MenuItem("Dark", 0, m_ThemeSelection[(int)Style::Theme::ImGuiDark]))
-						SetEditorTheme(Style::Theme::ImGuiDark);
-					if (ImGui::MenuItem("Light", 0, m_ThemeSelection[(int)Style::Theme::ImGuiLight]))
-						SetEditorTheme(Style::Theme::ImGuiLight);
-					ImGui::EndMenu();
-				}
 				ImGui::EndMenu();
 			}
 
@@ -625,19 +595,22 @@ namespace Eos {
 		// Camera Preview
 		if (m_SceneState == SceneState::Edit && m_ShowCameraPreview)
 		{
-			if (Entity ce = m_EditorScene->GetPrimaryCameraEntity(); ce && ce.HasComponent<TransformComponent>())
+			m_CameraPreviewFramebuffer->Bind();
+			RenderCommand::SetClearColor({ 0, 0, 0, 0 });
+			RenderCommand::Clear(); // TODO: Fix Program/shader state performance warning
+
+			if (Entity cameraEntity = m_EditorScene->GetPrimaryCameraEntity();
+				cameraEntity && cameraEntity.HasComponent<TransformComponent>())
 			{
-				auto& camera = ce.GetComponent<CameraComponent>().Camera;
+				auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
 				camera.SetViewportSize(16, 9);
 
-				m_CameraPreviewFramebuffer->Bind();
-				RenderCommand::SetClearColor({ 0, 0, 0, 0 });
-				RenderCommand::Clear(); // TODO: Fix Program/shader state performance warning
-				m_EditorScene->RenderScene(camera, ce.GetComponent<TransformComponent>().GetTransform());
-				m_CameraPreviewFramebuffer->Unbind();
+				m_EditorScene->RenderScene(camera, cameraEntity.GetComponent<TransformComponent>().GetTransform());
 
 				camera.SetViewportSize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			}
+
+			m_CameraPreviewFramebuffer->Unbind();
 		}
 	}
 
@@ -767,47 +740,20 @@ namespace Eos {
 		Application::Get().GetWindow().SetTitle("Eos Editor - " + m_EditorScene->GetName());
 	}
 
-	void EditorLayer::SetEditorTheme(Style::Theme theme)
+	void EditorLayer::SetEditorTheme(Style::Theme newTheme)
 	{
-		if (!m_ThemeSelection[(int)theme])
-		{
-			Style::SetTheme(theme);
-			m_ThemeSelection[(int)m_Settings.Theme] = false;
-			m_ThemeSelection[(int)theme] = true;
-			m_Settings.Theme = theme;
-		}
-
-		// General color adjustments
-		ImVec4* colors = ImGui::GetStyle().Colors;
-		ImVec4& bg = colors[ImGuiCol_WindowBg];
-		ImVec4 bg_light = ImVec4(bg.x + 0.1f, bg.y + 0.1f, bg.z + 0.1f, 0.9f);
-		ImVec4 titleBg = colors[ImGuiCol_TitleBg];
-
-		colors[ImGuiCol_PopupBg]				= bg_light;
-		colors[ImGuiCol_HeaderActive]			= bg_light;
-		colors[ImGuiCol_HeaderHovered]			= bg;
-		colors[ImGuiCol_Header]					= bg;
-		colors[ImGuiCol_TitleBgActive]			= titleBg;
-		colors[ImGuiCol_TitleBgCollapsed]		= titleBg;
-		colors[ImGuiCol_MenuBarBg]				= titleBg;
-		colors[ImGuiCol_SeparatorActive]		= titleBg;
-		colors[ImGuiCol_SeparatorHovered]		= titleBg;
-		colors[ImGuiCol_Separator]				= titleBg;
-		colors[ImGuiCol_TabHovered]				= bg;
-		colors[ImGuiCol_TabActive]				= bg;
-		colors[ImGuiCol_TabUnfocusedActive]		= bg;
-		colors[ImGuiCol_TabUnfocused]			= colors[ImGuiCol_Tab];
+		Style::SetTheme(newTheme);
+		m_ThemeSelection[m_Settings.Theme] = false;
+		m_ThemeSelection[newTheme] = true;
+		m_Settings.Theme = newTheme;
 	}
 
-	void EditorLayer::SetEditorFont(Style::Font font)
+	void EditorLayer::SetEditorFont(Style::Font newFont)
 	{
-		if (!m_FontSelection[(int)font])
-		{
-			Style::SetDefaultFont(font);
-			m_FontSelection[(int)m_Settings.Font] = false;
-			m_FontSelection[(int)font] = true;
-			m_Settings.Font = font;
-		}
+		Style::SetDefaultFont(newFont);
+		m_FontSelection[m_Settings.Font] = false;
+		m_FontSelection[newFont] = true;
+		m_Settings.Font = newFont;
 	}
 
 	void EditorLayer::SaveEditorSettings()

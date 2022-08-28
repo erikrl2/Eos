@@ -17,15 +17,6 @@ namespace Eos {
 			case Style::Theme::Dark1:			return "Dark1";
 			case Style::Theme::Dark2:			return "Dark2";
 			case Style::Theme::Dark3:			return "Dark3";
-			case Style::Theme::Dark4:			return "Dark4";
-			case Style::Theme::Dark5:			return "Dark5";
-			case Style::Theme::Dark6:			return "Dark6";
-			case Style::Theme::Dark7:			return "Dark7";
-			case Style::Theme::Photoshop:		return "Photoshop";
-			case Style::Theme::SonicRiders:		return "SonicRiders";
-			case Style::Theme::Unreal:			return "Unreal";
-			case Style::Theme::VisualStudio:	return "VisualStudio";
-			case Style::Theme::DarkRuda:		return "DarkRuda";
 		}
 
 		EOS_CORE_ASSERT(false, "Unknown body type");
@@ -37,15 +28,6 @@ namespace Eos {
 		if (themeString == "Dark1")				return Style::Theme::Dark1;
 		if (themeString == "Dark2")				return Style::Theme::Dark2;
 		if (themeString == "Dark3")				return Style::Theme::Dark3;
-		if (themeString == "Dark4")				return Style::Theme::Dark4;
-		if (themeString == "Dark5")				return Style::Theme::Dark5;
-		if (themeString == "Dark6")				return Style::Theme::Dark6;
-		if (themeString == "Dark7")				return Style::Theme::Dark7;
-		if (themeString == "Photoshop")			return Style::Theme::Photoshop;
-		if (themeString == "SonicRiders")		return Style::Theme::SonicRiders;
-		if (themeString == "Unreal")			return Style::Theme::Unreal;
-		if (themeString == "VisualStudio")		return Style::Theme::VisualStudio;
-		if (themeString == "DarkRuda")			return Style::Theme::DarkRuda;
 
 		EOS_CORE_ASSERT(false, "Unknown body type");
 		return Style::Theme::Dark1;

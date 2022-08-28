@@ -52,8 +52,8 @@ namespace Eos {
 		void SetEditorScene(const Ref<Scene>& scene);
 		void SyncWindowTitle();
 
-		void SetEditorTheme(Style::Theme theme);
-		void SetEditorFont(Style::Font font);
+		void SetEditorTheme(Style::Theme newTheme);
+		void SetEditorFont(Style::Font newFont);
 
 		void SaveEditorSettings();
 		void LoadEditorSettings();
@@ -102,8 +102,8 @@ namespace Eos {
 
 		// Settings
 		EditorSettings m_Settings;
-		bool m_ThemeSelection[16] = {};
-		bool m_FontSelection[16] = {};
+		bool m_ThemeSelection[3] = {};
+		bool m_FontSelection[5] = {};
 
 		const char* m_ImGuiConfigFilepath = "config/eos.ini";
 		const char* m_UserConfigFilepath = "config/user.ini";
