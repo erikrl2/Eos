@@ -64,7 +64,9 @@ namespace Eos {
 				std::transform(searchText.begin(), searchText.end(), searchText.begin(), ::tolower);
 				if (filenameString.find(searchText) != std::string::npos)
 				{
-					if (!directoryEntry.is_directory() ? path.extension() != ".ttf" && path.extension() != ".frag" && path.extension() != ".vert" && path.extension() != ".glsl" : true)
+					// TODO: Remove if-statement
+					if (!directoryEntry.is_directory() ? path.extension() != ".ttf" && path.extension() != ".frag"
+						&& path.extension() != ".vert" && path.extension() != ".glsl" : true)
 						DrawDirectoryEntry(directoryEntry, thumbnailSize);
 				}
 			}
@@ -133,8 +135,8 @@ namespace Eos {
 
 	void ContentBrowserPanel::DrawSearchbar()
 	{
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - 124.0f);
-		ImGui::SetNextItemWidth(130.0f);
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - 100.0f);
+		ImGui::SetNextItemWidth(140.0f);
 		ImGui::InputTextWithHint("##Search", ICON_FA_SEARCH "  Search...", m_SearchBuffer, sizeof(m_SearchBuffer));
 		DrawClearSearchbarButton();
 		ImGui::Separator();

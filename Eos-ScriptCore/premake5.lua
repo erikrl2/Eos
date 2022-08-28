@@ -3,8 +3,8 @@ project "Eos-ScriptCore"
 	language "C#"
 	dotnetframework "4.7.2"
 
-	targetdir ("%{wks.location}/EosEditor/Resources/Scripts")
-	objdir ("%{wks.location}/EosEditor/Resources/Scripts/Intermediates")
+	targetdir ("../EosEditor/Resources/Scripts")
+	objdir ("../EosEditor/Resources/Scripts/Intermediates")
 
 	files 
 	{
