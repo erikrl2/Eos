@@ -156,7 +156,6 @@ namespace Eos {
 	{
 		YAML::Emitter out;
 		out << YAML::BeginMap;
-		out << YAML::Key << "Scene" << YAML::Value << m_Scene->GetName();
 		out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 
 		auto idView = m_Scene->m_Registry.view<IDComponent>();
@@ -177,8 +176,7 @@ namespace Eos {
 
 	void SceneSerializer::SerializeRuntime(const std::filesystem::path& filepath)
 	{
-		// Not implemented
-		EOS_CORE_ASSERT(false);
+		EOS_CORE_ASSERT(false, "Not implemented");
 	}
 
 	bool SceneSerializer::Deserialize(const std::filesystem::path& filepath)
@@ -194,10 +192,7 @@ namespace Eos {
 			return false;
 		}
 		
-		if (!data["Scene"])
-			return false;
-
-		std::string sceneName = data["Scene"].as<std::string>();
+		std::string sceneName = filepath.stem().string();
 		EOS_CORE_TRACE("Deserializing scene '{0}'", sceneName);
 		m_Scene->SetName(sceneName);
 

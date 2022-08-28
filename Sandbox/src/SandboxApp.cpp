@@ -21,7 +21,7 @@ Eos::Application* Eos::CreateApplication(Eos::ApplicationCommandLineArgs args)
 	Eos::ApplicationSpecification spec;
 	spec.Name = "Sandbox";
 	spec.CommandLineArgs = args;
-	spec.WorkingDirectory = "../EosEditor";
+	spec.WorkingDirectory = "../Editor";
 
 	return new Sandbox(spec);
 }

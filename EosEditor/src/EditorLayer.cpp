@@ -160,8 +160,6 @@ namespace Eos {
 
 	void EditorLayer::UI_MenuBar()
 	{
-		static bool renamingScene = false;
-
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::BeginMainMenuBar();
 		ImGui::PopStyleVar();
@@ -187,11 +185,6 @@ namespace Eos {
 
 		if (ImGui::BeginMenu(ICON_FA_EDIT "  Edit "))
 		{
-			if (ImGui::MenuItem(ICON_FA_PEN "  Rename Scene"))
-				renamingScene = true;
-
-			ImGui::Separator();
-
 			if (ImGui::BeginMenu(ICON_FA_PALETTE "  Themes"))
 			{
 				if (ImGui::MenuItem("Eos Dark 1", 0, m_ThemeSelection[Style::Theme::Dark1]))
@@ -217,26 +210,6 @@ namespace Eos {
 		}
 
 		ImGui::EndMainMenuBar();
-
-		if (renamingScene)
-		{
-			ImGui::Begin("Rename Scene", &renamingScene, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings);
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(6.0f, 6.0f));
-			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.25f, 0.25f, 0.25f, 1.0f));
-
-			char sceneName[64];
-			strncpy_s(sceneName, m_EditorScene->GetName().c_str(), sizeof(sceneName));
-			if (ImGui::InputText("##RenameInput", sceneName, sizeof(sceneName), ImGuiInputTextFlags_EnterReturnsTrue))
-			{
-				m_EditorScene->SetName(sceneName);
-				SyncWindowTitle();
-				renamingScene = false;
-			}
-
-			ImGui::PopStyleVar();
-			ImGui::PopStyleColor();
-			ImGui::End();
-		}
 	}
 
 	void EditorLayer::UI_Toolbar()
@@ -619,9 +592,8 @@ namespace Eos {
 		if (m_SceneState != SceneState::Edit)
 			return;
 
-		Ref<Scene> newScene = CreateRef<Scene>();
-		SetEditorScene(newScene);
 		m_EditorScenePath = std::filesystem::path();
+		SetEditorScene(CreateRef<Scene>());
 	}
 
 	void EditorLayer::OpenScene()
@@ -644,11 +616,11 @@ namespace Eos {
 
 		Ref<Scene> newScene = CreateRef<Scene>();
 		SceneSerializer serializer(newScene);
-		if (!serializer.Deserialize(path.string()))
+		if (!serializer.Deserialize(path))
 			return false;
 
-		SetEditorScene(newScene);
 		m_EditorScenePath = path;
+		SetEditorScene(newScene);
 		return true;
 	}
 
@@ -665,8 +637,7 @@ namespace Eos {
 		std::filesystem::path filepath = FileDialogs::SaveFile("Eos Scene (*.eos)\0*.eos\0");
 		if (!filepath.empty())
 		{
-			if (m_EditorScene->GetName() == "Untitled")
-				m_EditorScene->SetName(filepath.stem().string());
+			m_EditorScene->SetName(filepath.stem().string());
 			m_EditorScenePath = filepath;
 
 			SerializeScene(m_EditorScene, filepath);
@@ -737,7 +708,7 @@ namespace Eos {
 
 	void EditorLayer::SyncWindowTitle()
 	{
-		Application::Get().GetWindow().SetTitle("Eos Editor - " + m_EditorScene->GetName());
+		Application::Get().GetWindow().SetTitle(m_ActiveScene->GetName() + " - EosEditor");
 	}
 
 	void EditorLayer::SetEditorTheme(Style::Theme newTheme)

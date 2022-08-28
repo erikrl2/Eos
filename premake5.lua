@@ -3,7 +3,7 @@ include "Dependencies.lua"
 
 workspace "Eos"
 	architecture "x86_64"
-	startproject "EosEditor"
+	startproject "Editor"
 
 	configurations
 	{
@@ -39,7 +39,7 @@ group "Core"
 group ""
 
 group "Tools"
-	include "EosEditor"
+	include "Editor"
 group ""
 
 group "Misc"
