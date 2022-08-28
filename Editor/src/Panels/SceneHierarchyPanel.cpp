@@ -357,7 +357,7 @@ namespace Eos {
 				glm::vec4& color = component.Color;
 				ImGui::ColorEdit4("##Color", glm::value_ptr(color));
 
-				static Ref<Texture2D> checkerboard = Texture2D::Create("resources/icons/Checkerboard.png");
+				static Ref<Texture2D> checkerboard = Texture2D::Create("Resources/Icons/Checkerboard.png");
 
 				uint32_t textureID = component.Texture ? component.Texture->GetRendererID() : checkerboard->GetRendererID();
 				ImVec4 tintColor = component.Texture ? ImVec4{ color.x, color.y, color.z, color.a } : ImVec4{ 1, 1, 1, 1 };

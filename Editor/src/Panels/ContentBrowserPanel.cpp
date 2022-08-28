@@ -13,8 +13,8 @@ namespace Eos {
 	ContentBrowserPanel::ContentBrowserPanel()
 		: m_CurrentDirectory(g_AssetPath)
 	{
-		m_DirectoryIcon = Texture2D::Create("resources/icons/DirectoryIcon.png");
-		m_FileIcon = Texture2D::Create("resources/icons/FileIcon.png");
+		m_DirectoryIcon = Texture2D::Create("Resources/Icons/DirectoryIcon.png");
+		m_FileIcon = Texture2D::Create("Resources/Icons/FileIcon.png");
 	}
 
 	void ContentBrowserPanel::OnImGuiRender()
