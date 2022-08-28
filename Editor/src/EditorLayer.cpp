@@ -592,8 +592,8 @@ namespace Eos {
 		if (m_SceneState != SceneState::Edit)
 			return;
 
-		m_EditorScenePath = std::filesystem::path();
 		SetEditorScene(CreateRef<Scene>());
+		m_EditorScenePath = std::filesystem::path();
 	}
 
 	void EditorLayer::OpenScene()
@@ -619,8 +619,8 @@ namespace Eos {
 		if (!serializer.Deserialize(path))
 			return false;
 
-		m_EditorScenePath = path;
 		SetEditorScene(newScene);
+		m_EditorScenePath = path;
 		return true;
 	}
 
