@@ -2,7 +2,7 @@
 #include "ScriptGlue.h"
 #include "ScriptEngine.h"
 
-#include "Eos/Core/UID.h"
+#include "Eos/Core/UUID.h"
 #include "Eos/Core/KeyCodes.h"
 #include "Eos/Core/Input.h"
 
@@ -40,11 +40,11 @@ namespace Eos {
 		return glm::dot(*parameter, *parameter);
 	}
 
-	static bool Entity_HasComponent(UID entityID, MonoReflectionType* componentType)
+	static bool Entity_HasComponent(UUID entityID, MonoReflectionType* componentType)
 	{
 		Scene* scene = ScriptEngine::GetSceneContext();
 		EOS_CORE_ASSERT(scene);
-		Entity entity = scene->GetEntityByUID(entityID);
+		Entity entity = scene->GetEntityByUUID(entityID);
 		EOS_CORE_ASSERT(entity);
 
 		MonoType* managedType = mono_reflection_type_get_type(componentType);
@@ -52,31 +52,31 @@ namespace Eos {
 		return s_EntityHasComponentFuncs.at(managedType)(entity);
 	}
 
-	static void TransformComponent_GetTranslation(UID entityID, glm::vec3* outTranslation)
+	static void TransformComponent_GetTranslation(UUID entityID, glm::vec3* outTranslation)
 	{
 		Scene* scene = ScriptEngine::GetSceneContext();
 		EOS_CORE_ASSERT(scene);
-		Entity entity = scene->GetEntityByUID(entityID);
+		Entity entity = scene->GetEntityByUUID(entityID);
 		EOS_CORE_ASSERT(entity);
 
 		*outTranslation = entity.GetComponent<TransformComponent>().Translation;
 	}
 
-	static void TransformComponent_SetTranslation(UID entityID, glm::vec3* translation)
+	static void TransformComponent_SetTranslation(UUID entityID, glm::vec3* translation)
 	{
 		Scene* scene = ScriptEngine::GetSceneContext();
 		EOS_CORE_ASSERT(scene);
-		Entity entity = scene->GetEntityByUID(entityID);
+		Entity entity = scene->GetEntityByUUID(entityID);
 		EOS_CORE_ASSERT(entity);
 
 		entity.GetComponent<TransformComponent>().Translation = *translation;
 	}
 
-	static void Rigidbody2DComponent_ApplyLinearImpulse(UID entityID, glm::vec2* impulse, glm::vec2* point, bool wake)
+	static void Rigidbody2DComponent_ApplyLinearImpulse(UUID entityID, glm::vec2* impulse, glm::vec2* point, bool wake)
 	{
 		Scene* scene = ScriptEngine::GetSceneContext();
 		EOS_CORE_ASSERT(scene);
-		Entity entity = scene->GetEntityByUID(entityID);
+		Entity entity = scene->GetEntityByUUID(entityID);
 		EOS_CORE_ASSERT(entity);
 
 		auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
@@ -84,11 +84,11 @@ namespace Eos {
 		body->ApplyLinearImpulse(b2Vec2(impulse->x, impulse->y), b2Vec2(point->x, point->y), wake);
 	}
 
-	static void Rigidbody2DComponent_ApplyLinearImpulseToCenter(UID entityID, glm::vec2* impulse, bool wake)
+	static void Rigidbody2DComponent_ApplyLinearImpulseToCenter(UUID entityID, glm::vec2* impulse, bool wake)
 	{
 		Scene* scene = ScriptEngine::GetSceneContext();
 		EOS_CORE_ASSERT(scene);
-		Entity entity = scene->GetEntityByUID(entityID);
+		Entity entity = scene->GetEntityByUUID(entityID);
 		EOS_CORE_ASSERT(entity);
 
 		auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();

@@ -50,15 +50,15 @@ namespace Eos {
 					m_SelectionContext = m_Context->CreateEntity();
 					m_SelectionContext.AddComponent<TransformComponent>();
 				}
-				else if (ImGui::MenuItem("Create Camera"))
-				{
-					m_SelectionContext = m_Context->CreateEntity("Camera");
-					m_SelectionContext.AddComponent<TransformComponent>().AddComponent<CameraComponent>();
-				}
 				else if (ImGui::MenuItem("Create Sprite"))
 				{
 					m_SelectionContext = m_Context->CreateEntity("Sprite");
 					m_SelectionContext.AddComponent<TransformComponent>().AddComponent<SpriteRendererComponent>();
+				}
+				else if (ImGui::MenuItem("Create Camera"))
+				{
+					m_SelectionContext = m_Context->CreateEntity("Camera");
+					m_SelectionContext.AddComponent<TransformComponent>().AddComponent<CameraComponent>();
 				}
 
 				ImGui::EndPopup();

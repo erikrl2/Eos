@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Eos/Core/UID.h"
+#include "Eos/Core/UUID.h"
 #include "Eos/Scene/Scene.h"
 #include "Eos/Scene/Components.h"
 
@@ -59,7 +59,7 @@ namespace Eos {
 		operator entt::entity() const { return m_EntityHandle; }
 		operator uint32_t() const { return (uint32_t)m_EntityHandle; }
 
-		UID GetUID() { return GetComponent<IDComponent>().ID; }
+		UUID GetUUID() { return GetComponent<IDComponent>().ID; }
 		const std::string& GetName() { return GetComponent<TagComponent>().Tag; }
 
 		bool operator==(const Entity& other) const { return m_EntityHandle == other.m_EntityHandle && m_Scene == other.m_Scene; }

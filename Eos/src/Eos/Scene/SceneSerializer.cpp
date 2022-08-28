@@ -206,14 +206,14 @@ namespace Eos {
 		{
 			for (auto entity : entities)
 			{
-				uint64_t uid = entity["Entity"].as<uint64_t>();
+				uint64_t uuid = entity["Entity"].as<uint64_t>();
 
 				std::string name;
 				auto tagComponent = entity["TagComponent"];
 				if (tagComponent)
 					name = tagComponent["Tag"].as<std::string>();
 
-				Entity deserializedEntity = m_Scene->CreateEntityWithUID(uid, name);
+				Entity deserializedEntity = m_Scene->CreateEntityWithUUID(uuid, name);
 
 				DeserializeAllEntityComponents(entity, deserializedEntity); // Deserialize components (except IDComponent and TagComponent)
 			}

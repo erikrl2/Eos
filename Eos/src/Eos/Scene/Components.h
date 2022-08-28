@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Eos/Scene/SceneCamera.h"
-#include "Eos/Core/UID.h"
+#include "Eos/Core/UUID.h"
 #include "Eos/Renderer/Texture.h"
 
 #include <glm/glm.hpp>
@@ -18,7 +18,7 @@ namespace Eos {
 
 	struct IDComponent
 	{
-		UID ID;
+		UUID ID;
 
 		IDComponent() = default;
 		IDComponent(const IDComponent&) = default;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Eos/Core/Timestep.h"
-#include "Eos/Core/UID.h"
+#include "Eos/Core/UUID.h"
 #include "Eos/Renderer/EditorCamera.h"
 
 #include <entt.hpp>
@@ -24,7 +24,7 @@ namespace Eos {
 		static Ref<Scene> Copy(Ref<Scene> other);
 
 		Entity CreateEntity(const std::string_view name = {});
-		Entity CreateEntityWithUID(UID uid, const std::string_view name = {});
+		Entity CreateEntityWithUUID(UUID uuid, const std::string_view name = {});
 		void DestroyEntity(Entity entity);
 		void DestroyAllEntities();
 
@@ -43,7 +43,7 @@ namespace Eos {
 
 		Entity DuplicateEntity(Entity entity);
 
-		Entity GetEntityByUID(UID uid);
+		Entity GetEntityByUUID(UUID uuid);
 
 		Entity GetPrimaryCameraEntity();
 
@@ -66,7 +66,7 @@ namespace Eos {
 
 		b2World* m_PhysicsWorld = nullptr;
 
-		std::unordered_map<UID, entt::entity> m_EntityMap;
+		std::unordered_map<UUID, entt::entity> m_EntityMap;
 
 		std::string m_Name = "Untitled";
 

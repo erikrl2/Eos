@@ -37,15 +37,15 @@ namespace Eos {
 	}
 
 	template<typename... Component>
-	static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UID, entt::entity>& enttMap)
+	static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap)
 	{
 		([&]()
 			{
 				for (auto e : src.view<Component>())
 				{
-					UID uid = src.get<IDComponent>(e).ID;
-					EOS_CORE_ASSERT(enttMap.find(uid) != enttMap.end());
-					entt::entity dstEnttID = enttMap.at(uid);
+					UUID uuid = src.get<IDComponent>(e).ID;
+					EOS_CORE_ASSERT(enttMap.find(uuid) != enttMap.end());
+					entt::entity dstEnttID = enttMap.at(uuid);
 
 					auto& component = src.get<Component>(e);
 					dst.emplace_or_replace<Component>(dstEnttID, component);
@@ -54,7 +54,7 @@ namespace Eos {
 	}
 
 	template<typename... Component>
-	static void CopyComponent(ComponentGroup<Component...>, entt::registry& dst, entt::registry& src, const std::unordered_map<UID, entt::entity>& enttMap)
+	static void CopyComponent(ComponentGroup<Component...>, entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap)
 	{
 		CopyComponent<Component...>(dst, src, enttMap);
 	}
@@ -84,15 +84,15 @@ namespace Eos {
 
 		auto& srcSceneRegistry = other->m_Registry;
 		auto& dstSceneRegistry = newScene->m_Registry;
-		std::unordered_map<UID, entt::entity> enttMap;
+		std::unordered_map<UUID, entt::entity> enttMap;
 
 		// Create entities in new scene
 		for (auto e : srcSceneRegistry.view<IDComponent>())
 		{
-			UID uid = srcSceneRegistry.get<IDComponent>(e).ID;
+			UUID uuid = srcSceneRegistry.get<IDComponent>(e).ID;
 			const auto& name = srcSceneRegistry.get<TagComponent>(e).Tag;
-			Entity newEntity = newScene->CreateEntityWithUID(uid, name);
-			enttMap[uid] = (entt::entity)newEntity;
+			Entity newEntity = newScene->CreateEntityWithUUID(uuid, name);
+			enttMap[uuid] = (entt::entity)newEntity;
 		}
 
 		// Copy components (except IDComponent and TagComponent)
@@ -103,23 +103,23 @@ namespace Eos {
 
 	Entity Scene::CreateEntity(const std::string_view name)
 	{
-		return CreateEntityWithUID(UID(), name);
+		return CreateEntityWithUUID(UUID(), name);
 	}
 
-	Entity Scene::CreateEntityWithUID(UID uid, const std::string_view name)
+	Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string_view name)
 	{
 		Entity entity = { m_Registry.create(), this };
-		entity.AddComponent<IDComponent>(uid).AddComponent<TagComponent>()
-			.GetComponent<TagComponent>().Tag = name.empty() ? "GameObject" : name;
+		entity.AddComponent<IDComponent>(uuid).AddComponent<TagComponent>()
+			.GetComponent<TagComponent>().Tag = name.empty() ? "Entity" : name;
 
-		m_EntityMap[uid] = entity;
+		m_EntityMap[uuid] = entity;
 
 		return entity;
 	}
 
 	void Scene::DestroyEntity(Entity entity)
 	{
-		m_EntityMap.erase(entity.GetUID());
+		m_EntityMap.erase(entity.GetUUID());
 		m_Registry.destroy(entity);
 	}
 
@@ -291,10 +291,10 @@ namespace Eos {
 		return {};
 	}
 
-	Entity Scene::GetEntityByUID(UID uid)
+	Entity Scene::GetEntityByUUID(UUID uuid)
 	{
-		if (m_EntityMap.find(uid) != m_EntityMap.end())
-			return { m_EntityMap.at(uid), this };
+		if (m_EntityMap.find(uuid) != m_EntityMap.end())
+			return { m_EntityMap.at(uuid), this };
 
 		return {};
 	}

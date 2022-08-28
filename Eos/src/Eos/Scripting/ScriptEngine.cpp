@@ -99,7 +99,7 @@ namespace Eos {
 		ScriptClass EntityClass;
 
 		std::unordered_map<std::string, Ref<ScriptClass>> EntityClasses;
-		std::unordered_map<UID, Ref<ScriptInstance>> EntityInstances;
+		std::unordered_map<UUID, Ref<ScriptInstance>> EntityInstances;
 
 		// Runtime
 		Scene* SceneContext = nullptr;
@@ -187,17 +187,17 @@ namespace Eos {
 		if (ScriptEngine::EntityClassExists(sc.ClassName))
 		{
 			Ref<ScriptInstance> instance = CreateRef<ScriptInstance>(s_Data->EntityClasses[sc.ClassName], entity);
-			s_Data->EntityInstances[entity.GetUID()] = instance;
+			s_Data->EntityInstances[entity.GetUUID()] = instance;
 			instance->InvokeOnCreate();
 		}
 	}
 
 	void ScriptEngine::OnUpdateEntity(Entity entity, Timestep ts)
 	{
-		UID entityUID = entity.GetUID();
-		EOS_CORE_ASSERT(s_Data->EntityInstances.find(entityUID) != s_Data->EntityInstances.end());
+		UUID entityUUID = entity.GetUUID();
+		EOS_CORE_ASSERT(s_Data->EntityInstances.find(entityUUID) != s_Data->EntityInstances.end());
 
-		Ref<ScriptInstance> instance = s_Data->EntityInstances[entityUID];
+		Ref<ScriptInstance> instance = s_Data->EntityInstances[entityUUID];
 		instance->InvokeOnUpdate((float)ts);
 	}
 
@@ -294,7 +294,7 @@ namespace Eos {
 
 		// Call Entity constructor
 		{
-			UID entityID = entity.GetUID();
+			UUID entityID = entity.GetUUID();
 			void* param = &entityID;
 			m_ScriptClass->InvokeMethod(m_Instance, m_Constructor, &param);
 		}
