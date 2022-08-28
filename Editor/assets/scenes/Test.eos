@@ -59,7 +59,6 @@ Entities:
     BoxCollider2DComponent:
       Offset: [0, 0]
       Size: [0.5, 0.5]
-      Rotation: 0
       Density: 1
       Friction: 0.5
       Restitution: 0

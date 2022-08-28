@@ -484,7 +484,6 @@ namespace Eos {
 			auto& bc2dComponent = entity.GetComponent<BoxCollider2DComponent>();
 			out << YAML::Key << "Offset" << YAML::Value << bc2dComponent.Offset;
 			out << YAML::Key << "Size" << YAML::Value << bc2dComponent.Size;
-			out << YAML::Key << "Rotation" << YAML::Value << bc2dComponent.Rotation;
 			out << YAML::Key << "Density" << YAML::Value << bc2dComponent.Density;
 			out << YAML::Key << "Friction" << YAML::Value << bc2dComponent.Friction;
 			out << YAML::Key << "Restitution" << YAML::Value << bc2dComponent.Restitution;
@@ -503,7 +502,6 @@ namespace Eos {
 			auto& bc2d = deserializedEntity.AddComponent<BoxCollider2DComponent>().GetComponent<BoxCollider2DComponent>();
 			bc2d.Offset = boxCollider2DComponent["Offset"].as<glm::vec2>();
 			bc2d.Size = boxCollider2DComponent["Size"].as<glm::vec2>();
-			bc2d.Rotation = boxCollider2DComponent["Rotation"].as<float>();
 			bc2d.Density = boxCollider2DComponent["Density"].as<float>();
 			bc2d.Friction = boxCollider2DComponent["Friction"].as<float>();
 			bc2d.Restitution = boxCollider2DComponent["Restitution"].as<float>();

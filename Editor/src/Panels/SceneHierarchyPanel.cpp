@@ -455,12 +455,6 @@ namespace Eos {
 				ImGui::DragFloat2("##Offset", glm::value_ptr(component.Offset), 0.01f, 0.0f, 0.0f, "%.2f");
 				DrawLabelLeft("Size");
 				ImGui::DragFloat2("##Size", glm::value_ptr(component.Size), 0.01f, 0.01f, 10000.0f, "%.2f");
-
-				DrawLabelLeft("Rotation");
-				float rotation = glm::degrees(component.Rotation);
-				ImGui::DragFloat("##Rotation", &rotation, 0.1f, 0.0f, 0.0f, "%.2f");
-				component.Rotation = glm::radians(rotation);
-
 				DrawLabelLeft("Density");
 				ImGui::DragFloat("##Density", &component.Density, 0.005f, 0.0f, 1.0f, "%.3f");
 				DrawLabelLeft("Friction");
