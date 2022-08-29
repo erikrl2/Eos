@@ -113,7 +113,7 @@ namespace Eos {
 
 		InitMono();
 		LoadAssembly("Resources/Scripts/Eos-ScriptCore.dll");
-		LoadAppAssembly("SandboxProject/Assets/Scripts/Binaries/Sandbox.dll");
+		LoadAppAssembly("SandboxProject/Binaries/Sandbox.dll");
 		LoadAssemblyClasses();
 
 		ScriptGlue::RegisterComponents();

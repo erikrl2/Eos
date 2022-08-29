@@ -1,4 +1,4 @@
-local EosRootDir = '../../../..'
+local EosRootDir = '../..'
 include (EosRootDir .. "/vendor/premake/premake_customization/solution_items.lua")
 
 workspace "Sandbox"
@@ -17,8 +17,6 @@ workspace "Sandbox"
 		"MultiProcessorCompile"
 	}
 
-outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
-
 project "Sandbox"
 	kind "SharedLib"
 	language "C#"
@@ -29,8 +27,7 @@ project "Sandbox"
 
 	files 
 	{
-		"Source/**.cs",
-		"Properties/**.cs"
+		"Assets/Scripts/**.cs"
 	}
 
 	links
