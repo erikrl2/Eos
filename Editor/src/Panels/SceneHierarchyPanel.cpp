@@ -362,7 +362,7 @@ namespace Eos {
 				uint32_t textureID = component.Texture ? component.Texture->GetRendererID() : checkerboard->GetRendererID();
 				ImVec4 tintColor = component.Texture ? ImVec4{ color.x, color.y, color.z, color.a } : ImVec4{ 1, 1, 1, 1 };
 
-				DrawLabelLeft("Texture");
+				DrawLabelLeft("Sprite");
 				ImGui::Image(reinterpret_cast<ImTextureID>((uint64_t)textureID), { 50.0f, 23.0f }, { 0, 0 }, { 1, 1 }, tintColor, { 1, 1, 1, 1 });
 				if (ImGui::BeginDragDropTarget())
 				{
@@ -374,7 +374,7 @@ namespace Eos {
 						if (texture->IsLoaded())
 							component.Texture = texture;
 						else
-							EOS_WARN("Could not load texture {0}", texturePath.filename().string());
+							EOS_WARN("Could not load sprite {0}", texturePath.filename().string());
 					}
 					ImGui::EndDragDropTarget();
 				}

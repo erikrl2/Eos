@@ -374,7 +374,7 @@ namespace Eos {
 	void EditorLayer::UI_Settings()
 	{
 		ImGui::Begin(ICON_FA_WRENCH "  Settings");
-		ImGui::Checkbox("2D editor camera", &EditorCamera::s_RotationLocked);
+		ImGui::Checkbox("Lock camera rotation", &EditorCamera::s_RotationLocked);
 		ImGui::Checkbox("Show primary camera view", &m_ShowCameraPreview);
 		ImGui::ColorEdit3("Selected entity outline color", glm::value_ptr(m_EntityOutlineColor), ImGuiColorEditFlags_NoInputs);
 		ImGui::Checkbox("Show physics colliders", &m_ShowPhysicsColliders);
@@ -392,7 +392,6 @@ namespace Eos {
 		float delta = time - lastFrameTime;
 		lastFrameTime = time;
 		ImGui::Text("FPS: %.0f", 1.0f / delta);
-		ImGui::Text("Uptime: %dmin", (int)time / 60);
 
 		const char* entityTag = "None";
 		if (m_HoveredEntity) entityTag = m_HoveredEntity.GetComponent<TagComponent>().Tag.c_str();

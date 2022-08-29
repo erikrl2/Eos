@@ -8,7 +8,7 @@
 namespace Eos {
 
 	// TODO: Once we have projects, change this to the projects assets directory
-	extern const std::filesystem::path g_AssetPath = "assets";
+	extern const std::filesystem::path g_AssetPath = "SandboxProject/Assets";
 
 	ContentBrowserPanel::ContentBrowserPanel()
 		: m_CurrentDirectory(g_AssetPath)
@@ -64,10 +64,7 @@ namespace Eos {
 				std::transform(searchText.begin(), searchText.end(), searchText.begin(), ::tolower);
 				if (filenameString.find(searchText) != std::string::npos)
 				{
-					// TODO: Remove if-statement
-					if (!directoryEntry.is_directory() ? path.extension() != ".ttf" && path.extension() != ".frag"
-						&& path.extension() != ".vert" && path.extension() != ".glsl" : true)
-						DrawDirectoryEntry(directoryEntry, thumbnailSize);
+					DrawDirectoryEntry(directoryEntry, thumbnailSize);
 				}
 			}
 		}
