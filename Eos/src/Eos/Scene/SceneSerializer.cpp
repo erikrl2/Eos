@@ -248,18 +248,15 @@ namespace Eos {
 	template<>
 	static void SerializeEntityComponent<TransformComponent>(YAML::Emitter& out, Entity entity)
 	{
-		if (entity.HasComponent<TransformComponent>())
-		{
-			out << YAML::Key << "TransformComponent";
-			out << YAML::BeginMap;
+		out << YAML::Key << "TransformComponent";
+		out << YAML::BeginMap;
 
-			auto& tc = entity.GetComponent<TransformComponent>();
-			out << YAML::Key << "Translation" << YAML::Value << tc.Translation;
-			out << YAML::Key << "Rotation" << YAML::Value << tc.Rotation;
-			out << YAML::Key << "Scale" << YAML::Value << tc.Scale;
+		auto& tc = entity.GetComponent<TransformComponent>();
+		out << YAML::Key << "Translation" << YAML::Value << tc.Translation;
+		out << YAML::Key << "Rotation" << YAML::Value << tc.Rotation;
+		out << YAML::Key << "Scale" << YAML::Value << tc.Scale;
 
-			out << YAML::EndMap;
-		}
+		out << YAML::EndMap;
 	}
 
 	template<>
@@ -268,7 +265,7 @@ namespace Eos {
 		auto transformComponent = entity["TransformComponent"];
 		if (transformComponent)
 		{
-			auto& tc = deserializedEntity.AddComponent<TransformComponent>().GetComponent<TransformComponent>();
+			auto& tc = deserializedEntity.GetComponent<TransformComponent>();
 			tc.Translation = transformComponent["Translation"].as<glm::vec3>();
 			tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
 			tc.Scale = transformComponent["Scale"].as<glm::vec3>();

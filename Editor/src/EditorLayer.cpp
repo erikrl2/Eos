@@ -556,7 +556,8 @@ namespace Eos {
 		}
 
 		// Selected entity outline 
-		if (Entity selection = m_SceneHierarchyPanel.GetSelectedEntity(); selection && selection.HasComponent<TransformComponent>()) {
+		if (Entity selection = m_SceneHierarchyPanel.GetSelectedEntity())
+		{
 			glm::vec3 forwardDir = m_EditorCamera.GetForwardDirection() * glm::vec3(0.002f);
 			glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -forwardDir.z)) * selection.GetComponent<TransformComponent>().GetTransform();
 			Renderer2D::DrawRect(transform, m_EntityOutlineColor);
@@ -571,8 +572,7 @@ namespace Eos {
 			RenderCommand::SetClearColor({ 0, 0, 0, 0 });
 			RenderCommand::Clear(); // TODO: Fix Program/shader state performance warning
 
-			if (Entity cameraEntity = m_EditorScene->GetPrimaryCameraEntity();
-				cameraEntity && cameraEntity.HasComponent<TransformComponent>())
+			if (Entity cameraEntity = m_EditorScene->GetPrimaryCameraEntity())
 			{
 				auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
 				camera.SetViewportSize(16, 9);

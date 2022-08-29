@@ -48,17 +48,16 @@ namespace Eos {
 				if (ImGui::MenuItem("Create Empty"))
 				{
 					m_SelectionContext = m_Context->CreateEntity();
-					m_SelectionContext.AddComponent<TransformComponent>();
 				}
 				else if (ImGui::MenuItem("Create Sprite"))
 				{
 					m_SelectionContext = m_Context->CreateEntity("Sprite");
-					m_SelectionContext.AddComponent<TransformComponent>().AddComponent<SpriteRendererComponent>();
+					m_SelectionContext.AddComponent<SpriteRendererComponent>();
 				}
 				else if (ImGui::MenuItem("Create Camera"))
 				{
 					m_SelectionContext = m_Context->CreateEntity("Camera");
-					m_SelectionContext.AddComponent<TransformComponent>().AddComponent<CameraComponent>();
+					m_SelectionContext.AddComponent<CameraComponent>();
 				}
 
 				ImGui::EndPopup();
@@ -221,7 +220,8 @@ namespace Eos {
 			bool removeComponent = false;
 			if (ImGui::BeginPopup("ComponentSettings"))
 			{
-				if (ImGui::MenuItem("Remove Component"))
+				bool enabled = typeid(T) != typeid(TransformComponent);
+				if (ImGui::MenuItem("Remove Component", (const char*)0, false, enabled))
 				{
 					removeComponent = true;
 				}

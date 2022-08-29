@@ -109,7 +109,9 @@ namespace Eos {
 	Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string_view name)
 	{
 		Entity entity = { m_Registry.create(), this };
-		entity.AddComponent<IDComponent>(uuid).AddComponent<TagComponent>()
+		entity.AddComponent<IDComponent>(uuid)
+			.AddComponent<TransformComponent>()
+			.AddComponent<TagComponent>()
 			.GetComponent<TagComponent>().Tag = name.empty() ? "Entity" : name;
 
 		m_EntityMap[uuid] = entity;
