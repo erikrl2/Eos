@@ -28,7 +28,7 @@ Entities:
       Scale: [0.5, 0.5, 0.5]
     SpriteRendererComponent:
       Color: [1, 1, 1, 1]
-      TexturePath: SandboxProject/Assets\Textures\ball.png
+      TexturePath: SandboxProject/Assets\Sprites\ball.png
       FlipXY: [0, 0]
       TilingFactor: 1
       Atlas: false
