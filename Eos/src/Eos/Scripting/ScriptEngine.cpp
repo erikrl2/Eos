@@ -202,12 +202,12 @@ namespace Eos {
 
 	void ScriptEngine::ShutdownMono()
 	{
-		// NOTE(Yan): mono is a little confusing to shutdown, so maybe come back to this
+		mono_domain_set(s_Data->RootDomain, false);
 
-		// mono_domain_unload(s_Data->AppDomain);
+		mono_domain_unload(s_Data->AppDomain);
 		s_Data->AppDomain = nullptr;
 
-		// mono_jit_cleanup(s_Data->RootDomain);
+		mono_jit_cleanup(s_Data->RootDomain);
 		s_Data->RootDomain = nullptr;
 	}
 
@@ -321,10 +321,6 @@ namespace Eos {
 			Ref<ScriptClass> scriptClass = CreateRef<ScriptClass>(nameSpace, className);
 			s_Data->EntityClasses[fullName] = scriptClass;
 
-
-			// This routine is an iterator routine for retrieving the fields in a class.
-			// You must pass a gpointer that points to zero and is treated as an opaque handle
-			// to iterate over all of the elements. When no more values are available, the return value is NULL.
 
 			int fieldCount = mono_class_num_fields(monoClass);
 			EOS_CORE_WARN("{} has {} fields:", className, fieldCount);

@@ -21,7 +21,6 @@ void Sandbox2D::OnAttach()
 
 void Sandbox2D::OnDetach()
 {
-	//m_Scene->OnRuntimeStop(); // Causes crash...
 }
 
 void Sandbox2D::OnUpdate(Eos::Timestep ts)
@@ -40,11 +39,18 @@ void Sandbox2D::OnEvent(Eos::Event& e)
 {
 	Eos::EventDispatcher dispatcher(e);
 	dispatcher.Dispatch<Eos::WindowResizeEvent>(EOS_BIND_EVENT_FN(OnWindowResize));
+	dispatcher.Dispatch<Eos::WindowCloseEvent>(EOS_BIND_EVENT_FN(OnWindowClose));
 }
 
 bool Sandbox2D::OnWindowResize(Eos::WindowResizeEvent& e)
 {
 	m_Scene->OnViewportResize(e.GetWidth(), e.GetHeight());
+	return false;
+}
+
+bool Sandbox2D::OnWindowClose(Eos::WindowCloseEvent& e)
+{
+	m_Scene->OnRuntimeStop();
 	return false;
 }
 
