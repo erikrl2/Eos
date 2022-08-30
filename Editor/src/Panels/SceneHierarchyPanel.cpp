@@ -334,7 +334,7 @@ namespace Eos {
 				ImGui::Checkbox("##FixedAspectRatio", &component.FixedAspectRatio);
 			});
 
-		DrawComponent<ScriptComponent>("Script", entity, [&](auto& component)
+		DrawComponent<ScriptComponent>("Script", entity, [entity](auto& component) mutable
 			{
 				bool scriptClassExists = ScriptEngine::EntityClassExists(component.ClassName);
 
