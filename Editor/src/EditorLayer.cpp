@@ -659,7 +659,7 @@ namespace Eos {
 		m_ActiveScene = Scene::Copy(m_EditorScene);
 		m_ActiveScene->OnRuntimeStart();
 
-		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		OnSceneStateChange();
 	}
 
 	void EditorLayer::OnSceneSimulate()
@@ -672,7 +672,7 @@ namespace Eos {
 		m_ActiveScene = Scene::Copy(m_EditorScene);
 		m_ActiveScene->OnSimulationStart();
 
-		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		OnSceneStateChange();
 	}
 
 	void EditorLayer::OnSceneStop()
@@ -688,7 +688,17 @@ namespace Eos {
 
 		m_ActiveScene = m_EditorScene;
 
+		OnSceneStateChange();
+	}
+
+	void EditorLayer::OnSceneStateChange()
+	{
+		Entity selectedEntityNew;
+		if (Entity selectedEntityOld = m_SceneHierarchyPanel.GetSelectedEntity())
+			selectedEntityNew = m_ActiveScene->GetEntityByUUID(selectedEntityOld.GetUUID());
+
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		m_SceneHierarchyPanel.SetSelectedEntity(selectedEntityNew);
 	}
 
 	void EditorLayer::SetEditorScene(const Ref<Scene>& scene)

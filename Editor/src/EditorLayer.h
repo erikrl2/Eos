@@ -48,6 +48,7 @@ namespace Eos {
 		void OnScenePlay();
 		void OnSceneSimulate();
 		void OnSceneStop();
+		void OnSceneStateChange();
 
 		void SetEditorScene(const Ref<Scene>& scene);
 		void SyncWindowTitle();

@@ -321,7 +321,7 @@ namespace Eos {
 			Ref<ScriptClass> scriptClass = CreateRef<ScriptClass>(nameSpace, className);
 			s_Data->EntityClasses[fullName] = scriptClass;
 
-
+			// Retrieve public fields
 			int fieldCount = mono_class_num_fields(monoClass);
 			EOS_CORE_WARN("{} has {} fields:", className, fieldCount);
 			void* iterator = nullptr;
