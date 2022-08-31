@@ -344,7 +344,7 @@ namespace Eos {
 				if (!scriptClassExists)
 					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.2f, 0.3f, 1.0f));
 
-				if (ImGui::InputText("Class", buffer, sizeof(buffer)))
+				if (ImGui::InputText("Class", buffer, sizeof(buffer), ImGuiInputTextFlags_CharsNoBlank))
 					component.ClassName = buffer;
 
 				// Fields
@@ -414,7 +414,7 @@ namespace Eos {
 					ImGui::SameLine();
 					ImGui::Checkbox("##FlipY", &component.FlipY);
 
-					DrawLabelLeft("Tiling Factor");
+					DrawLabelLeft("Tiling Factor", 115.0f);
 					ImGui::DragFloat("##TilingFactor", &component.TilingFactor, 0.01f, 0.0f, 100.0f, "%.2f");
 
 					DrawLabelLeft("Is Atlas");

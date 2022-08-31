@@ -34,7 +34,7 @@ namespace Eos {
 
 		Application& app = Application::Get();
 		app.GetWindow().MaximizeWindow();
-		app.GetImGuiLayer()->BlockEvents(false);
+		app.GetImGuiLayer()->ConsumeEvents(false);
 
 		bool sceneLoaded = false;
 		auto commandLineArgs = app.GetSpecification().CommandLineArgs;
@@ -423,9 +423,11 @@ namespace Eos {
 		if (e.IsRepeat())
 			return false;
 
+		bool editing = m_SceneState == SceneState::Edit;
 		bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
 		bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
-		bool editing = m_ViewportHovered && m_SceneState == SceneState::Edit;
+		bool canChangeGizmoType = !ImGuizmo::IsUsing() && editing;
+
 		switch (e.GetKeyCode())
 		{
 			case Key::N:
@@ -455,26 +457,32 @@ namespace Eos {
 			// Scene Commands
 			case Key::D:
 			{
-				if (m_SceneState == SceneState::Edit && control)
-					DuplicateEntity();
+				if (editing && control)
+					DuplicateSelectedEntity();
+				break;
+			}
+			case Key::Delete:
+			{
+				if (editing)
+					DeleteSelectedEntity();
 				break;
 			}
 
 			// Gizmo
 			case Key::Q:
-				if (!ImGuizmo::IsUsing() && editing)
+				if (canChangeGizmoType)
 					m_GizmoType = -1;
 				break;
 			case Key::W:
-				if (!ImGuizmo::IsUsing() && editing)
+				if (canChangeGizmoType)
 					m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 				break;
 			case Key::E:
-				if (!ImGuizmo::IsUsing() && editing)
+				if (canChangeGizmoType)
 					m_GizmoType = ImGuizmo::OPERATION::ROTATE;
 				break;
 			case Key::R:
-				if (!ImGuizmo::IsUsing() && editing)
+				if (canChangeGizmoType)
 					m_GizmoType = ImGuizmo::OPERATION::SCALE;
 				break;
 		}
@@ -558,7 +566,8 @@ namespace Eos {
 		if (Entity selection = m_SceneHierarchyPanel.GetSelectedEntity())
 		{
 			glm::vec3 forwardDir = m_EditorCamera.GetForwardDirection() * glm::vec3(0.002f);
-			glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -forwardDir.z)) * selection.GetComponent<TransformComponent>().GetTransform();
+			glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -forwardDir.z))
+				* selection.GetComponent<TransformComponent>().GetTransform();
 			Renderer2D::DrawRect(transform, m_EntityOutlineColor);
 		}
 
@@ -624,6 +633,9 @@ namespace Eos {
 
 	void EditorLayer::SaveScene()
 	{
+		if (m_SceneState != SceneState::Edit)
+			return;
+
 		if (!m_EditorScenePath.empty())
 			SerializeScene(m_EditorScene, m_EditorScenePath);
 		else
@@ -632,6 +644,9 @@ namespace Eos {
 
 	void EditorLayer::SaveSceneAs()
 	{
+		if (m_SceneState != SceneState::Edit)
+			return;
+
 		std::filesystem::path filepath = FileDialogs::SaveFile("Eos Scene (*.eos)\0*.eos\0");
 		if (!filepath.empty())
 		{
@@ -752,10 +767,19 @@ namespace Eos {
 		SetEditorFont(m_Settings.Font);
 	}
 
-	void EditorLayer::DuplicateEntity()
+	void EditorLayer::DuplicateSelectedEntity()
 	{
 		if (Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity())
-			m_SceneHierarchyPanel.SetSelectedEntity(m_EditorScene->DuplicateEntity(selectedEntity));
+			m_EditorScene->DuplicateEntity(selectedEntity);
+	}
+
+	void EditorLayer::DeleteSelectedEntity()
+	{
+		if (Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity())
+		{
+			m_ActiveScene->DestroyEntity(selectedEntity);
+			m_SceneHierarchyPanel.SetSelectedEntity({});
+		}
 	}
 
 }
