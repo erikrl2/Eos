@@ -38,7 +38,7 @@ namespace Eos {
 			ImGui::PushStyleColor(ImGuiCol_Header, bg_light);
 			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, bg_light);
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 3));
-			m_Context->m_Registry.each([&](const auto e) { DrawEntityNode({ e, m_Context.get()}); });
+			m_Context->m_Registry.each([&](const auto e) { DrawEntityNode({ e, m_Context.get() }); });
 			ImGui::PopStyleColor(2);
 			ImGui::PopStyleVar();
 

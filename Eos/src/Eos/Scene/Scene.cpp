@@ -87,8 +87,10 @@ namespace Eos {
 		std::unordered_map<UUID, entt::entity> enttMap;
 
 		// Create entities in new scene
-		for (auto e : srcSceneRegistry.view<IDComponent>())
+		auto view = srcSceneRegistry.view<IDComponent>();
+		for (auto it = view.rbegin(); it != view.rend(); it++)
 		{
+			const entt::entity& e = *it;
 			UUID uuid = srcSceneRegistry.get<IDComponent>(e).ID;
 			const auto& name = srcSceneRegistry.get<TagComponent>(e).Tag;
 			Entity newEntity = newScene->CreateEntityWithUUID(uuid, name);
