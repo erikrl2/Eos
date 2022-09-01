@@ -46,7 +46,7 @@ Entities:
       RestitutionThreshold: 1
   - Entity: 15526091628486638286
     TagComponent:
-      Tag: Sprite
+      Tag: Ground
     TransformComponent:
       Translation: [0, -1, 0]
       Rotation: [0, 0, 0]

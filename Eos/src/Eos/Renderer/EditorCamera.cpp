@@ -5,7 +5,7 @@
 #include "Eos/Core/KeyCodes.h"
 #include "Eos/Core/MouseCodes.h"
 
-#include <GLFW/glfw3.h>
+#include <imgui.h>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
@@ -62,17 +62,31 @@ namespace Eos {
 
 	void EditorCamera::OnUpdate(Timestep ts)
 	{
-		if (Input::IsKeyPressed(Key::LeftAlt))
+		static bool viewToolActive = false;
+
+		if (Input::IsKeyPressed(Key::LeftAlt) /* && viewportHovered */) // TODO
 		{
+			if (!Input::IsMouseButtonPressed(Mouse::ButtonLeft)
+				&& !Input::IsMouseButtonPressed(Mouse::ButtonRight)
+				&& !Input::IsMouseButtonPressed(Mouse::ButtonMiddle))
+				viewToolActive = true;
+		}
+		else
+			viewToolActive = false;
+
+		if (viewToolActive)
+		{
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+
 			const glm::vec2& mouse{ Input::GetMouseX(), Input::GetMouseY() };
 			glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
 			m_InitialMousePosition = mouse;
 
 			if (Input::IsMouseButtonPressed(Mouse::ButtonLeft))
-				if (EditorCamera::s_RotationLocked)
-					MousePan(delta);
-				else
+				if (!EditorCamera::s_RotationLocked)
 					MouseRotate(delta);
+				else
+					MousePan(delta);
 			else if (Input::IsMouseButtonPressed(Mouse::ButtonMiddle))
 				MousePan(delta);
 			else if (Input::IsMouseButtonPressed(Mouse::ButtonRight))

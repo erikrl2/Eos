@@ -19,7 +19,7 @@ namespace Eos {
 
 	void ContentBrowserPanel::OnImGuiRender()
 	{
-		ImGui::Begin(ICON_FA_FOLDER "  Browser");
+		ImGui::Begin("   " ICON_FA_FOLDER "  Browser   ");
 
 		const bool& searching = (bool&)m_SearchBuffer[0];
 

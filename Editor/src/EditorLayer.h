@@ -28,9 +28,6 @@ namespace Eos {
 		virtual void OnUpdate(Timestep ts) override;
 		virtual void OnImGuiRender() override;
 		virtual void OnEvent(Event& e) override;
-	public:
-		static bool IsViewportHovered() { return m_ViewportHovered; };
-		static bool IsViewportFocused() { return m_ViewportFocused; };
 	private:
 		bool OnKeyPressed(KeyPressedEvent& e);
 		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
@@ -83,7 +80,7 @@ namespace Eos {
 		std::filesystem::path m_EditorScenePath;
 		Entity m_HoveredEntity;
 
-		inline static bool m_ViewportFocused = false, m_ViewportHovered = false;
+		bool m_ViewportFocused = false, m_ViewportHovered = false;
 
 		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
 		glm::vec2 m_ViewportBounds[2] = {};

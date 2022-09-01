@@ -28,7 +28,7 @@ namespace Eos {
 
 	void SceneHierarchyPanel::OnImGuiRender()
 	{
-		ImGui::Begin(ICON_FA_LIST "  Hierarachy");
+		ImGui::Begin("   " ICON_FA_LIST "  Hierarachy   ");
 
 		if (m_Context)
 		{
@@ -66,7 +66,7 @@ namespace Eos {
 		}
 		ImGui::End();
 
-		ImGui::Begin(ICON_FA_INFO_CIRCLE "  Inspector");
+		ImGui::Begin("   " ICON_FA_INFO_CIRCLE "  Inspector   ");
 		if (m_SelectionContext)
 		{
 			DrawComponents(m_SelectionContext);

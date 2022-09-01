@@ -141,7 +141,7 @@ namespace Eos {
 		ImGuiStyle& style = ImGui::GetStyle();
 		ImVec2 minWinSize = style.WindowMinSize;
 		style.WindowMinSize = { 350.0f, 150.0f };
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12.0f, 5.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(-1.0f, 5.0f));
 		ImGui::DockSpace(ImGui::GetID("MyDockSpace"));
 		ImGui::PopStyleVar();
 		style.WindowMinSize = minWinSize;
@@ -263,7 +263,7 @@ namespace Eos {
 	void EditorLayer::UI_Viewport()
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4.5f, 4.5f));
-		ImGui::Begin(ICON_FA_GLOBE "  Scene");
+		ImGui::Begin("   " ICON_FA_GLOBE "  Scene   ");
 		ImGui::PopStyleVar();
 		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
 		auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
@@ -373,7 +373,7 @@ namespace Eos {
 
 	void EditorLayer::UI_Settings()
 	{
-		ImGui::Begin(ICON_FA_WRENCH "  Settings");
+		ImGui::Begin("   " ICON_FA_WRENCH "  Settings   ");
 		ImGui::Checkbox("Lock camera rotation", &EditorCamera::s_RotationLocked);
 		ImGui::Checkbox("Show primary camera view", &m_ShowCameraPreview);
 		ImGui::ColorEdit3("Selected entity outline color", glm::value_ptr(m_EntityOutlineColor), ImGuiColorEditFlags_NoInputs);
@@ -385,7 +385,7 @@ namespace Eos {
 
 	void EditorLayer::UI_RendererStats()
 	{
-		ImGui::Begin(ICON_FA_INFO "  Stats");
+		ImGui::Begin("   " ICON_FA_INFO "  Stats   ");
 
 		static float lastFrameTime = 0.0f;
 		float time = (float)ImGui::GetTime();
