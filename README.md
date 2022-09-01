@@ -4,7 +4,7 @@
 
 ---
 
-![EosEditor Image](https://user-images.githubusercontent.com/92889691/187065240-9c76392a-dd5b-45d2-a8aa-1049ea95ea2c.png)
+![editor](https://user-images.githubusercontent.com/92889691/187909443-c5dbf4dc-35ac-4ddb-9213-e403149c6f4e.png)
 
 This is a personal project with the intention of learning about graphics programming.
 
