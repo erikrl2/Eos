@@ -131,7 +131,7 @@ namespace Eos {
 
 	static void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 70.0f)
 	{
-		ImFont* boldFont = Style::GetImGuiFont(Style::Font::OpenSansBold);
+		ImFont* boldFont = Style::GetImGuiFont(Font_OpenSansBold);
 
 		ImGui::PushID(label.c_str());
 
@@ -376,9 +376,7 @@ namespace Eos {
 				glm::vec4& color = component.Color;
 				ImGui::ColorEdit4("##Color", glm::value_ptr(color));
 
-				static Ref<Texture2D> checkerboard = Texture2D::Create("Resources/Icons/Checkerboard.png");
-
-				uint32_t textureID = component.Texture ? component.Texture->GetRendererID() : checkerboard->GetRendererID();
+				uint32_t textureID = component.Texture ? component.Texture->GetRendererID() : Style::GetIcon(Icon_Checkerboard)->GetRendererID();
 				ImVec4 tintColor = component.Texture ? ImVec4{ color.x, color.y, color.z, color.a } : ImVec4{ 1, 1, 1, 1 };
 
 				DrawLabelLeft("Sprite");

@@ -22,8 +22,6 @@ namespace Eos {
 	private:
 		std::filesystem::path m_CurrentDirectory;
 
-		Ref<Texture2D> m_DirectoryIcon;
-		Ref<Texture2D> m_FileIcon;
 		std::unordered_map<std::filesystem::path, Ref<Texture2D>> m_ImageIcons;
 
 		Ref<Texture2D> m_SearchIcon;

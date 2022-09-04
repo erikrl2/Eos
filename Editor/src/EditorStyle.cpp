@@ -3,13 +3,35 @@
 
 namespace Eos {
 
+	void Style::LoadFonts()
+	{
+		LoadFont("assets/fonts/opensans/OpenSans-Bold.ttf", 17.0f);
+
+		LoadFontMergedWithIconFont("assets/fonts/opensans/OpenSans-Regular.ttf", 17.0f);
+		LoadFontMergedWithIconFont("assets/fonts/Roboto/Roboto-Medium.ttf", 16.0f);
+		LoadFontMergedWithIconFont("assets/fonts/Ruda/Ruda-Regular.ttf", 16.0f);
+	}
+
+	void Style::LoadIcons()
+	{
+		s_Icons[Icon_Directory] = Texture2D::Create("Resources/Icons/DirectoryIcon.png");
+		s_Icons[Icon_File] = Texture2D::Create("Resources/Icons/FileIcon.png");
+		s_Icons[Icon_GrabHand] = Texture2D::Create("Resources/Icons/GrabHandIcon.png");
+		s_Icons[Icon_Checkerboard] = Texture2D::Create("Resources/Icons/Checkerboard.png");
+	}
+
+	void Style::SetFont(Font font)
+	{
+		ImGui::GetIO().FontDefault = GetImGuiFont(font);
+	}
+
 	void Style::SetTheme(Theme theme)
 	{
 		switch (theme)
 		{
-			case Dark1: SetEosDark1(); break;
-			case Dark2: SetEosDark2(); break;
-			case Dark3: SetEosDark3(); break;
+			case Theme_Dark1: SetEosDark1(); break;
+			case Theme_Dark2: SetEosDark2(); break;
+			case Theme_Dark3: SetEosDark3(); break;
 		}
 	}
 
@@ -18,18 +40,9 @@ namespace Eos {
 		return ImGui::GetIO().Fonts->Fonts[font];
 	}
 
-	void Style::SetDefaultFont(Font font)
+	Ref<Texture2D> Style::GetIcon(Icon icon)
 	{
-		ImGui::GetIO().FontDefault = GetImGuiFont(font);
-	}
-
-	void Style::LoadFonts()
-	{
-		LoadFont("assets/fonts/opensans/OpenSans-Bold.ttf", 17.0f);
-
-		LoadFontWithIcons("assets/fonts/opensans/OpenSans-Regular.ttf", 17.0f);
-		LoadFontWithIcons("assets/fonts/Roboto/Roboto-Medium.ttf", 16.0f);
-		LoadFontWithIcons("assets/fonts/Ruda/Ruda-Regular.ttf", 16.0f);
+		return s_Icons[icon];
 	}
 
 	void Style::LoadFont(const char* filepath, float fontsize)
@@ -37,7 +50,7 @@ namespace Eos {
 		ImGui::GetIO().Fonts->AddFontFromFileTTF(filepath, fontsize);
 	}
 
-	void Style::LoadFontWithIcons(const char* filepath, float fontsize)
+	void Style::LoadFontMergedWithIconFont(const char* filepath, float fontsize)
 	{
 		LoadFont(filepath, fontsize);
 

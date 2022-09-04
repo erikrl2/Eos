@@ -1,6 +1,8 @@
 #include "eospch.h"
 #include "Panels/ContentBrowserPanel.h"
 
+#include "EditorStyle.h"
+
 #include "IconsFontAwesome5.h"
 
 #include <imgui/imgui.h>
@@ -13,8 +15,6 @@ namespace Eos {
 	ContentBrowserPanel::ContentBrowserPanel()
 		: m_CurrentDirectory(g_AssetPath)
 	{
-		m_DirectoryIcon = Texture2D::Create("Resources/Icons/DirectoryIcon.png");
-		m_FileIcon = Texture2D::Create("Resources/Icons/FileIcon.png");
 	}
 
 	void ContentBrowserPanel::OnImGuiRender()
@@ -85,7 +85,7 @@ namespace Eos {
 
 		ImGui::PushID(filenameString.c_str());
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-		Ref<Texture2D> icon = directoryEntry.is_directory() ? m_DirectoryIcon : GetFileIcon(directoryEntry.path());
+		Ref<Texture2D> icon = directoryEntry.is_directory() ? Style::GetIcon(Icon_Directory) : GetFileIcon(directoryEntry.path());
 		ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)icon->GetRendererID()), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
 		ImGui::PopStyleColor();
 
@@ -127,7 +127,7 @@ namespace Eos {
 			else
 				EOS_WARN("Could not load texture {0}", filepath.filename().string());
 		}
-		return m_FileIcon;
+		return Style::GetIcon(Icon_File);
 	}
 
 	void ContentBrowserPanel::DrawSearchbar()

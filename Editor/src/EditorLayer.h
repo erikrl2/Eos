@@ -12,8 +12,8 @@ namespace Eos {
 
 	struct EditorSettings
 	{
-		Style::Theme Theme = Style::Theme::Dark1;
-		Style::Font Font = Style::Font::RobotoMedium;
+		Theme Theme = Theme_Dark1;
+		Font Font = Font_RobotoMedium;
 	};
 
 	class EditorLayer : public Layer
@@ -53,8 +53,8 @@ namespace Eos {
 		void SetEditorScene(const Ref<Scene>& scene);
 		void SyncWindowTitle();
 
-		void SetEditorTheme(Style::Theme newTheme);
-		void SetEditorFont(Style::Font newFont);
+		void SetEditorTheme(Theme newTheme);
+		void SetEditorFont(Font newFont);
 
 		void SaveEditorSettings();
 		void LoadEditorSettings();
@@ -62,13 +62,14 @@ namespace Eos {
 		void DuplicateSelectedEntity();
 		void DeleteSelectedEntity();
 
-		// UI Panels
 		void UI_MenuBar();
 		void UI_Toolbar();
 		void UI_Viewport();
 		void UI_Gizmos();
 		void UI_Settings();
 		void UI_RendererStats();
+
+		void UpdateCursor();
 	private:
 		EditorCamera m_EditorCamera;
 
@@ -87,6 +88,7 @@ namespace Eos {
 
 		int m_GizmoType = -1;
 
+		bool m_LockCameraRotation = false;
 		glm::vec4 m_EntityOutlineColor = { 1, 1, 1, 1 };
 		bool m_ShowPhysicsColliders = true;
 		glm::vec4 m_PhysicsVisualizationColor = { 0, 1, 0, 1 };

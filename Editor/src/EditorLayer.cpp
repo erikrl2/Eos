@@ -29,6 +29,7 @@ namespace Eos {
 		EOS_PROFILE_FUNCTION();
 
 		Style::LoadFonts();
+		Style::LoadIcons();
 		LoadEditorSettings();
 		ImGui::GetIO().IniFilename = m_ImGuiConfigFilepath;
 
@@ -127,6 +128,8 @@ namespace Eos {
 	{
 		EOS_PROFILE_FUNCTION();
 
+		UpdateCursor();
+
 		// Dockspace
 		const ImGuiViewport* viewport = ImGui::GetMainViewport();
 		ImGui::SetNextWindowPos(viewport->WorkPos);
@@ -187,23 +190,23 @@ namespace Eos {
 		{
 			if (ImGui::BeginMenu(ICON_FA_PALETTE "  Themes"))
 			{
-				if (ImGui::MenuItem("Eos Dark 1", 0, m_ThemeSelection[Style::Theme::Dark1]))
-					SetEditorTheme(Style::Theme::Dark1);
-				if (ImGui::MenuItem("Eos Dark 2", 0, m_ThemeSelection[Style::Theme::Dark2]))
-					SetEditorTheme(Style::Theme::Dark2);
-				if (ImGui::MenuItem("Eos Dark 3", 0, m_ThemeSelection[Style::Theme::Dark3]))
-					SetEditorTheme(Style::Theme::Dark3);
+				if (ImGui::MenuItem("Eos Dark 1", 0, m_ThemeSelection[Theme_Dark1]))
+					SetEditorTheme(Theme_Dark1);
+				if (ImGui::MenuItem("Eos Dark 2", 0, m_ThemeSelection[Theme_Dark2]))
+					SetEditorTheme(Theme_Dark2);
+				if (ImGui::MenuItem("Eos Dark 3", 0, m_ThemeSelection[Theme_Dark3]))
+					SetEditorTheme(Theme_Dark3);
 				ImGui::EndMenu();
 			}
 
 			if (ImGui::BeginMenu(ICON_FA_FONT "   Fonts"))
 			{
-				if (ImGui::MenuItem("OpenSans-Regular", 0, m_FontSelection[(int)Style::Font::OpenSansRegular]))
-					SetEditorFont(Style::Font::OpenSansRegular);
-				if (ImGui::MenuItem("Roboto-Medium", 0, m_FontSelection[(int)Style::Font::RobotoMedium]))
-					SetEditorFont(Style::Font::RobotoMedium);
-				if (ImGui::MenuItem("Ruda-Regular", 0, m_FontSelection[(int)Style::Font::RudaRegular]))
-					SetEditorFont(Style::Font::RudaRegular);
+				if (ImGui::MenuItem("OpenSans-Regular", 0, m_FontSelection[Font_OpenSansRegular]))
+					SetEditorFont(Font_OpenSansRegular);
+				if (ImGui::MenuItem("Roboto-Medium", 0, m_FontSelection[Font_RobotoMedium]))
+					SetEditorFont(Font_RobotoMedium);
+				if (ImGui::MenuItem("Ruda-Regular", 0, m_FontSelection[Font_RudaRegular]))
+					SetEditorFont(Font_RudaRegular);
 				ImGui::EndMenu();
 			}
 			ImGui::EndMenu();
@@ -273,6 +276,8 @@ namespace Eos {
 
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
+
+		m_EditorCamera.SetViewportHovered(m_ViewportHovered);
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
@@ -374,7 +379,8 @@ namespace Eos {
 	void EditorLayer::UI_Settings()
 	{
 		ImGui::Begin("   " ICON_FA_WRENCH "  Settings   ");
-		ImGui::Checkbox("Lock camera rotation", &EditorCamera::s_RotationLocked);
+		if (ImGui::Checkbox("Lock camera rotation", &m_LockCameraRotation))
+			m_EditorCamera.SetRotationLocked(m_LockCameraRotation);
 		ImGui::Checkbox("Show primary camera view", &m_ShowCameraPreview);
 		ImGui::ColorEdit3("Selected entity outline color", glm::value_ptr(m_EntityOutlineColor), ImGuiColorEditFlags_NoInputs);
 		ImGui::Checkbox("Show physics colliders", &m_ShowPhysicsColliders);
@@ -404,6 +410,52 @@ namespace Eos {
 		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
 
 		ImGui::End();
+	}
+
+	static void DrawCustomCursor(Icon cursor)
+	{
+		Ref<Texture2D> image = Style::GetIcon(cursor);
+		ImVec2 pos = ImGui::GetMousePos();
+
+		ImGui::SetMouseCursor(ImGuiMouseCursor_None);
+		ImGui::GetForegroundDrawList()->AddImage(reinterpret_cast<ImTextureID>((uint64_t)image->GetRendererID()),
+			pos, ImVec2(pos.x + 24.0f, pos.y + 24.0f), ImVec2(0, 1), ImVec2(1, 0));
+	}
+
+	static void DrawCustomCursor(const char* cursor)
+	{
+		ImGui::SetMouseCursor(ImGuiMouseCursor_None);
+		ImGui::GetForegroundDrawList()->AddText(Style::GetImGuiFont(Font_RobotoMedium), 18.0f, ImGui::GetMousePos(), 0xffffffff, cursor);
+	}
+
+	void EditorLayer::UpdateCursor()
+	{
+		if (!m_EditorCamera.IsViewingToolActive() || !m_ViewportHovered)
+			return; // Default cursor is drawn
+
+		switch (m_EditorCamera.GetCameraState())
+		{
+			case CameraState::Default:
+			{
+				DrawCustomCursor(ICON_FA_EYE);
+				break;
+			}
+			case CameraState::Pan:
+			{
+				DrawCustomCursor(Icon_GrabHand);
+				break;
+			}
+			case CameraState::Rotate:
+			{
+				DrawCustomCursor(ICON_FA_EYE);
+				break;
+			}
+			case CameraState::Zoom:
+			{
+				DrawCustomCursor(ICON_FA_SEARCH);
+				break;
+			}
+		}
 	}
 
 	void EditorLayer::OnEvent(Event& e)
@@ -734,7 +786,7 @@ namespace Eos {
 		Application::Get().GetWindow().SetTitle(m_ActiveScene->GetName() + " - EosEditor");
 	}
 
-	void EditorLayer::SetEditorTheme(Style::Theme newTheme)
+	void EditorLayer::SetEditorTheme(Theme newTheme)
 	{
 		Style::SetTheme(newTheme);
 		m_ThemeSelection[m_Settings.Theme] = false;
@@ -742,9 +794,9 @@ namespace Eos {
 		m_Settings.Theme = newTheme;
 	}
 
-	void EditorLayer::SetEditorFont(Style::Font newFont)
+	void EditorLayer::SetEditorFont(Font newFont)
 	{
-		Style::SetDefaultFont(newFont);
+		Style::SetFont(newFont);
 		m_FontSelection[m_Settings.Font] = false;
 		m_FontSelection[newFont] = true;
 		m_Settings.Font = newFont;
