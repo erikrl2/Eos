@@ -35,7 +35,7 @@ namespace Eos {
 		static void SetTheme(Theme theme);
 
 		static ImFont* GetImGuiFont(Font font);
-		static Ref<Texture2D> GetIcon(Icon icon);
+		static Ref<Texture2D> GetIconImage(Icon icon);
 	private:
 		static void Style::LoadFont(const char* filepath, float fontsize);
 		static void Style::LoadFontMergedWithIconFont(const char* filepath, float fontsize);

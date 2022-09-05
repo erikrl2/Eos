@@ -40,9 +40,9 @@ namespace Eos {
 		return ImGui::GetIO().Fonts->Fonts[font];
 	}
 
-	Ref<Texture2D> Style::GetIcon(Icon icon)
+	Ref<Texture2D> Style::GetIconImage(Icon icon)
 	{
-		return s_Icons[icon];
+		return s_Icons.at(icon);
 	}
 
 	void Style::LoadFont(const char* filepath, float fontsize)

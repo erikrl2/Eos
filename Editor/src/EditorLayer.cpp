@@ -414,7 +414,7 @@ namespace Eos {
 
 	static void DrawCustomCursor(Icon cursor)
 	{
-		Ref<Texture2D> image = Style::GetIcon(cursor);
+		Ref<Texture2D> image = Style::GetIconImage(cursor);
 		ImVec2 pos = ImGui::GetMousePos();
 
 		ImGui::SetMouseCursor(ImGuiMouseCursor_None);

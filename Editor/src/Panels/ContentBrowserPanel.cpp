@@ -85,7 +85,7 @@ namespace Eos {
 
 		ImGui::PushID(filenameString.c_str());
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-		Ref<Texture2D> icon = directoryEntry.is_directory() ? Style::GetIcon(Icon_Directory) : GetFileIcon(directoryEntry.path());
+		Ref<Texture2D> icon = directoryEntry.is_directory() ? Style::GetIconImage(Icon_Directory) : GetFileIcon(directoryEntry.path());
 		ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t)icon->GetRendererID()), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
 		ImGui::PopStyleColor();
 
@@ -127,7 +127,7 @@ namespace Eos {
 			else
 				EOS_WARN("Could not load texture {0}", filepath.filename().string());
 		}
-		return Style::GetIcon(Icon_File);
+		return Style::GetIconImage(Icon_File);
 	}
 
 	void ContentBrowserPanel::DrawSearchbar()

@@ -249,8 +249,7 @@ namespace Eos {
 			auto& tag = entity.GetComponent<TagComponent>().Tag;
 
 			char buffer[128];
-			memset(buffer, 0, sizeof(buffer));
-			strcpy_s(buffer, tag.c_str());
+			strncpy_s(buffer, sizeof(buffer), tag.c_str(), sizeof(buffer));
 			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
 			{
@@ -334,12 +333,12 @@ namespace Eos {
 				ImGui::Checkbox("##FixedAspectRatio", &component.FixedAspectRatio);
 			});
 
-		DrawComponent<ScriptComponent>("Script", entity, [entity](auto& component) mutable
+		DrawComponent<ScriptComponent>("Script", entity, [entity, scene = m_Context](auto& component) mutable
 			{
 				bool scriptClassExists = ScriptEngine::EntityClassExists(component.ClassName);
 
 				static char buffer[64];
-				strcpy_s(buffer, component.ClassName.c_str());
+				strcpy_s(buffer, sizeof(buffer), component.ClassName.c_str());
 
 				if (!scriptClassExists)
 					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.2f, 0.3f, 1.0f));
@@ -348,19 +347,80 @@ namespace Eos {
 					component.ClassName = buffer;
 
 				// Fields
-				Ref<ScriptInstance> scriptInstance = ScriptEngine::GetEntityScriptInstance(entity.GetUUID());
-				if (scriptInstance)
+				bool sceneRunning = scene->IsRunning();
+				if (sceneRunning)
 				{
-					const auto& fields = scriptInstance->GetScriptClass()->GetFields();
-
-					for (const auto& [name, field] : fields)
+					Ref<ScriptInstance> scriptInstance = ScriptEngine::GetEntityScriptInstance(entity.GetUUID());
+					if (scriptInstance)
 					{
-						if (field.Type == ScriptFieldType::Float)
+						const auto& fields = scriptInstance->GetScriptClass()->GetFields();
+						for (const auto& [name, field] : fields)
 						{
-							float data = scriptInstance->GetFieldValue<float>(name);
-							if (ImGui::DragFloat(name.c_str(), &data))
+							if (field.Type == ScriptFieldType::Float)
 							{
-								scriptInstance->SetFieldValue(name, data);
+								float data = scriptInstance->GetFieldValue<float>(name);
+								if (ImGui::DragFloat(name.c_str(), &data, 0.1f))
+									scriptInstance->SetFieldValue(name, data);
+							}
+							else if (field.Type == ScriptFieldType::Int)
+							{
+								int data = scriptInstance->GetFieldValue<int>(name);
+								if (ImGui::DragInt(name.c_str(), &data))
+									scriptInstance->SetFieldValue(name, data);
+							}
+						}
+					}
+				}
+				else
+				{
+					Ref<ScriptClass> entityClass = ScriptEngine::GetEntityClass(component.ClassName);
+					if (entityClass)
+					{
+						const auto& fields = entityClass->GetFields();
+
+						auto& entityFields = ScriptEngine::GetScriptFieldMap(entity);
+						for (const auto& [name, field] : fields)
+						{
+							// Field has been set in editor
+							if (entityFields.find(name) != entityFields.end())
+							{
+								ScriptFieldInstance& scriptField = entityFields.at(name);
+
+								if (field.Type == ScriptFieldType::Float)
+								{
+									float data = scriptField.GetValue<float>();
+									if (ImGui::DragFloat(name.c_str(), &data, 0.1f))
+										scriptField.SetValue(data);
+								}
+								else if (field.Type == ScriptFieldType::Int)
+								{
+									int data = scriptField.GetValue<int>();
+									if (ImGui::DragInt(name.c_str(), &data))
+										scriptField.SetValue(data);
+								}
+							}
+							else
+							{
+								if (field.Type == ScriptFieldType::Float)
+								{
+									float data = 0.0f;
+									if (ImGui::DragFloat(name.c_str(), &data, 0.1f))
+									{
+										ScriptFieldInstance& fieldInstance = entityFields[name];
+										fieldInstance.Field = field;
+										fieldInstance.SetValue(data);
+									}
+								}
+								else if (field.Type == ScriptFieldType::Int)
+								{
+									int data = 0;
+									if (ImGui::DragInt(name.c_str(), &data))
+									{
+										ScriptFieldInstance& fieldInstance = entityFields[name];
+										fieldInstance.Field = field;
+										fieldInstance.SetValue(data);
+									}
+								}
 							}
 						}
 					}
@@ -376,7 +436,7 @@ namespace Eos {
 				glm::vec4& color = component.Color;
 				ImGui::ColorEdit4("##Color", glm::value_ptr(color));
 
-				uint32_t textureID = component.Texture ? component.Texture->GetRendererID() : Style::GetIcon(Icon_Checkerboard)->GetRendererID();
+				uint32_t textureID = component.Texture ? component.Texture->GetRendererID() : Style::GetIconImage(Icon_Checkerboard)->GetRendererID();
 				ImVec4 tintColor = component.Texture ? ImVec4{ color.x, color.y, color.z, color.a } : ImVec4{ 1, 1, 1, 1 };
 
 				DrawLabelLeft("Sprite");
