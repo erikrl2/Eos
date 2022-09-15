@@ -90,17 +90,8 @@ namespace Eos {
 		{
 			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImGui::GetStyle().Colors[ImGuiCol_WindowBg]);
 
-			// TODO: Add move up/down MenuItem
-
-			//if (ImGui::MenuItem("Create Empty Child"))
-			//{
-			//	// TODO: Add child entity
-			//}
-
-			//ImGui::Separator();
-
 			if (ImGui::MenuItem("Duplicate"))
-				m_Context->DuplicateEntity(entity);
+				m_SelectionContext = m_Context->DuplicateEntity(entity);
 
 			if (ImGui::MenuItem("Delete"))
 				entityDeleted = true;

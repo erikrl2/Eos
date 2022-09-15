@@ -46,7 +46,7 @@ namespace Eos {
 			NewScene();
 
 		m_MainFramebuffer =	Framebuffer::Create({ 1280, 720, {FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth} });
-		m_CameraPreviewFramebuffer = Framebuffer::Create({ 1280, 720, {FramebufferTextureFormat::RGBA8,  FramebufferTextureFormat::Depth} });
+		m_CameraPreviewFramebuffer = Framebuffer::Create({ 1280, 720, {FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth} });
 
 		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 
@@ -822,7 +822,10 @@ namespace Eos {
 	void EditorLayer::DuplicateSelectedEntity()
 	{
 		if (Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity())
-			m_EditorScene->DuplicateEntity(selectedEntity);
+		{
+			Entity duplicate = m_ActiveScene->DuplicateEntity(selectedEntity);
+			m_SceneHierarchyPanel.SetSelectedEntity(duplicate);
+		}
 	}
 
 	void EditorLayer::DeleteSelectedEntity()

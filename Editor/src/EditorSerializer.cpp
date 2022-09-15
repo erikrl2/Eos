@@ -10,50 +10,50 @@
 
 namespace Eos {
 
-	static std::string ThemeTypeToString(Style::Theme theme)
+	static std::string ThemeTypeToString(Theme theme)
 	{
 		switch (theme)
 		{
-			case Style::Theme::Dark1:			return "Dark1";
-			case Style::Theme::Dark2:			return "Dark2";
-			case Style::Theme::Dark3:			return "Dark3";
+			case Theme_Dark1:			return "Dark1";
+			case Theme_Dark2:			return "Dark2";
+			case Theme_Dark3:			return "Dark3";
 		}
 
 		EOS_CORE_ASSERT(false, "Unknown body type");
 		return {};
 	}
 
-	static Style::Theme ThemeTypeFromString(const std::string& themeString)
+	static Theme ThemeTypeFromString(const std::string& themeString)
 	{
-		if (themeString == "Dark1")				return Style::Theme::Dark1;
-		if (themeString == "Dark2")				return Style::Theme::Dark2;
-		if (themeString == "Dark3")				return Style::Theme::Dark3;
+		if (themeString == "Dark1")				return Theme_Dark1;
+		if (themeString == "Dark2")				return Theme_Dark2;
+		if (themeString == "Dark3")				return Theme_Dark3;
 
 		EOS_CORE_ASSERT(false, "Unknown body type");
-		return Style::Theme::Dark1;
+		return Theme_Dark1;
 	}
 
-	static std::string FontTypeToString(Style::Font font)
+	static std::string FontTypeToString(Font font)
 	{
 		switch (font)
 		{
-			case Style::Font::OpenSansRegular:		return "OpenSans-Regular";
-			case Style::Font::RobotoMedium:			return "Roboto-Medium";
-			case Style::Font::RudaRegular:			return "Ruda-Regular";
+			case Font_OpenSansRegular:		return "OpenSans-Regular";
+			case Font_RobotoMedium:			return "Roboto-Medium";
+			case Font_RudaRegular:			return "Ruda-Regular";
 		}
 
 		EOS_CORE_ASSERT(false, "Unknown body type");
 		return {};
 	}
 
-	static Style::Font FontTypeFromString(const std::string& fontString)
+	static Font FontTypeFromString(const std::string& fontString)
 	{
-		if (fontString == "OpenSans-Regular")		return Style::Font::OpenSansRegular;
-		if (fontString == "Roboto-Medium")			return Style::Font::RobotoMedium;
-		if (fontString == "Ruda-Regular")			return Style::Font::RudaRegular;
+		if (fontString == "OpenSans-Regular")		return Font_OpenSansRegular;
+		if (fontString == "Roboto-Medium")			return Font_RobotoMedium;
+		if (fontString == "Ruda-Regular")			return Font_RudaRegular;
 
 		EOS_CORE_WARN("Unknown body type");
-		return Style::Font::OpenSansRegular;
+		return Font_OpenSansRegular;
 	}
 
 	EditorSerializer::EditorSerializer(EditorSettings* settings)

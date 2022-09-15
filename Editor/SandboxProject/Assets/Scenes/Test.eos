@@ -19,6 +19,8 @@ Entities:
       FixedAspectRatio: false
     ScriptComponent:
       ClassName: Sandbox.Camera
+      ScriptFields:
+        []
   - Entity: 11619259828702573690
     TagComponent:
       Tag: Player
@@ -34,6 +36,10 @@ Entities:
       Atlas: false
     ScriptComponent:
       ClassName: Sandbox.Player
+      ScriptFields:
+        - Name: Speed
+          Type: Float
+          Data: 1.60000002
     Rigidbody2DComponent:
       BodyType: Dynamic
       FixedRotation: false
