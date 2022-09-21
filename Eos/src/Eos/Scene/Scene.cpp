@@ -270,6 +270,9 @@ namespace Eos {
 
 	void Scene::OnViewportResize(uint32_t width, uint32_t height)
 	{
+		if (m_ViewportWidth == width && m_ViewportHeight == height)
+			return;
+
 		m_ViewportWidth = width;
 		m_ViewportHeight = height;
 
@@ -294,6 +297,17 @@ namespace Eos {
 		for (auto [entity, camera] : m_Registry.view<CameraComponent>().each())
 		{
 			if (camera.Primary)
+				return Entity{ entity, this };
+		}
+		return {};
+	}
+
+	Entity Scene::FindEntityByName(std::string_view name)
+	{
+		auto view = m_Registry.view<TagComponent>();
+		for (auto [entity, tc] : m_Registry.view<TagComponent>().each())
+		{
+			if (tc.Tag == name)
 				return Entity{ entity, this };
 		}
 		return {};
