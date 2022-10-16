@@ -7,6 +7,8 @@
 
 #include "Eos/Math/Math.h"
 
+#include "Eos/Scripting/ScriptEngine.h"
+
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 
@@ -183,6 +185,18 @@ namespace Eos {
 
 			if (ImGui::MenuItem("Exit"))
 				Application::Get().Close();
+
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu(ICON_FA_FILE_CODE "  Script"))
+		{
+			if (ImGui::MenuItem(ICON_FA_FILE_UPLOAD "  Reload assembly", "Ctrl+R"))
+			{
+				if (m_SceneState != SceneState::Edit)
+					OnSceneStop();
+				ScriptEngine::ReloadAssembly();
+			}
 
 			ImGui::EndMenu();
 		}
@@ -523,21 +537,36 @@ namespace Eos {
 
 			// Gizmo
 			case Key::Q:
+			{
 				if (canChangeGizmoType)
 					m_GizmoType = -1;
 				break;
+			}
 			case Key::W:
+			{
 				if (canChangeGizmoType)
 					m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 				break;
+			}
 			case Key::E:
+			{
 				if (canChangeGizmoType)
 					m_GizmoType = ImGuizmo::OPERATION::ROTATE;
 				break;
+			}
 			case Key::R:
-				if (canChangeGizmoType)
-					m_GizmoType = ImGuizmo::OPERATION::SCALE;
+			{
+				if (control)
+				{
+					if (m_SceneState != SceneState::Edit)
+						OnSceneStop();
+					ScriptEngine::ReloadAssembly();
+				}
+				else
+					if (canChangeGizmoType)
+						m_GizmoType = ImGuizmo::OPERATION::SCALE;
 				break;
+			}
 		}
 		return false;
 	}
