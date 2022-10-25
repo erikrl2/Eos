@@ -1,12 +1,17 @@
 #include "eospch.h"
 #include "ScriptEngine.h"
 
-#include "ScriptGlue.h"
+#include "Eos/Scripting/ScriptGlue.h"
+
+#include "Eos/Core/Application.h"
+#include "Eos/Core/Timer.h"
 
 #include "mono/jit/jit.h"
 #include "mono/metadata/assembly.h"
 #include "mono/metadata/object.h"
 #include "mono/metadata/tabledefs.h"
+
+#include "FileWatch.h"
 
 namespace Eos {
 
@@ -141,11 +146,28 @@ namespace Eos {
 		std::unordered_map<UUID, Ref<ScriptInstance>> EntityInstances;
 		std::unordered_map<UUID, ScriptFieldMap> EntityScriptFields;
 
+		Scope<filewatch::FileWatch<std::string>> AppAssemblyFileWatcher;
+		bool AssemblyReloadPending = false;
+
 		// Runtime
 		Scene* SceneContext = nullptr;
 	};
 
 	static ScriptEngineData* s_Data = nullptr;
+
+	static void OnAppAssemblyFileSystemEvent(const std::string& path, const filewatch::Event change_type)
+	{
+		if (!s_Data->AssemblyReloadPending && change_type == filewatch::Event::modified)
+		{
+			s_Data->AssemblyReloadPending = true;
+
+			Application::Get().SubmitToMainThread([]()
+				{
+					s_Data->AppAssemblyFileWatcher.reset();
+					ScriptEngine::ReloadAssembly();
+				});
+		}
+	}
 
 	void ScriptEngine::Init()
 	{
@@ -208,6 +230,9 @@ namespace Eos {
 		s_Data->AppAssemblyFilepath = filepath;
 		s_Data->AppAssembly = Utils::LoadMonoAssembly(filepath);
 		s_Data->AppAssemblyImage = mono_assembly_get_image(s_Data->AppAssembly);
+
+		s_Data->AppAssemblyFileWatcher = CreateScope<filewatch::FileWatch<std::string>>(filepath.string(), OnAppAssemblyFileSystemEvent);
+		s_Data->AssemblyReloadPending = false;
 	}
 
 	void ScriptEngine::ReloadAssembly()
@@ -222,7 +247,6 @@ namespace Eos {
 
 		ScriptGlue::RegisterComponents();
 
-		// Retrieve and instantiate class
 		s_Data->EntityClass = ScriptClass("Eos", "Entity", true);
 	}
 

@@ -34,6 +34,7 @@ project "Eos"
 		"src",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.Box2D}",
+		"%{IncludeDir.filewatch}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.Imgui}",
