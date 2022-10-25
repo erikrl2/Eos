@@ -193,9 +193,8 @@ namespace Eos {
 		{
 			if (ImGui::MenuItem(ICON_FA_FILE_UPLOAD "  Reload assembly", "Ctrl+R"))
 			{
-				if (m_SceneState != SceneState::Edit)
-					OnSceneStop();
-				ScriptEngine::ReloadAssembly();
+				if (m_SceneState == SceneState::Edit)
+					ScriptEngine::ReloadAssembly();
 			}
 
 			ImGui::EndMenu();
@@ -237,41 +236,67 @@ namespace Eos {
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 0.5f));
-		{
-			static const char* labelPlay = ICON_FA_PLAY "  Play";
-			static const char* labelSim = ICON_FA_PLAY_CIRCLE "  Simulate";
 
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - 100.0f);
-			if (ImGui::Button(labelPlay, ImVec2(60, 0)))
+		static const char* labelPlay = ICON_FA_PLAY "  Play";
+		static const char* labelSim = ICON_FA_PLAY_CIRCLE "  Simulate";
+		static const char* labelPause = ICON_FA_PAUSE "  Pause";
+		static const char* labelStep = ICON_FA_STEP_FORWARD "  Step";
+
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - 200.0f);
+
+		if (ImGui::Button(labelPlay, ImVec2(60, 0))) // PLay button
+		{
+			if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate)
 			{
-				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate)
-				{
-					OnScenePlay();
-					labelPlay = ICON_FA_STOP "  Stop";
-					labelSim = ICON_FA_PLAY_CIRCLE "  Simulate";
-				}
-				else if (m_SceneState == SceneState::Play)
-				{
-					OnSceneStop();
-					labelPlay = ICON_FA_PLAY "  Play";
-				}
+				OnScenePlay();
+				labelPlay = ICON_FA_STOP "  Stop";
+				labelSim = ICON_FA_PLAY_CIRCLE "  Simulate";
 			}
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - 20.0f);
-			if (ImGui::Button(labelSim, ImVec2(90, 0)))
+			else if (m_SceneState == SceneState::Play)
 			{
-				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play)
-				{
-					OnSceneSimulate();
-					labelSim = ICON_FA_STOP_CIRCLE "  Stop";
-					labelPlay = ICON_FA_PLAY "  Play";
-				}
-				else if (m_SceneState == SceneState::Simulate)
-				{
-					OnSceneStop();
-					labelSim = ICON_FA_PLAY_CIRCLE "  Simulate";
-				}
+				OnSceneStop();
+				labelPlay = ICON_FA_PLAY "  Play";
 			}
+			labelPause = ICON_FA_PAUSE "  Pause";
 		}
+
+		if (ImGui::Button(labelSim, ImVec2(90, 0))) // Simulation button
+		{
+			if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play)
+			{
+				OnSceneSimulate();
+				labelSim = ICON_FA_STOP_CIRCLE "  Stop";
+				labelPlay = ICON_FA_PLAY "  Play";
+			}
+			else if (m_SceneState == SceneState::Simulate)
+			{
+				OnSceneStop();
+				labelSim = ICON_FA_PLAY_CIRCLE "  Simulate";
+			}
+			labelPause = ICON_FA_PAUSE "  Pause";
+		}
+
+		bool isPaused = m_ActiveScene->IsPaused();
+
+		ImGui::BeginDisabled(m_SceneState == SceneState::Edit);
+		if (ImGui::Button(labelPause, ImVec2(90, 0))) // Pause button
+		{
+			m_ActiveScene->SetPaused(!isPaused);
+
+			if (isPaused)
+				labelPause = ICON_FA_PAUSE "  Pause";
+			else
+				labelPause = ICON_FA_PLAY "  Continue";
+		}
+		ImGui::EndDisabled();
+
+		ImGui::BeginDisabled(!isPaused);
+		if (ImGui::Button(labelStep, ImVec2(90, 0))) // Step button
+		{
+			m_ActiveScene->Step();
+		}
+		ImGui::EndDisabled();
+
 		ImGui::PopStyleVar();
 		ImGui::PopStyleColor(2);
 
@@ -558,9 +583,8 @@ namespace Eos {
 			{
 				if (control)
 				{
-					if (m_SceneState != SceneState::Edit)
-						OnSceneStop();
-					ScriptEngine::ReloadAssembly();
+					if (m_SceneState == SceneState::Edit)
+						ScriptEngine::ReloadAssembly();
 				}
 				else
 					if (canChangeGizmoType)
@@ -786,6 +810,14 @@ namespace Eos {
 		m_ActiveScene = m_EditorScene;
 
 		OnSceneStateChange();
+	}
+
+	void EditorLayer::OnScenePause()
+	{
+		if (m_SceneState == SceneState::Edit)
+			return;
+
+		m_ActiveScene->SetPaused(true);
 	}
 
 	void EditorLayer::OnSceneStateChange()

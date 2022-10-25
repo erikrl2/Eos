@@ -48,6 +48,8 @@ namespace Eos {
 		void OnScenePlay();
 		void OnSceneSimulate();
 		void OnSceneStop();
+		void OnScenePause();
+
 		void OnSceneStateChange();
 
 		void SetEditorScene(const Ref<Scene>& scene);
