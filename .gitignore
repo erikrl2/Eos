@@ -1,16 +1,17 @@
 # Binaries
-**/bin/
+bin/
+binaries/
 bin-int/
+intermediates/
 
-# Eos files
-**.log
-EosEditor/EosEditor.ini
+# Eos
+Editor/Resources/Scripts/
+Editor/assets/cache/
+scripts/__pycache__/
+*.log
 
-# Visual Studio files and folder
+# Visual Studio
 .vs/
-**.sln
-**.vcxproj*
-
-# Directories
-EosEditor/assets/cache
-scripts/__pycache__
+*.sln
+*.vcxproj*
+*.csproj*

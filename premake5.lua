@@ -3,7 +3,7 @@ include "Dependencies.lua"
 
 workspace "Eos"
 	architecture "x86_64"
-	startproject "EosEditor"
+	startproject "Editor"
 
 	configurations
 	{
@@ -33,6 +33,15 @@ group "Dependencies"
 	include "Eos/vendor/yaml-cpp"
 group ""
 
-include "Eos"
-include "Sandbox"
-include "EosEditor"
+group "Core"
+	include "Eos"
+	include "Eos-ScriptCore"
+group ""
+
+group "Tools"
+	include "Editor"
+group ""
+
+group "Misc"
+	include "Sandbox"
+group ""

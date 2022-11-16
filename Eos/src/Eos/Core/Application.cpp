@@ -4,6 +4,7 @@
 #include "Eos/Core/Log.h"
 
 #include "Eos/Renderer/Renderer.h"
+#include "Eos/Scripting/ScriptEngine.h"
 
 #include "Eos/Core/Input.h"
 
@@ -28,6 +29,7 @@ namespace Eos {
 		m_Window->SetEventCallback(EOS_BIND_EVENT_FN(Application::OnEvent));
 
 		Renderer::Init();
+		ScriptEngine::Init();
 
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
@@ -37,6 +39,7 @@ namespace Eos {
 	{
 		EOS_PROFILE_FUNCTION();
 
+		ScriptEngine::Shutdown();
 		Renderer::Shutdown();
 	}
 
@@ -59,6 +62,13 @@ namespace Eos {
 	void Application::Close()
 	{
 		m_Running = false;
+	}
+
+	void Application::SubmitToMainThread(const std::function<void()>& function)
+	{
+		std::scoped_lock<std::mutex> lock(m_MainThreadQueueMutex);
+
+		m_MainThreadQueue.emplace_back(function);
 	}
 
 	void Application::OnEvent(Event& e)
@@ -88,6 +98,8 @@ namespace Eos {
 			float time = Platform::GetTime();
 			Timestep timestep = time - m_LastFrameTime;
 			m_LastFrameTime = time;
+
+			ExecuteMainThreadQueue();
 
 			if (!m_Minimized)
 			{
@@ -128,6 +140,16 @@ namespace Eos {
 		m_Minimized = false;
 		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
 		return false;
+	}
+
+	void Application::ExecuteMainThreadQueue()
+	{
+		std::scoped_lock<std::mutex> lock(m_MainThreadQueueMutex);
+
+		for (auto& func : m_MainThreadQueue)
+			func();
+
+		m_MainThreadQueue.clear();
 	}
 
 }

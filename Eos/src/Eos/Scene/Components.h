@@ -1,10 +1,8 @@
 #pragma once
 
 #include "Eos/Scene/SceneCamera.h"
-#include "Eos/Core/UID.h"
+#include "Eos/Core/UUID.h"
 #include "Eos/Renderer/Texture.h"
-
-#include "Eos/Scene/NativeScript.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -20,7 +18,7 @@ namespace Eos {
 
 	struct IDComponent
 	{
-		UID ID;
+		UUID ID;
 
 		IDComponent() = default;
 		IDComponent(const IDComponent&) = default;
@@ -94,39 +92,30 @@ namespace Eos {
 		CameraComponent(const CameraComponent&) = default;
 	};
 
+	struct ScriptComponent
+	{
+		std::string ClassName;
+
+		ScriptComponent() = default;
+		ScriptComponent(const ScriptComponent&) = default;
+		ScriptComponent(const std::string& className)
+			: ClassName(className) {}
+	};
+
+	class ScriptableEntity;
+
 	struct NativeScriptComponent
 	{
-		std::unordered_map<entt::id_type, std::function<std::shared_ptr<NativeScript>(Entity entity)>> InstantiateScripts;
-		std::unordered_map<entt::id_type, std::shared_ptr<NativeScript>> Instances;
+		ScriptableEntity* Instance = nullptr;
 
-		template<typename T, typename... Args>
-		NativeScriptComponent& Bind(Args... args)
-		{
-			InstantiateScripts.try_emplace(entt::type_id<T>().hash(), [args...](Entity entity)->std::shared_ptr<NativeScript> { return std::make_shared<T>(entity, args...); });
-			return *this;
-		}
-
-		NativeScriptComponent& Instantiate(Entity entity)
-		{
-			for (const auto& [id, instantiateScript] : InstantiateScripts)
-			{
-				Instances.try_emplace(id, instantiateScript(entity));
-			}
-			return *this;
-		}
+		ScriptableEntity* (*InstantiateScript)();
+		void (*DestroyScript)(NativeScriptComponent*);
 
 		template<typename T>
-		T* GetInstance()
+		void Bind()
 		{
-			return Instances.at[entt::type_hash<T>];
-		}
-
-		void OnUpdate(Timestep ts)
-		{
-			for (auto& [id, instance] : Instances)
-			{
-				instance->OnUpdate(ts);
-			}
+			InstantiateScript = []() { return static_cast<ScriptableEntity*>(new T()); };
+			DestroyScript = [](NativeScriptComponent* nsc) { delete nsc->Instance; nsc->Instance = nullptr; };
 		}
 	};
 
@@ -147,7 +136,6 @@ namespace Eos {
 	{
 		glm::vec2 Offset = { 0.0f, 0.0f };
 		glm::vec2 Size = { 0.5f, 0.5f };
-		float Rotation = 0.0f;
 
 		// TODO: move into physics material in the future
 		float Density = 1.0f;
@@ -183,6 +171,10 @@ namespace Eos {
 	template<typename... Component>
 	struct ComponentGroup {};
 
-	using AllComponents = ComponentGroup<TransformComponent, SpriteRendererComponent, CircleRendererComponent, CameraComponent, NativeScriptComponent, Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent>;
+	using AllComponents =
+		ComponentGroup<TransformComponent, SpriteRendererComponent,
+		CircleRendererComponent, CameraComponent, ScriptComponent,
+		NativeScriptComponent, Rigidbody2DComponent, BoxCollider2DComponent,
+		CircleCollider2DComponent>;
 
 }

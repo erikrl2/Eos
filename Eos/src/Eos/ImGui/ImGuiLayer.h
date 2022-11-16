@@ -21,9 +21,9 @@ namespace Eos {
 		void Begin();
 		void End();
 
-		void BlockEvents(bool block) { m_BlockEvents = block; }
+		void ConsumeEvents(bool consume = true) { m_ConsumeEvents = consume; }
 	private:
-		bool m_BlockEvents = true;
+		bool m_ConsumeEvents = true;
 	};
 
 }

@@ -7,6 +7,11 @@
 
 namespace Eos {
 
+	enum class CameraState
+	{
+		Default = -1, Pan, Rotate, Zoom
+	};
+
 	class EditorCamera : public Camera
 	{
 	public:
@@ -32,8 +37,12 @@ namespace Eos {
 
 		float GetPitch() const { return m_Pitch; }
 		float GetYaw() const { return m_Yaw; }
-	public:
-		static bool s_RotationLocked;
+
+		void SetViewportHovered(bool viewportHovered) { m_ViewportHovered = viewportHovered; }
+		void SetRotationLocked(bool rotationLocked) { m_RotationLocked = rotationLocked; }
+
+		bool IsViewingToolActive() const { return m_ViewingToolActive; }
+		CameraState GetCameraState() const { return m_CameraState; }
 	private:
 		void UpdateProjection();
 		void UpdateView();
@@ -62,6 +71,12 @@ namespace Eos {
 		float m_Pitch = 0.0f, m_Yaw = 0.0f;
 
 		float m_ViewportWidth = 1280, m_ViewportHeight = 720;
+
+		bool m_ViewingToolActive = false;
+		bool m_ViewportHovered = false;
+		bool m_RotationLocked = false;
+
+		CameraState m_CameraState = CameraState::Default;
 	};
 
 }

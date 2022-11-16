@@ -5,8 +5,6 @@
 #include "Eos/Core/KeyCodes.h"
 #include "Eos/Core/MouseCodes.h"
 
-#include <GLFW/glfw3.h>
-
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
@@ -26,7 +24,7 @@ namespace Eos {
 
 	void EditorCamera::UpdateView()
 	{
-		if (s_RotationLocked)
+		if (m_RotationLocked)
 			 m_Yaw = m_Pitch = 0.0f;
 		m_Position = CalculatePosition();
 
@@ -62,21 +60,50 @@ namespace Eos {
 
 	void EditorCamera::OnUpdate(Timestep ts)
 	{
+		bool leftButtonPressed = Input::IsMouseButtonPressed(Mouse::ButtonLeft);
+		bool rightButtonPressed = Input::IsMouseButtonPressed(Mouse::ButtonRight);
+		bool middleButtonPressed = Input::IsMouseButtonPressed(Mouse::ButtonMiddle);
+
 		if (Input::IsKeyPressed(Key::LeftAlt))
+		{
+			if (m_ViewportHovered && !leftButtonPressed && !rightButtonPressed && !middleButtonPressed)
+				m_ViewingToolActive = true;
+		}
+		else if (middleButtonPressed)
+		{
+			if (m_ViewportHovered && !m_ViewingToolActive)
+			{
+				m_InitialMousePosition = { Input::GetMouseX(), Input::GetMouseY() };
+				m_ViewingToolActive = true;
+				return;
+			}
+		}
+		else
+			m_ViewingToolActive = false;
+
+		if (m_ViewingToolActive)
 		{
 			const glm::vec2& mouse{ Input::GetMouseX(), Input::GetMouseY() };
 			glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
 			m_InitialMousePosition = mouse;
 
-			if (Input::IsMouseButtonPressed(Mouse::ButtonLeft))
-				if (EditorCamera::s_RotationLocked)
-					MousePan(delta);
-				else
-					MouseRotate(delta);
-			else if (Input::IsMouseButtonPressed(Mouse::ButtonMiddle))
+			if (leftButtonPressed)
+			{
+				m_CameraState = CameraState::Rotate;
+				MouseRotate(delta);
+			}
+			else if (middleButtonPressed)
+			{
+				m_CameraState = CameraState::Pan;
 				MousePan(delta);
-			else if (Input::IsMouseButtonPressed(Mouse::ButtonRight))
+			}
+			else if (rightButtonPressed)
+			{
+				m_CameraState = CameraState::Zoom;
 				MouseZoom(delta.y);
+			}
+			else
+				m_CameraState = CameraState::Default;
 		}
 
 		UpdateView();
@@ -144,7 +171,5 @@ namespace Eos {
 	{
 		return glm::quat(glm::vec3(-m_Pitch, -m_Yaw, 0.0f));
 	}
-
-	bool EditorCamera::s_RotationLocked = true;
 
 }

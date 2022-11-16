@@ -1,7 +1,8 @@
 #include "eospch.h"
 #include "Eos/Scene/SceneSerializer.h"
 
-#include "Eos/Scene/Components.h"
+#include "Eos/Scene/Entity.h"
+#include "Eos/Scripting/ScriptEngine.h"
 
 #include <fstream>
 
@@ -83,9 +84,39 @@ namespace YAML {
 		}
 	};
 
+	template<>
+	struct convert<Eos::UUID>
+	{
+		static Node encode(const Eos::UUID& uuid)
+		{
+			Node node;
+			node.push_back((uint64_t)uuid);
+			return node;
+		}
+
+		static bool decode(const Node& node, Eos::UUID& uuid)
+		{
+			uuid = node.as<uint64_t>();
+			return true;
+		}
+	};
+
 }
 
 namespace Eos {
+
+#define WRITE_SCRIPT_FIELD(FieldType, Type)   \
+	case ScriptFieldType::FieldType:          \
+		out << scriptField.GetValue<Type>();  \
+		break
+
+#define READ_SCRIPT_FIELD(FieldType, Type)            \
+	case ScriptFieldType::FieldType:                  \
+	{                                                 \
+		Type data = scriptField["Data"].as<Type>();   \
+		fieldInstance.SetValue(data);                 \
+		break;                                        \
+	}
 
 	static void SerializeAllEntityComponents(YAML::Emitter& out, Entity entity);
 
@@ -156,13 +187,12 @@ namespace Eos {
 	{
 		YAML::Emitter out;
 		out << YAML::BeginMap;
-		out << YAML::Key << "Scene" << YAML::Value << m_Scene->GetName();
 		out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 
 		auto idView = m_Scene->m_Registry.view<IDComponent>();
 		for (auto it = idView.rbegin(); it != idView.rend(); it++)
 		{
-			Entity entity = { *it, *m_Scene };
+			Entity entity = { *it, m_Scene.get() };
 			if (!entity)
 				return;
 
@@ -177,8 +207,7 @@ namespace Eos {
 
 	void SceneSerializer::SerializeRuntime(const std::filesystem::path& filepath)
 	{
-		// Not implemented
-		EOS_CORE_ASSERT(false);
+		EOS_CORE_ASSERT(false, "Not implemented");
 	}
 
 	bool SceneSerializer::Deserialize(const std::filesystem::path& filepath)
@@ -194,10 +223,7 @@ namespace Eos {
 			return false;
 		}
 		
-		if (!data["Scene"])
-			return false;
-
-		std::string sceneName = data["Scene"].as<std::string>();
+		std::string sceneName = filepath.stem().string();
 		EOS_CORE_TRACE("Deserializing scene '{0}'", sceneName);
 		m_Scene->SetName(sceneName);
 
@@ -206,14 +232,14 @@ namespace Eos {
 		{
 			for (auto entity : entities)
 			{
-				uint64_t uid = entity["Entity"].as<uint64_t>();
+				uint64_t uuid = entity["Entity"].as<uint64_t>();
 
 				std::string name;
 				auto tagComponent = entity["TagComponent"];
 				if (tagComponent)
 					name = tagComponent["Tag"].as<std::string>();
 
-				Entity deserializedEntity = m_Scene->CreateEntityWithUID(uid, name);
+				Entity deserializedEntity = m_Scene->CreateEntityWithUUID(uuid, name);
 
 				DeserializeAllEntityComponents(entity, deserializedEntity); // Deserialize components (except IDComponent and TagComponent)
 			}
@@ -253,18 +279,15 @@ namespace Eos {
 	template<>
 	static void SerializeEntityComponent<TransformComponent>(YAML::Emitter& out, Entity entity)
 	{
-		if (entity.HasComponent<TransformComponent>())
-		{
-			out << YAML::Key << "TransformComponent";
-			out << YAML::BeginMap;
+		out << YAML::Key << "TransformComponent";
+		out << YAML::BeginMap;
 
-			auto& tc = entity.GetComponent<TransformComponent>();
-			out << YAML::Key << "Translation" << YAML::Value << tc.Translation;
-			out << YAML::Key << "Rotation" << YAML::Value << tc.Rotation;
-			out << YAML::Key << "Scale" << YAML::Value << tc.Scale;
+		auto& tc = entity.GetComponent<TransformComponent>();
+		out << YAML::Key << "Translation" << YAML::Value << tc.Translation;
+		out << YAML::Key << "Rotation" << YAML::Value << tc.Rotation;
+		out << YAML::Key << "Scale" << YAML::Value << tc.Scale;
 
-			out << YAML::EndMap;
-		}
+		out << YAML::EndMap;
 	}
 
 	template<>
@@ -273,7 +296,7 @@ namespace Eos {
 		auto transformComponent = entity["TransformComponent"];
 		if (transformComponent)
 		{
-			auto& tc = deserializedEntity.AddComponent<TransformComponent>().GetComponent<TransformComponent>();
+			auto& tc = deserializedEntity.GetComponent<TransformComponent>();
 			tc.Translation = transformComponent["Translation"].as<glm::vec3>();
 			tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
 			tc.Scale = transformComponent["Scale"].as<glm::vec3>();
@@ -306,6 +329,122 @@ namespace Eos {
 			out << YAML::Key << "FixedAspectRatio" << YAML::Value << cameraComponent.FixedAspectRatio;
 
 			out << YAML::EndMap;
+		}
+	}
+
+	template<>
+	static void SerializeEntityComponent<ScriptComponent>(YAML::Emitter& out, Entity entity)
+	{
+		if (entity.HasComponent<ScriptComponent>())
+		{
+			auto& scriptComponent = entity.GetComponent<ScriptComponent>();
+
+			out << YAML::Key << "ScriptComponent";
+			out << YAML::BeginMap;
+			out << YAML::Key << "ClassName" << YAML::Value << scriptComponent.ClassName;
+
+			// Fields
+			Ref<ScriptClass> entityClass = ScriptEngine::GetEntityClass(scriptComponent.ClassName);
+			const auto& fields = entityClass->GetFields();
+			if (fields.size() > 0)
+			{
+				out << YAML::Key << "ScriptFields" << YAML::Value;
+				auto& entityFields = ScriptEngine::GetScriptFieldMap(entity);
+				out << YAML::BeginSeq;
+				for (const auto& [name, field] : fields)
+				{
+					if (entityFields.find(name) == entityFields.end())
+						continue;
+
+					out << YAML::BeginMap;
+					out << YAML::Key << "Name" << YAML::Value << name;
+					out << YAML::Key << "Type" << YAML::Value << Utils::ScriptFieldTypeToString(field.Type);
+
+					out << YAML::Key << "Data" << YAML::Value;
+					ScriptFieldInstance& scriptField = entityFields.at(name);
+
+					switch (field.Type)
+					{
+						WRITE_SCRIPT_FIELD(Float, float);
+						WRITE_SCRIPT_FIELD(Double, double);
+						WRITE_SCRIPT_FIELD(Bool, bool);
+						WRITE_SCRIPT_FIELD(Char, char);
+						WRITE_SCRIPT_FIELD(Byte, int8_t);
+						WRITE_SCRIPT_FIELD(Short, int16_t);
+						WRITE_SCRIPT_FIELD(Int, int32_t);
+						WRITE_SCRIPT_FIELD(Long, int64_t);
+						WRITE_SCRIPT_FIELD(UByte, uint8_t);
+						WRITE_SCRIPT_FIELD(UShort, uint16_t);
+						WRITE_SCRIPT_FIELD(UInt, uint32_t);
+						WRITE_SCRIPT_FIELD(ULong, uint64_t);
+						WRITE_SCRIPT_FIELD(Vector2, glm::vec2);
+						WRITE_SCRIPT_FIELD(Vector3, glm::vec3);
+						WRITE_SCRIPT_FIELD(Vector4, glm::vec4);
+						WRITE_SCRIPT_FIELD(Entity, UUID);
+					}
+					out << YAML::EndMap;
+				}
+				out << YAML::EndSeq;
+			}
+
+			out << YAML::EndMap;
+		}
+	}
+
+	template<>
+	static void DeserializeEntityComponent<ScriptComponent>(YAML::detail::iterator_value& entity, Entity& deserializedEntity)
+	{
+		auto scriptComponent = entity["ScriptComponent"];
+		if (scriptComponent)
+		{
+			auto& sc = deserializedEntity.AddComponent<ScriptComponent>().GetComponent<ScriptComponent>();
+			sc.ClassName = scriptComponent["ClassName"].as<std::string>();
+
+			if (auto scriptFields = scriptComponent["ScriptFields"])
+			{
+				if (Ref<ScriptClass> entityClass = ScriptEngine::GetEntityClass(sc.ClassName))
+				{
+					const auto& fields = entityClass->GetFields();
+					auto& entityFields = ScriptEngine::GetScriptFieldMap(deserializedEntity);
+
+					for (auto scriptField : scriptFields)
+					{
+						std::string name = scriptField["Name"].as<std::string>();
+						std::string typeString = scriptField["Type"].as<std::string>();
+						ScriptFieldType type = Utils::ScriptFieldTypeFromString(typeString);
+
+						ScriptFieldInstance& fieldInstance = entityFields[name];
+
+						// TODO: turn this assert into log warning
+						// EOS_CORE_ASSERT(fields.find(name) != fields.end());
+
+						if (fields.find(name) == fields.end())
+							continue;
+
+						fieldInstance.Field = fields.at(name);
+
+						switch (type)
+						{
+							READ_SCRIPT_FIELD(Float, float);
+							READ_SCRIPT_FIELD(Double, double);
+							READ_SCRIPT_FIELD(Bool, bool);
+							READ_SCRIPT_FIELD(Char, char);
+							READ_SCRIPT_FIELD(Byte, int8_t);
+							READ_SCRIPT_FIELD(Short, int16_t);
+							READ_SCRIPT_FIELD(Int, int32_t);
+							READ_SCRIPT_FIELD(Long, int64_t);
+							READ_SCRIPT_FIELD(UByte, uint8_t);
+							READ_SCRIPT_FIELD(UShort, uint16_t);
+							READ_SCRIPT_FIELD(UInt, uint32_t);
+							READ_SCRIPT_FIELD(ULong, uint64_t);
+							READ_SCRIPT_FIELD(Vector2, glm::vec2);
+							READ_SCRIPT_FIELD(Vector3, glm::vec3);
+							READ_SCRIPT_FIELD(Vector4, glm::vec4);
+							READ_SCRIPT_FIELD(Entity, UUID);
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -464,7 +603,6 @@ namespace Eos {
 			auto& bc2dComponent = entity.GetComponent<BoxCollider2DComponent>();
 			out << YAML::Key << "Offset" << YAML::Value << bc2dComponent.Offset;
 			out << YAML::Key << "Size" << YAML::Value << bc2dComponent.Size;
-			out << YAML::Key << "Rotation" << YAML::Value << bc2dComponent.Rotation;
 			out << YAML::Key << "Density" << YAML::Value << bc2dComponent.Density;
 			out << YAML::Key << "Friction" << YAML::Value << bc2dComponent.Friction;
 			out << YAML::Key << "Restitution" << YAML::Value << bc2dComponent.Restitution;
@@ -483,7 +621,6 @@ namespace Eos {
 			auto& bc2d = deserializedEntity.AddComponent<BoxCollider2DComponent>().GetComponent<BoxCollider2DComponent>();
 			bc2d.Offset = boxCollider2DComponent["Offset"].as<glm::vec2>();
 			bc2d.Size = boxCollider2DComponent["Size"].as<glm::vec2>();
-			bc2d.Rotation = boxCollider2DComponent["Rotation"].as<float>();
 			bc2d.Density = boxCollider2DComponent["Density"].as<float>();
 			bc2d.Friction = boxCollider2DComponent["Friction"].as<float>();
 			bc2d.Restitution = boxCollider2DComponent["Restitution"].as<float>();

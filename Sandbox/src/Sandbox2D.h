@@ -11,10 +11,11 @@ public:
 	virtual void OnAttach() override;
 	virtual void OnDetach() override;
 	virtual void OnUpdate(Eos::Timestep ts) override;
-	//virtual void OnImGuiRender() override;
+	virtual void OnImGuiRender() override;
 	virtual void OnEvent(Eos::Event& e) override;
 
 	bool Sandbox2D::OnWindowResize(Eos::WindowResizeEvent& e);
+	bool Sandbox2D::OnWindowClose(Eos::WindowCloseEvent& e);
 private:
 	Eos::Ref<Eos::Scene> m_Scene;
 };

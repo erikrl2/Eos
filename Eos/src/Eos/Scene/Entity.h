@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Eos/Core/UID.h"
+#include "Eos/Core/UUID.h"
 #include "Eos/Scene/Scene.h"
+#include "Eos/Scene/Components.h"
 
 #include <entt.hpp>
 
@@ -11,7 +12,7 @@ namespace Eos {
 	{
 	public:
 		Entity() = default;
-		Entity(entt::entity handle, Scene& scene);
+		Entity(entt::entity handle, Scene* scene);
 		Entity(const Entity&) = default;
 
 		Scene& GetScene() { return *m_Scene; }
@@ -54,26 +55,15 @@ namespace Eos {
 			return *this;
 		}
 
-		Entity CreateEntity(const std::string_view name = {})
-		{
-			return m_Scene->CreateEntity(name);
-		}
-
-		void DestroyAllEntities()
-		{
-			m_Scene->DestroyAllEntities();
-		}
-
-		void DestroyEntity(Entity entity)
-		{
-			m_Scene->DestroyEntity(entity);
-		}
-
 		operator bool() const { return m_EntityHandle != entt::null; }
-		bool operator==(const Entity& other) const { return m_EntityHandle == other.m_EntityHandle && m_Scene == other.m_Scene; }
-		bool operator!=(const Entity& other) const { return !(*this == other); }
 		operator entt::entity() const { return m_EntityHandle; }
 		operator uint32_t() const { return (uint32_t)m_EntityHandle; }
+
+		UUID GetUUID() { return GetComponent<IDComponent>().ID; }
+		const std::string& GetName() { return GetComponent<TagComponent>().Tag; }
+
+		bool operator==(const Entity& other) const { return m_EntityHandle == other.m_EntityHandle && m_Scene == other.m_Scene; }
+		bool operator!=(const Entity& other) const { return !(*this == other); }
 	private:
 		entt::entity m_EntityHandle{ entt::null };
 		Scene* m_Scene = nullptr;

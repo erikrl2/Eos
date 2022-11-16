@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Eos/Core/Timestep.h"
-#include "Eos/Core/UID.h"
+#include "Eos/Core/UUID.h"
 #include "Eos/Renderer/EditorCamera.h"
 
 #include <entt.hpp>
@@ -24,7 +24,7 @@ namespace Eos {
 		static Ref<Scene> Copy(Ref<Scene> other);
 
 		Entity CreateEntity(const std::string_view name = {});
-		Entity CreateEntityWithUID(UID uid, const std::string_view name = {});
+		Entity CreateEntityWithUUID(UUID uuid, const std::string_view name = {});
 		void DestroyEntity(Entity entity);
 		void DestroyAllEntities();
 
@@ -43,7 +43,17 @@ namespace Eos {
 
 		Entity DuplicateEntity(Entity entity);
 
+		Entity FindEntityByName(std::string_view name);
+		Entity GetEntityByUUID(UUID uuid);
+
 		Entity GetPrimaryCameraEntity();
+
+		bool IsRunning() const { return m_IsRunning; }
+		bool IsPaused() const { return m_IsPaused; }
+
+		void SetPaused(bool paused) { m_IsPaused = paused; }
+
+		void Step(int frames = 1);
 
 		template<typename... Components>
 		auto GetAllEntitiesWith() { return m_Registry.view<Components...>(); }
@@ -61,8 +71,13 @@ namespace Eos {
 	private:
 		entt::registry m_Registry;
 		uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
+		bool m_IsRunning = false;
+		bool m_IsPaused = false;
+		int m_StepFrames = 0;
 
 		b2World* m_PhysicsWorld = nullptr;
+
+		std::unordered_map<UUID, entt::entity> m_EntityMap;
 
 		std::string m_Name = "Untitled";
 

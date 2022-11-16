@@ -1,7 +1,9 @@
 #include "eospch.h"
 #include "Eos/Scene/Scene.h"
 
+#include "Eos/Scene/ScriptableEntity.h"
 #include "Eos/Scene/Components.h"
+#include "Eos/Scripting/ScriptEngine.h"
 #include "Eos/Renderer/Renderer2D.h"
 
 #include <glm/glm.hpp>
@@ -35,15 +37,15 @@ namespace Eos {
 	}
 
 	template<typename... Component>
-	static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UID, entt::entity>& enttMap)
+	static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap)
 	{
 		([&]()
 			{
 				for (auto e : src.view<Component>())
 				{
-					UID uid = src.get<IDComponent>(e).ID;
-					EOS_CORE_ASSERT(enttMap.find(uid) != enttMap.end());
-					entt::entity dstEnttID = enttMap.at(uid);
+					UUID uuid = src.get<IDComponent>(e).ID;
+					EOS_CORE_ASSERT(enttMap.find(uuid) != enttMap.end());
+					entt::entity dstEnttID = enttMap.at(uuid);
 
 					auto& component = src.get<Component>(e);
 					dst.emplace_or_replace<Component>(dstEnttID, component);
@@ -52,7 +54,7 @@ namespace Eos {
 	}
 
 	template<typename... Component>
-	static void CopyComponent(ComponentGroup<Component...>, entt::registry& dst, entt::registry& src, const std::unordered_map<UID, entt::entity>& enttMap)
+	static void CopyComponent(ComponentGroup<Component...>, entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap)
 	{
 		CopyComponent<Component...>(dst, src, enttMap);
 	}
@@ -82,15 +84,17 @@ namespace Eos {
 
 		auto& srcSceneRegistry = other->m_Registry;
 		auto& dstSceneRegistry = newScene->m_Registry;
-		std::unordered_map<UID, entt::entity> enttMap;
+		std::unordered_map<UUID, entt::entity> enttMap;
 
 		// Create entities in new scene
-		for (auto e : srcSceneRegistry.view<IDComponent>())
+		auto view = srcSceneRegistry.view<IDComponent>();
+		for (auto it = view.rbegin(); it != view.rend(); it++)
 		{
-			UID uid = srcSceneRegistry.get<IDComponent>(e).ID;
+			const entt::entity& e = *it;
+			UUID uuid = srcSceneRegistry.get<IDComponent>(e).ID;
 			const auto& name = srcSceneRegistry.get<TagComponent>(e).Tag;
-			Entity newEntity = newScene->CreateEntityWithUID(uid, name);
-			enttMap[uid] = (entt::entity)newEntity;
+			Entity newEntity = newScene->CreateEntityWithUUID(uuid, name);
+			enttMap[uuid] = (entt::entity)newEntity;
 		}
 
 		// Copy components (except IDComponent and TagComponent)
@@ -101,19 +105,25 @@ namespace Eos {
 
 	Entity Scene::CreateEntity(const std::string_view name)
 	{
-		return CreateEntityWithUID(UID(), name);
+		return CreateEntityWithUUID(UUID(), name);
 	}
 
-	Entity Scene::CreateEntityWithUID(UID uid, const std::string_view name)
+	Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string_view name)
 	{
-		Entity entity = { m_Registry.create(), *this };
-		entity.AddComponent<IDComponent>(uid).AddComponent<TagComponent>()
-			.GetComponent<TagComponent>().Tag = name.empty() ? "GameObject" : name;
+		Entity entity = { m_Registry.create(), this };
+		entity.AddComponent<IDComponent>(uuid)
+			.AddComponent<TransformComponent>()
+			.AddComponent<TagComponent>()
+			.GetComponent<TagComponent>().Tag = name.empty() ? "Entity" : name;
+
+		m_EntityMap[uuid] = entity;
+
 		return entity;
 	}
 
 	void Scene::DestroyEntity(Entity entity)
 	{
+		m_EntityMap.erase(entity.GetUUID());
 		m_Registry.destroy(entity);
 	}
 
@@ -124,12 +134,31 @@ namespace Eos {
 
 	void Scene::OnRuntimeStart()
 	{
+		m_IsRunning = true;
+
 		OnPhysics2DStart();
+
+		// Scripting
+		{
+			ScriptEngine::OnRuntimeStart(this);
+
+			// Instantiate all script entities
+			auto view = m_Registry.view<ScriptComponent>();
+			for (auto e : view)
+			{
+				Entity entity = { e, this };
+				ScriptEngine::OnCreateEntity(entity);
+			}
+		}
 	}
 
 	void Scene::OnRuntimeStop()
 	{
+		m_IsRunning = false;
+
 		OnPhysics2DStop();
+
+		ScriptEngine::OnRuntimeStop();
 	}
 
 	void Scene::OnSimulationStart()
@@ -144,35 +173,49 @@ namespace Eos {
 
 	void Scene::OnUpdateRuntime(Timestep ts)
 	{
-		// Update scripts
+		if (!m_IsPaused || m_StepFrames-- > 0)
 		{
-			for (auto [entity, nsc] : m_Registry.view<NativeScriptComponent>().each())
+			// Update scripts
 			{
-				// TODO: Move to Scene::OnScenePlay
-				if (nsc.Instances.empty())
+				// C# Entity OnUpdate
+				auto view = m_Registry.view<ScriptComponent>();
+				for (auto e : view)
 				{
-					nsc.Instantiate({ entity, *this });
+					Entity entity = { e, this };
+					ScriptEngine::OnUpdateEntity(entity, ts);
 				}
-				nsc.OnUpdate(ts);
+
+				m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc)
+					{
+						// TODO: Move to Scene::OnScenePlay
+						if (!nsc.Instance)
+						{
+							nsc.Instance = nsc.InstantiateScript();
+							nsc.Instance->m_Entity = Entity{ entity, this };
+							nsc.Instance->OnCreate();
+						}
+
+						nsc.Instance->OnUpdate(ts);
+					});
 			}
-		}
 
-		// Physics
-		{
-			const int32_t velocityIterations = 6;
-			const int32_t positionIterations = 2;
-			m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
-
-			// Retrieve transform from Box2D
-			for (auto [e, transform, rb2d] : m_Registry.view<TransformComponent, Rigidbody2DComponent>().each())
+			// Physics
 			{
-				Entity entity = { e, *this };
+				const int32_t velocityIterations = 6;
+				const int32_t positionIterations = 2;
+				m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
 
-				b2Body* body = (b2Body*)rb2d.RuntimeBody;
-				const auto& position = body->GetPosition();
-				transform.Translation.x = position.x;
-				transform.Translation.y = position.y;
-				transform.Rotation.z = body->GetAngle();
+				// Retrieve transform from Box2D
+				for (auto [e, transform, rb2d] : m_Registry.view<TransformComponent, Rigidbody2DComponent>().each())
+				{
+					Entity entity = { e, this };
+
+					b2Body* body = (b2Body*)rb2d.RuntimeBody;
+					const auto& position = body->GetPosition();
+					transform.Translation.x = position.x;
+					transform.Translation.y = position.y;
+					transform.Rotation.z = body->GetAngle();
+				}
 			}
 		}
 
@@ -199,22 +242,25 @@ namespace Eos {
 
 	void Scene::OnUpdateSimulation(Timestep ts, EditorCamera& camera)
 	{
-		// Physics
+		if (!m_IsPaused || m_StepFrames-- > 0)
 		{
-			const int32_t velocityIterations = 6;
-			const int32_t positionIterations = 2;
-			m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
-
-			// Retrieve transform from Box2D
-			for (auto [e, transform, rb2d] : m_Registry.view<TransformComponent, Rigidbody2DComponent>().each())
+			// Physics
 			{
-				Entity entity = { e, *this };
+				const int32_t velocityIterations = 6;
+				const int32_t positionIterations = 2;
+				m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
 
-				b2Body* body = (b2Body*)rb2d.RuntimeBody;
-				const auto& position = body->GetPosition();
-				transform.Translation.x = position.x;
-				transform.Translation.y = position.y;
-				transform.Rotation.z = body->GetAngle();
+				// Retrieve transform from Box2D
+				for (auto [e, transform, rb2d] : m_Registry.view<TransformComponent, Rigidbody2DComponent>().each())
+				{
+					Entity entity = { e, this };
+
+					b2Body* body = (b2Body*)rb2d.RuntimeBody;
+					const auto& position = body->GetPosition();
+					transform.Translation.x = position.x;
+					transform.Translation.y = position.y;
+					transform.Rotation.z = body->GetAngle();
+				}
 			}
 		}
 
@@ -230,6 +276,9 @@ namespace Eos {
 
 	void Scene::OnViewportResize(uint32_t width, uint32_t height)
 	{
+		if (m_ViewportWidth == width && m_ViewportHeight == height)
+			return;
+
 		m_ViewportWidth = width;
 		m_ViewportHeight = height;
 
@@ -254,8 +303,32 @@ namespace Eos {
 		for (auto [entity, camera] : m_Registry.view<CameraComponent>().each())
 		{
 			if (camera.Primary)
-				return Entity{ entity, *this };
+				return Entity{ entity, this };
 		}
+		return {};
+	}
+
+	void Scene::Step(int frames)
+	{
+		m_StepFrames = frames;
+	}
+
+	Entity Scene::FindEntityByName(std::string_view name)
+	{
+		auto view = m_Registry.view<TagComponent>();
+		for (auto [entity, tc] : m_Registry.view<TagComponent>().each())
+		{
+			if (tc.Tag == name)
+				return Entity{ entity, this };
+		}
+		return {};
+	}
+
+	Entity Scene::GetEntityByUUID(UUID uuid)
+	{
+		if (m_EntityMap.find(uuid) != m_EntityMap.end())
+			return { m_EntityMap.at(uuid), this };
+
 		return {};
 	}
 
@@ -270,7 +343,7 @@ namespace Eos {
 
 		for (auto [e, transform, rb2d] : m_Registry.view<TransformComponent, Rigidbody2DComponent>().each())
 		{
-			Entity entity = { e, *this };
+			Entity entity = { e, this };
 
 			b2BodyDef bodyDef;
 			bodyDef.type = Rigidbody2DTypeToBox2DBody(rb2d.Type);
@@ -287,7 +360,7 @@ namespace Eos {
 
 				b2PolygonShape boxShape;
 				boxShape.SetAsBox(bc2d.Size.x * transform.Scale.x, bc2d.Size.y * transform.Scale.y,
-					b2Vec2(bc2d.Offset.x, bc2d.Offset.y), bc2d.Rotation);
+					b2Vec2(bc2d.Offset.x, bc2d.Offset.y), 0.0f);
 
 				b2FixtureDef fixtureDef;
 				fixtureDef.shape = &boxShape;
@@ -398,6 +471,9 @@ namespace Eos {
 		if (m_ViewportWidth > 0 && m_ViewportHeight > 0)
 			component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
 	}
+
+	template<>
+	void Scene::OnComponentAdded<ScriptComponent>(Entity entity, ScriptComponent& component) {}
 
 	template<>
 	void Scene::OnComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component) {}
