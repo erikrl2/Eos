@@ -7,6 +7,7 @@
 #include "Eos/Core/Timer.h"
 #include "Eos/Core/Buffer.h"
 #include "Eos/Core/FileSystem.h"
+#include "Eos/Project/Project.h"
 
 #include "mono/jit/jit.h"
 #include "mono/metadata/assembly.h"
@@ -48,7 +49,7 @@ namespace Eos {
 
 			// NOTE: We can't use this image for anything other than loading the assembly because this image doesn't have a reference to the assembly
 			MonoImageOpenStatus status;
-			MonoImage* image = mono_image_open_from_data_full(fileData.As<char>(), fileData.Size(), 1, &status, 0);
+			MonoImage* image = mono_image_open_from_data_full(fileData.As<char>(), (uint32_t)fileData.Size(), 1, &status, 0);
 
 			if (status != MONO_IMAGE_OK)
 			{
@@ -65,7 +66,7 @@ namespace Eos {
 				if (std::filesystem::exists(pdbPath))
 				{
 					ScopedBuffer pdbFileData = FileSystem::ReadFileBinary(pdbPath);
-					mono_debug_open_image_from_memory(image, pdbFileData.As<const mono_byte>(), pdbFileData.Size());
+					mono_debug_open_image_from_memory(image, pdbFileData.As<const mono_byte>(), (int)pdbFileData.Size());
 					EOS_CORE_INFO("Loaded PDB {}", pdbPath);
 				}
 			}
@@ -168,7 +169,8 @@ namespace Eos {
 			EOS_CORE_ERROR("[ScriptEngine] Could not load Eos-ScriptCore assembly.");
 			return;
 		}
-		status = LoadAppAssembly("SandboxProject/Binaries/Sandbox.dll");
+#if 0
+		status = LoadAppAssembly("SandboxProject/Assets/Scripts/Binaries/Sandbox.dll");
 		if (!status)
 		{
 			EOS_CORE_ERROR("[ScriptEngine] Could not load app assembly.");
@@ -181,6 +183,7 @@ namespace Eos {
 
 		// Retrieve and instantiate class
 		s_Data->EntityClass = ScriptClass("Eos", "Entity", true);
+#endif
 	}
 
 	void ScriptEngine::Shutdown()
@@ -269,6 +272,12 @@ namespace Eos {
 		ScriptGlue::RegisterComponents();
 
 		s_Data->EntityClass = ScriptClass("Eos", "Entity", true);
+	}
+
+	void ScriptEngine::SetNewAppAssembly(const std::filesystem::path& filepath)
+	{
+		s_Data->AppAssemblyFilepath = filepath;
+		ReloadAssembly();
 	}
 
 	void ScriptEngine::OnRuntimeStart(Scene* scene)

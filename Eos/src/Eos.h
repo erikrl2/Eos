@@ -22,6 +22,8 @@
 #include "Eos/Scene/ScriptableEntity.h"
 #include "Eos/Scene/Components.h"
 
+#include "Eos/Project/Project.h"
+
 // ---Renderer-----------------------
 #include "Eos/Renderer/Renderer.h"
 #include "Eos/Renderer/Renderer2D.h"

@@ -4,6 +4,8 @@
 #include "Eos/Scene/Entity.h"
 #include "Eos/Scripting/ScriptEngine.h"
 
+#include "Eos/Project/Project.h"
+
 #include <fstream>
 
 #define YAML_CPP_STATIC_DEFINE
@@ -483,10 +485,12 @@ namespace Eos {
 			out << YAML::Key << "Color" << YAML::Value << src.Color;
 			if (auto& texture = src.Texture)
 			{
-				out << YAML::Key << "TexturePath" << YAML::Value << texture->GetPath();
+				std::string texturePath = std::filesystem::relative(texture->GetPath(), Project::GetAssetDirectory()).string();
+				out << YAML::Key << "TexturePath" << YAML::Value << texturePath;
 				out << YAML::Key << "FlipXY" << YAML::Value << glm::vec2(src.FlipX, src.FlipY); // TEMP
 				out << YAML::Key << "TilingFactor" << YAML::Value << src.TilingFactor;
-				// ------ TEMP -------
+
+				// TODO: Refactor
 				out << YAML::Key << "Atlas" << YAML::Value << src.Atlas;
 				if (src.Atlas)
 				{
@@ -494,7 +498,6 @@ namespace Eos {
 					out << YAML::Key << "CellSize" << YAML::Value << src.CellSize;
 					out << YAML::Key << "SpriteSize" << YAML::Value << src.SpriteSize;
 				}
-				// ------ TEMP -------
 			}
 
 			out << YAML::EndMap;
@@ -511,11 +514,12 @@ namespace Eos {
 			src.Color = spriteRendererComponent["Color"].as<glm::vec4>();
 			if (auto texture = spriteRendererComponent["TexturePath"])
 			{
-				if (std::string textureFilePath = texture.as<std::string>();
-					std::filesystem::exists(textureFilePath))
+				std::string textureFilePath = texture.as<std::string>();
+				textureFilePath = Project::GetAssetFileSystemPath(textureFilePath).string();
+				if (std::filesystem::exists(textureFilePath))
 				{
 					src.Texture = Texture2D::Create(textureFilePath);
-					glm::vec2 flipXY = spriteRendererComponent["FlipXY"].as<glm::vec2>(); // TEMP
+					glm::vec2 flipXY = spriteRendererComponent["FlipXY"].as<glm::vec2>(); // TODO: Refactor
 					src.FlipX = (bool)flipXY.x;
 					src.FlipY = (bool)flipXY.y;
 					src.TilingFactor = spriteRendererComponent["TilingFactor"].as<float>();

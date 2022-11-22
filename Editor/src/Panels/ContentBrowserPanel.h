@@ -20,6 +20,7 @@ namespace Eos {
 		void DrawSearchbar();
 		void DrawClearSearchbarButton();
 	private:
+		std::filesystem::path m_BaseDirectory;
 		std::filesystem::path m_CurrentDirectory;
 
 		std::unordered_map<std::filesystem::path, Ref<Texture2D>> m_ImageIcons;
