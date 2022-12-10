@@ -134,7 +134,11 @@ namespace Eos {
 		Scope<filewatch::FileWatch<std::string>> AppAssemblyFileWatcher;
 		bool AssemblyReloadPending = false;
 
+#ifdef EOS_DEBUG
 		bool EnableDebugging = true;
+#else
+		bool EnableDebugging = false;
+#endif
 
 		// Runtime
 		Scene* SceneContext = nullptr;

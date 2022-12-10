@@ -40,9 +40,14 @@ namespace Eos {
 		auto commandLineArgs = app.GetSpecification().CommandLineArgs;
 		if (commandLineArgs.Count > 1)
 			isProjectLoaded = OpenProject(commandLineArgs[1]);
+		else
+			isProjectLoaded = OpenProject();
 
 		if (!isProjectLoaded)
-			NewProject();
+		{
+			Application::Get().Close(); // TODO: Remove
+			//NewProject();
+		}
 
 		m_MainFramebuffer =	Framebuffer::Create({ 1280, 720, {FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth} });
 		m_CameraPreviewFramebuffer = Framebuffer::Create({ 1280, 720, {FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth} });
@@ -542,7 +547,7 @@ namespace Eos {
 			case Key::O:
 			{
 				if (control)
-					OpenScene();
+					OpenProject();
 				break;
 			}
 			case Key::S:
@@ -719,11 +724,13 @@ namespace Eos {
 		//m_ContentBrowserPanel = CreateScope<ContentBrowserPanel>();
 	}
 
-	void EditorLayer::OpenProject()
+	bool EditorLayer::OpenProject()
 	{
 		std::string filepath = FileDialogs::OpenFile("Eos Project (*.eosproj)\0*.eosproj\0");
-		if (!filepath.empty())
-			OpenProject(filepath);
+		if (filepath.empty())
+			return false;
+
+		return OpenProject(filepath);
 	}
 
 	bool EditorLayer::OpenProject(const std::filesystem::path& path)

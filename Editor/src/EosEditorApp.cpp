@@ -22,8 +22,8 @@ namespace Eos {
 		spec.CommandLineArgs = args;
 
 		// For testing purposes (TODO: Remove)
-		spec.CommandLineArgs.Count++;
-		spec.CommandLineArgs.Args[1] = "SandboxProject/Sandbox.eosproj";
+		//spec.CommandLineArgs.Count++;
+		//spec.CommandLineArgs.Args[1] = "SandboxProject/Sandbox.eosproj";
 
 		return new EosEditor(spec);
 	}

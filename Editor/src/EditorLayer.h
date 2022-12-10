@@ -38,7 +38,7 @@ namespace Eos {
 		void OnOverlayRender();
 
 		void NewProject();
-		void OpenProject();
+		bool OpenProject();
 		bool OpenProject(const std::filesystem::path& path);
 		void SaveProject();
 
