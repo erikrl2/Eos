@@ -9,6 +9,8 @@
 
 #include "Eos/Scripting/ScriptEngine.h"
 
+#include "Eos/Renderer/Font.h"
+
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 
@@ -22,6 +24,7 @@ namespace Eos {
 	EditorLayer::EditorLayer()
 		: Layer("EditorLayer")
 	{
+		Font font("assets/fonts/opensans/OpenSans-Regular.ttf");
 	}
 
 	void EditorLayer::OnAttach()
@@ -913,7 +916,7 @@ namespace Eos {
 		m_Settings.Theme = newTheme;
 	}
 
-	void EditorLayer::SetEditorFont(Font newFont)
+	void EditorLayer::SetEditorFont(EditorFont newFont)
 	{
 		Style::SetFont(newFont);
 		m_FontSelection[m_Settings.Font] = false;

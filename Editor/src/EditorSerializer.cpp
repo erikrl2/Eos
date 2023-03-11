@@ -33,7 +33,7 @@ namespace Eos {
 		return Theme_Dark1;
 	}
 
-	static std::string FontTypeToString(Font font)
+	static std::string FontTypeToString(EditorFont font)
 	{
 		switch (font)
 		{
@@ -46,7 +46,7 @@ namespace Eos {
 		return {};
 	}
 
-	static Font FontTypeFromString(const std::string& fontString)
+	static EditorFont FontTypeFromString(const std::string& fontString)
 	{
 		if (fontString == "OpenSans-Regular")		return Font_OpenSansRegular;
 		if (fontString == "Roboto-Medium")			return Font_RobotoMedium;

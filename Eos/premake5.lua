@@ -39,6 +39,8 @@ project "Eos"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.Imgui}",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.msdfgen}",
+		"%{IncludeDir.msdf_atlas_gen}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.mono}",
@@ -53,6 +55,7 @@ project "Eos"
 		"GLFW",
 		"Glad",
 		"Imgui",
+		"msdf-atlas-gen",
 		"yaml-cpp",
 
 		"%{Library.mono}"

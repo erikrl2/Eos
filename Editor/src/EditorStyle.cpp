@@ -20,7 +20,7 @@ namespace Eos {
 		s_Icons[Icon_Checkerboard] = Texture2D::Create("Resources/Icons/Checkerboard.png");
 	}
 
-	void Style::SetFont(Font font)
+	void Style::SetFont(EditorFont font)
 	{
 		ImGui::GetIO().FontDefault = GetImGuiFont(font);
 	}
@@ -35,7 +35,7 @@ namespace Eos {
 		}
 	}
 
-	ImFont* Style::GetImGuiFont(Font font)
+	ImFont* Style::GetImGuiFont(EditorFont font)
 	{
 		return ImGui::GetIO().Fonts->Fonts[font];
 	}

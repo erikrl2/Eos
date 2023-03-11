@@ -15,7 +15,7 @@ namespace Eos {
 		Theme_Dark1 = 0, Theme_Dark2, Theme_Dark3
 	};
 
-	enum Font : uint16_t
+	enum EditorFont : uint16_t
 	{
 		Font_OpenSansBold = 1, Font_OpenSansRegular, Font_RobotoMedium, Font_RudaRegular
 	};
@@ -31,10 +31,10 @@ namespace Eos {
 		static void LoadFonts();
 		static void LoadIcons();
 
-		static void SetFont(Font font);
+		static void SetFont(EditorFont font);
 		static void SetTheme(Theme theme);
 
-		static ImFont* GetImGuiFont(Font font);
+		static ImFont* GetImGuiFont(EditorFont font);
 		static Ref<Texture2D> GetIconImage(Icon icon);
 	private:
 		static void Style::LoadFont(const char* filepath, float fontsize);

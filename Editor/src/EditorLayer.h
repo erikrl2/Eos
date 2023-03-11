@@ -13,7 +13,7 @@ namespace Eos {
 	struct EditorSettings
 	{
 		Theme Theme = Theme_Dark1;
-		Font Font = Font_RobotoMedium;
+		EditorFont Font = Font_RobotoMedium;
 	};
 
 	class EditorLayer : public Layer
@@ -61,7 +61,7 @@ namespace Eos {
 		void SyncWindowTitle();
 
 		void SetEditorTheme(Theme newTheme);
-		void SetEditorFont(Font newFont);
+		void SetEditorFont(EditorFont newFont);
 
 		void SaveEditorSettings();
 		void LoadEditorSettings();

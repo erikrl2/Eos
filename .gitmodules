@@ -26,3 +26,7 @@
 	path = Eos/vendor/Box2D
 	url = https://github.com/erikrl2/box2d
 	branch = main
+[submodule "Eos/vendor/msdf-atlas-gen"]
+	path = Eos/vendor/msdf-atlas-gen
+	url = https://github.com/erikrl2/msdf-atlas-gen
+	branch = master

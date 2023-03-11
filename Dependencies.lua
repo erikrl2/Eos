@@ -19,6 +19,8 @@ IncludeDir["mono"] = "%{wks.location}/Eos/vendor/mono/include"
 IncludeDir["shaderc"] = "%{wks.location}/Eos/vendor/shaderc/include"
 IncludeDir["SPIRV_Cross"] = "%{wks.location}/Eos/vendor/SPIRV-Cross"
 IncludeDir["VulkanSDK"] = "%{VULKAN_SDK}/Include"
+IncludeDir["msdfgen"] = "%{wks.location}/Eos/vendor/msdf-atlas-gen/msdfgen"
+IncludeDir["msdf_atlas_gen"] = "%{wks.location}/Eos/vendor/msdf-atlas-gen/msdf-atlas-gen"
 
 LibraryDir = {}
 LibraryDir["mono"] = "%{wks.location}/Eos/vendor/mono/lib/%{cfg.buildcfg}"
