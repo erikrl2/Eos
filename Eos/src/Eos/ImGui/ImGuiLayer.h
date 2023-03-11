@@ -22,6 +22,8 @@ namespace Eos {
 		void End();
 
 		void ConsumeEvents(bool consume = true) { m_ConsumeEvents = consume; }
+
+		uint32_t GetActiveWidgetID() const;
 	private:
 		bool m_ConsumeEvents = true;
 	};

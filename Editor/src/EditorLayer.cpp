@@ -456,7 +456,7 @@ namespace Eos {
 		ImGui::Text("FPS: %.0f", 1.0f / delta);
 
 		const char* entityTag = "None";
-		if (m_HoveredEntity) entityTag = m_HoveredEntity.GetComponent<TagComponent>().Tag.c_str();
+		if (m_HoveredEntity) entityTag = m_HoveredEntity.GetName().c_str();
 		ImGui::Text("Hovered Entity: %s", entityTag);
 
 		auto stats = Renderer2D::GetStats();
@@ -531,7 +531,7 @@ namespace Eos {
 		if (e.IsRepeat())
 			return false;
 
-		bool editing = m_SceneState == SceneState::Edit;
+		bool editing = m_SceneState == SceneState::Edit && Application::Get().GetImGuiLayer()->GetActiveWidgetID() == 0;
 		bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
 		bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
 		bool canChangeGizmoType = !ImGuizmo::IsUsing() && editing;
@@ -737,11 +737,12 @@ namespace Eos {
 	{
 		if (Project::Load(path))
 		{
+			ScriptEngine::Init();
+
 			auto startScenePath = Project::GetAssetFileSystemPath(Project::GetActive()->GetConfig().StartScene);
 			auto assemblyPath = Project::GetAssetFileSystemPath(Project::GetActive()->GetConfig().ScriptModulePath);
 			EOS_ASSERT(std::filesystem::exists(startScenePath) && std::filesystem::exists(assemblyPath));
 
-			ScriptEngine::SetNewAppAssembly(assemblyPath);
 			OpenScene(startScenePath);
 			m_ContentBrowserPanel = CreateScope<ContentBrowserPanel>();
 			return true;
@@ -952,8 +953,8 @@ namespace Eos {
 	{
 		if (Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity())
 		{
-			m_ActiveScene->DestroyEntity(selectedEntity);
 			m_SceneHierarchyPanel.SetSelectedEntity({});
+			m_ActiveScene->DestroyEntity(selectedEntity);
 		}
 	}
 

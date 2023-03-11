@@ -173,8 +173,9 @@ namespace Eos {
 			EOS_CORE_ERROR("[ScriptEngine] Could not load Eos-ScriptCore assembly.");
 			return;
 		}
-#if 0
-		status = LoadAppAssembly("SandboxProject/Assets/Scripts/Binaries/Sandbox.dll");
+
+		auto scriptModulePath = Project::GetAssetDirectory() / Project::GetActive()->GetConfig().ScriptModulePath;
+		status = LoadAppAssembly(scriptModulePath);
 		if (!status)
 		{
 			EOS_CORE_ERROR("[ScriptEngine] Could not load app assembly.");
@@ -187,7 +188,6 @@ namespace Eos {
 
 		// Retrieve and instantiate class
 		s_Data->EntityClass = ScriptClass("Eos", "Entity", true);
-#endif
 	}
 
 	void ScriptEngine::Shutdown()
@@ -276,12 +276,6 @@ namespace Eos {
 		ScriptGlue::RegisterComponents();
 
 		s_Data->EntityClass = ScriptClass("Eos", "Entity", true);
-	}
-
-	void ScriptEngine::SetNewAppAssembly(const std::filesystem::path& filepath)
-	{
-		s_Data->AppAssemblyFilepath = filepath;
-		ReloadAssembly();
 	}
 
 	void ScriptEngine::OnRuntimeStart(Scene* scene)

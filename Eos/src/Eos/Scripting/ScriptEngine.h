@@ -146,7 +146,6 @@ namespace Eos {
 		static bool LoadAppAssembly(const std::filesystem::path& filepath);
 
 		static void ReloadAssembly();
-		static void SetNewAppAssembly(const std::filesystem::path& filepath);
 
 		static void OnRuntimeStart(Scene* scene);
 		static void OnRuntimeStop();
