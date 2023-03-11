@@ -1,4 +1,4 @@
-local EosRootDir = '../..'
+local EosRootDir = '../../../..'
 include (EosRootDir .. "/vendor/premake/premake_customization/solution_items.lua")
 
 workspace "Sandbox"
@@ -27,7 +27,8 @@ project "Sandbox"
 
 	files 
 	{
-		"Assets/Scripts/**.cs"
+		"Source/**.cs",
+		"Properties/**.cs"
 	}
 
 	links

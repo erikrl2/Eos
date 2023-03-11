@@ -13,7 +13,7 @@ namespace Eos {
 		~SceneSerializer() = default;
 
 		void Serialize(const std::filesystem::path& filepath);
-		void SerializeRuntime(const std::filesystem::path& filepath); // TODO: implement
+		void SerializeRuntime(const std::filesystem::path& filepath); // TODO: Implement
 
 		bool Deserialize(const std::filesystem::path& filepath);
 		bool DeserializeRuntime(const std::filesystem::path& filepath);

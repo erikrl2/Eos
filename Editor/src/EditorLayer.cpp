@@ -19,8 +19,6 @@
 
 namespace Eos {
 
-	extern const std::filesystem::path g_AssetPath;
-
 	EditorLayer::EditorLayer()
 		: Layer("EditorLayer")
 	{
@@ -33,19 +31,23 @@ namespace Eos {
 		Style::LoadFonts();
 		Style::LoadIcons();
 		LoadEditorSettings();
-		ImGui::GetIO().IniFilename = m_ImGuiConfigFilepath;
 
 		Application& app = Application::Get();
 		app.GetWindow().MaximizeWindow();
 		app.GetImGuiLayer()->ConsumeEvents(false);
 
-		bool sceneLoaded = false;
+		bool isProjectLoaded = false;
 		auto commandLineArgs = app.GetSpecification().CommandLineArgs;
 		if (commandLineArgs.Count > 1)
-			sceneLoaded = OpenScene(commandLineArgs[1]);
+			isProjectLoaded = OpenProject(commandLineArgs[1]);
+		else
+			isProjectLoaded = OpenProject();
 
-		if (!sceneLoaded)
-			NewScene();
+		if (!isProjectLoaded)
+		{
+			Application::Get().Close(); // TODO: Remove
+			//NewProject();
+		}
 
 		m_MainFramebuffer =	Framebuffer::Create({ 1280, 720, {FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth} });
 		m_CameraPreviewFramebuffer = Framebuffer::Create({ 1280, 720, {FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth} });
@@ -159,7 +161,7 @@ namespace Eos {
 		UI_RendererStats();
 		UI_Settings();
 		m_SceneHierarchyPanel.OnImGuiRender();
-		m_ContentBrowserPanel.OnImGuiRender();
+		m_ContentBrowserPanel->OnImGuiRender();
 
 		ImGui::End();
 	}
@@ -172,14 +174,30 @@ namespace Eos {
 
 		if (ImGui::BeginMenu(ICON_FA_FILE_ALT "  File "))
 		{
-			if (ImGui::MenuItem(ICON_FA_FILE "   New", "Ctrl+N"))
-				NewScene();
-			if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN "  Open..", "Ctrl+O"))
-				OpenScene();
-			if (ImGui::MenuItem(ICON_FA_SAVE "   Save", "Ctrl+S"))
+			if (ImGui::BeginMenu(ICON_FA_PLUS "   New"))
+			{
+				if (ImGui::MenuItem(ICON_FA_FOLDER "  Project"))
+					NewProject();
+				if (ImGui::MenuItem(ICON_FA_FILE "   Scene", "Ctrl+N"))
+					NewScene();
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu(ICON_FA_FOLDER_OPEN "  Open.."))
+			{
+				if (ImGui::MenuItem(ICON_FA_FOLDER "  Project"))
+					OpenProject();
+				if (ImGui::MenuItem(ICON_FA_FILE "   Scene", "Ctrl+O"))
+					OpenScene();
+				ImGui::EndMenu();
+			}
+			if (ImGui::MenuItem(ICON_FA_SAVE "   Save Scene", "Ctrl+S"))
 				SaveScene();
-			if (ImGui::MenuItem(ICON_FA_SAVE "   Save As..", "Ctrl+Shift+S"))
+			if (ImGui::MenuItem(ICON_FA_SAVE "   Save Scene As..", "Ctrl+Shift+S"))
 				SaveSceneAs();
+			if (ImGui::MenuItem(ICON_FA_TOOLBOX "  Project Settings"))
+			{
+				// TODO
+			}
 
 			ImGui::Separator();
 
@@ -196,7 +214,6 @@ namespace Eos {
 				if (m_SceneState == SceneState::Edit)
 					ScriptEngine::ReloadAssembly();
 			}
-
 			ImGui::EndMenu();
 		}
 
@@ -330,21 +347,20 @@ namespace Eos {
 			{
 				std::filesystem::path path = (const wchar_t*)payload->Data;
 
-				if (path.extension() == ".eos")	// Load scene
+				if (path.extension() == ".eos")
 				{
 					m_HoveredEntity = Entity();
-					OpenScene(std::filesystem::path(g_AssetPath) / path);
+					OpenScene(path);
 				}
-				else if (path.extension() == ".png" || path.extension() == ".jpeg") // Load texture
+				else if (path.extension() == ".png" || path.extension() == ".jpeg")
 				{
 					if (m_HoveredEntity && m_HoveredEntity.HasComponent<SpriteRendererComponent>())
 					{
-						std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
-						Ref<Texture2D> texture = Texture2D::Create(texturePath.string());
+						Ref<Texture2D> texture = Texture2D::Create(path.string());
 						if (texture->IsLoaded())
 							m_HoveredEntity.GetComponent<SpriteRendererComponent>().Texture = texture;
 						else
-							EOS_WARN("Could not load texture {0}", texturePath.filename().string());
+							EOS_WARN("Could not load texture {0}", path.filename().string());
 					}
 				}
 			}
@@ -440,7 +456,7 @@ namespace Eos {
 		ImGui::Text("FPS: %.0f", 1.0f / delta);
 
 		const char* entityTag = "None";
-		if (m_HoveredEntity) entityTag = m_HoveredEntity.GetComponent<TagComponent>().Tag.c_str();
+		if (m_HoveredEntity) entityTag = m_HoveredEntity.GetName().c_str();
 		ImGui::Text("Hovered Entity: %s", entityTag);
 
 		auto stats = Renderer2D::GetStats();
@@ -515,7 +531,7 @@ namespace Eos {
 		if (e.IsRepeat())
 			return false;
 
-		bool editing = m_SceneState == SceneState::Edit;
+		bool editing = m_SceneState == SceneState::Edit && Application::Get().GetImGuiLayer()->GetActiveWidgetID() == 0;
 		bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
 		bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
 		bool canChangeGizmoType = !ImGuizmo::IsUsing() && editing;
@@ -531,7 +547,7 @@ namespace Eos {
 			case Key::O:
 			{
 				if (control)
-					OpenScene();
+					OpenProject();
 				break;
 			}
 			case Key::S:
@@ -700,6 +716,46 @@ namespace Eos {
 		}
 	}
 
+	void EditorLayer::NewProject()
+	{
+		// TODO: Prompt user to select a directory
+		//Project::New();
+		//NewScene();
+		//m_ContentBrowserPanel = CreateScope<ContentBrowserPanel>();
+	}
+
+	bool EditorLayer::OpenProject()
+	{
+		std::string filepath = FileDialogs::OpenFile("Eos Project (*.eosproj)\0*.eosproj\0");
+		if (filepath.empty())
+			return false;
+
+		return OpenProject(filepath);
+	}
+
+	bool EditorLayer::OpenProject(const std::filesystem::path& path)
+	{
+		if (Project::Load(path))
+		{
+			ScriptEngine::Init();
+
+			auto startScenePath = Project::GetAssetFileSystemPath(Project::GetActive()->GetConfig().StartScene);
+			auto assemblyPath = Project::GetAssetFileSystemPath(Project::GetActive()->GetConfig().ScriptModulePath);
+			EOS_ASSERT(std::filesystem::exists(startScenePath) && std::filesystem::exists(assemblyPath));
+
+			OpenScene(startScenePath);
+			m_ContentBrowserPanel = CreateScope<ContentBrowserPanel>();
+			return true;
+		}
+		return false;
+	}
+
+	void EditorLayer::SaveProject()
+	{
+		// TODO: Implement
+		//Project::SaveActive();
+	}
+
 	void EditorLayer::NewScene()
 	{
 		if (m_SceneState != SceneState::Edit)
@@ -844,7 +900,9 @@ namespace Eos {
 
 	void EditorLayer::SyncWindowTitle()
 	{
-		Application::Get().GetWindow().SetTitle(m_ActiveScene->GetName() + " - EosEditor");
+		std::string& projectName = Project::GetActive()->GetConfig().Name;
+		std::string title = projectName + " - " + m_ActiveScene->GetName() + " - EosEditor";
+		Application::Get().GetWindow().SetTitle(title);
 	}
 
 	void EditorLayer::SetEditorTheme(Theme newTheme)
@@ -866,18 +924,20 @@ namespace Eos {
 	void EditorLayer::SaveEditorSettings()
 	{
 		EditorSerializer serializer(&m_Settings);
-		serializer.Serialize(m_UserConfigFilepath);
+		serializer.Serialize("config/user.ini");
 	}
 
 	void EditorLayer::LoadEditorSettings()
 	{
-		if (std::filesystem::exists(m_UserConfigFilepath))
+		if (std::filesystem::exists("config/user.ini"))
 		{
 			EditorSerializer serializer(&m_Settings);
-			serializer.Deserialize(m_UserConfigFilepath);
+			serializer.Deserialize("config/user.ini");
 		}
 		SetEditorTheme(m_Settings.Theme);
 		SetEditorFont(m_Settings.Font);
+
+		ImGui::GetIO().IniFilename = "config/eos.ini";
 	}
 
 	void EditorLayer::DuplicateSelectedEntity()
@@ -893,8 +953,8 @@ namespace Eos {
 	{
 		if (Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity())
 		{
-			m_ActiveScene->DestroyEntity(selectedEntity);
 			m_SceneHierarchyPanel.SetSelectedEntity({});
+			m_ActiveScene->DestroyEntity(selectedEntity);
 		}
 	}
 

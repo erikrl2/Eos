@@ -5,6 +5,7 @@
 #include "Eos/Scene/Components.h"
 #include "Eos/Scripting/ScriptEngine.h"
 #include "Eos/Renderer/Renderer2D.h"
+#include "Eos/Physics/Physics2D.h"
 
 #include <glm/glm.hpp>
 
@@ -15,18 +16,6 @@
 #include <box2d/b2_circle_shape.h>
 
 namespace Eos {
-
-	static b2BodyType Rigidbody2DTypeToBox2DBody(Rigidbody2DComponent::BodyType bodyType)
-	{
-		switch (bodyType)
-		{
-			case Rigidbody2DComponent::BodyType::Static:    return b2_staticBody;
-			case Rigidbody2DComponent::BodyType::Dynamic:   return b2_dynamicBody;
-			case Rigidbody2DComponent::BodyType::Kinematic: return b2_kinematicBody;
-		}
-		EOS_CORE_ASSERT(false, "Unknown body type");
-		return b2_staticBody;
-	}
 
 	Scene::Scene()
 	{
@@ -291,7 +280,7 @@ namespace Eos {
 
 	Entity Scene::DuplicateEntity(Entity entity)
 	{
-		std::string name = entity.GetComponent<TagComponent>().Tag;
+		std::string name = entity.GetName();
 		Entity newEntity = CreateEntity(name);
 
 		CopyComponentIfExists(AllComponents{}, newEntity, entity);
@@ -346,7 +335,7 @@ namespace Eos {
 			Entity entity = { e, this };
 
 			b2BodyDef bodyDef;
-			bodyDef.type = Rigidbody2DTypeToBox2DBody(rb2d.Type);
+			bodyDef.type = Utils::Rigidbody2DTypeToBox2DBody(rb2d.Type);
 			bodyDef.position.Set(transform.Translation.x, transform.Translation.y);
 			bodyDef.angle = transform.Rotation.z;
 

@@ -1,6 +1,8 @@
 #include "eospch.h"
 #include "Eos/ImGui/ImGuiLayer.h"
 
+#include <imgui_internal.h>
+
 #define IMGUI_IMPL_API
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
@@ -94,6 +96,11 @@ namespace Eos {
 			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(backup_current_context);
 		}
+	}
+
+	uint32_t ImGuiLayer::GetActiveWidgetID() const
+	{
+		return GImGui->ActiveId;
 	}
 
 }

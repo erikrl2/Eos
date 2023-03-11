@@ -1,5 +1,7 @@
 #include "eospch.h"
-#include "Panels/ContentBrowserPanel.h"
+#include "ContentBrowserPanel.h"
+
+#include "Eos/Project/Project.h"
 
 #include "EditorStyle.h"
 
@@ -9,11 +11,8 @@
 
 namespace Eos {
 
-	// TODO: Once we have projects, change this to the projects assets directory
-	extern const std::filesystem::path g_AssetPath = "SandboxProject/Assets";
-
 	ContentBrowserPanel::ContentBrowserPanel()
-		: m_CurrentDirectory(g_AssetPath)
+		: m_BaseDirectory(Project::GetAssetDirectory()), m_CurrentDirectory(m_BaseDirectory)
 	{
 	}
 
@@ -23,7 +22,7 @@ namespace Eos {
 
 		const bool& searching = (bool&)m_SearchBuffer[0];
 
-		if (m_CurrentDirectory != std::filesystem::path(g_AssetPath))
+		if (m_CurrentDirectory != m_BaseDirectory)
 		{
 			if (ImGui::Button(ICON_FA_ARROW_LEFT "  back"))
 			{
@@ -54,7 +53,7 @@ namespace Eos {
 		}
 		else
 		{
-			for (auto& directoryEntry : std::filesystem::recursive_directory_iterator(g_AssetPath))
+			for (auto& directoryEntry : std::filesystem::recursive_directory_iterator(m_BaseDirectory))
 			{
 				// Case insensitive check if filename contains the search string
 				auto& path = directoryEntry.path();
@@ -62,10 +61,9 @@ namespace Eos {
 				std::string searchText = m_SearchBuffer;
 				std::transform(filenameString.begin(), filenameString.end(), filenameString.begin(), ::tolower);
 				std::transform(searchText.begin(), searchText.end(), searchText.begin(), ::tolower);
+
 				if (filenameString.find(searchText) != std::string::npos)
-				{
 					DrawDirectoryEntry(directoryEntry, thumbnailSize);
-				}
 			}
 		}
 
@@ -91,8 +89,7 @@ namespace Eos {
 
 		if (!directoryEntry.is_directory() && ImGui::BeginDragDropSource())
 		{
-			auto relativePath = std::filesystem::relative(path, g_AssetPath);
-			const wchar_t* itemPath = relativePath.c_str();
+			const wchar_t* itemPath = path.c_str();
 			ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t));
 			ImGui::EndDragDropSource();
 		}

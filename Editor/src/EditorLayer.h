@@ -37,6 +37,11 @@ namespace Eos {
 
 		void OnOverlayRender();
 
+		void NewProject();
+		bool OpenProject();
+		bool OpenProject(const std::filesystem::path& path);
+		void SaveProject();
+
 		void NewScene();
 		void OpenScene();
 		bool OpenScene(const std::filesystem::path& path);
@@ -105,15 +110,12 @@ namespace Eos {
 
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
-		ContentBrowserPanel m_ContentBrowserPanel;
+		Scope<ContentBrowserPanel> m_ContentBrowserPanel;
 
 		// Settings
 		EditorSettings m_Settings;
 		bool m_ThemeSelection[3] = {};
 		bool m_FontSelection[5] = {};
-
-		const char* m_ImGuiConfigFilepath = "config/eos.ini";
-		const char* m_UserConfigFilepath = "config/user.ini";
 	};
 
 }
