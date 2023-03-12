@@ -24,7 +24,6 @@ namespace Eos {
 	EditorLayer::EditorLayer()
 		: Layer("EditorLayer")
 	{
-		Font font("assets/fonts/opensans/OpenSans-Regular.ttf");
 	}
 
 	void EditorLayer::OnAttach()
