@@ -9,8 +9,6 @@
 
 #include "Eos/Scripting/ScriptEngine.h"
 
-#include "Eos/Renderer/Font.h"
-
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 

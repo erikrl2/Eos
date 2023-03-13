@@ -5,14 +5,9 @@
 #include "FontGeometry.h"
 #include "GlyphGeometry.h"
 
+#include "MSDFData.h"
+
 namespace Eos {
-
-	struct MSDFData
-	{
-		std::vector<msdf_atlas::GlyphGeometry> Glyphs;
-		msdf_atlas::FontGeometry FontGeometry;
-
-	};
 
 	template<typename T, typename S, int N, msdf_atlas::GeneratorFunction<S, N> GenFunc>
 	static Ref<Texture2D> CreateAndCacheAtlas(const std::string& fontName, float fontSize, const std::vector<msdf_atlas::GlyphGeometry>& glyphs,
@@ -92,6 +87,9 @@ namespace Eos {
 		atlasPacker.getDimensions(width, height);
 		emSize = atlasPacker.getScale();
 
+		for (msdf_atlas::GlyphGeometry& glyph : m_Data->Glyphs)
+			glyph.edgeColoring(msdfgen::edgeColoringInkTrap, 3.0, 0);
+
 		m_AtlasTexture = CreateAndCacheAtlas<uint8_t, float, 3, msdf_atlas::msdfGenerator>("Test", (float)emSize, m_Data->Glyphs, m_Data->FontGeometry, width, height);
 
 		msdfgen::destroyFont(font);
@@ -101,6 +99,15 @@ namespace Eos {
 	Font::~Font()
 	{
 		delete m_Data;
+	}
+
+	Ref<Font> Font::GetDefault()
+	{
+		static Ref<Font> DefaultFont;
+		if (!DefaultFont)
+			DefaultFont = CreateRef<Font>("assets/fonts/opensans/OpenSans-Regular.ttf");
+
+		return DefaultFont;
 	}
 
 }
