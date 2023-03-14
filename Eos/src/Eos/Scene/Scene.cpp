@@ -405,6 +405,14 @@ namespace Eos {
 			}
 		}
 
+		// Draw text
+		{
+			for (auto [entity, transform, text] : m_Registry.view<TransformComponent, TextComponent>().each())
+			{
+				Renderer2D::DrawString(text.TextString, transform.GetTransform(), text, (int)entity);
+			}
+		}
+
 		Renderer2D::EndScene();
 	}
 
@@ -427,6 +435,14 @@ namespace Eos {
 			for (auto [entity, transform, circle] : m_Registry.view<TransformComponent, CircleRendererComponent>().each())
 			{
 				Renderer2D::DrawCircle(transform.GetTransform(), circle.Color, circle.Thickness, circle.Fade, (int)entity);
+			}
+		}
+
+		// Draw text
+		{
+			for (auto [entity, transform, text] : m_Registry.view<TransformComponent, TextComponent>().each())
+			{
+				Renderer2D::DrawString(text.TextString, transform.GetTransform(), text, (int)entity);
 			}
 		}
 
@@ -475,5 +491,10 @@ namespace Eos {
 
 	template<>
 	void Scene::OnComponentAdded<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component) {}
+
+	template<>
+	void Scene::OnComponentAdded<TextComponent>(Entity entity, TextComponent& component)
+	{
+	}
 
 }

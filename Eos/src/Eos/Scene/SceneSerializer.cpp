@@ -669,6 +669,38 @@ namespace Eos {
 	}
 
 	template<>
+	static void SerializeEntityComponent<TextComponent>(YAML::Emitter& out, Entity entity)
+	{
+		if (entity.HasComponent<TextComponent>())
+		{
+			out << YAML::Key << "TextComponent";
+			out << YAML::BeginMap;
+
+			auto& textComponent = entity.GetComponent<TextComponent>();
+			out << YAML::Key << "TextString" << YAML::Value << textComponent.TextString;
+			out << YAML::Key << "Color" << YAML::Value << textComponent.Color;
+			out << YAML::Key << "Kerning" << YAML::Value << textComponent.Kerning;
+			out << YAML::Key << "LineSpacing" << YAML::Value << textComponent.LineSpacing;
+
+			out << YAML::EndMap;
+		}
+	}
+
+	template<>
+	static void DeserializeEntityComponent<TextComponent>(YAML::detail::iterator_value& entity, Entity& deserializedEntity)
+	{
+		auto textComponent = entity["TextComponent"];
+		if (textComponent)
+		{
+			auto& tc = deserializedEntity.AddComponent<TextComponent>().GetComponent<TextComponent>();
+			tc.TextString = textComponent["TextString"].as<std::string>();
+			tc.Color = textComponent["Color"].as<glm::vec4>();
+			tc.Kerning = textComponent["Kerning"].as<float>();
+			tc.LineSpacing = textComponent["LineSpacing"].as<float>();
+		}
+	}
+
+	template<>
 	static void SerializeEntityComponent<NativeScriptComponent>(YAML::Emitter& out, Entity entity)
 	{
 		// TODO

@@ -10,6 +10,7 @@
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
+#include <imgui/misc/cpp/imgui_stdlib.h>
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -545,7 +546,13 @@ namespace Eos {
 				ImGui::DragFloat("##RestitutionThreshold", &component.RestitutionThreshold, 0.01f, 0.0f, 10000.0f, "%.2f");
 			});
 
-		// Add new components here
+		DrawComponent<TextComponent>("Text Renderer", entity, [](auto& component)
+			{
+				ImGui::InputTextMultiline("Text String", &component.TextString, ImVec2(0.0f, 75.0f), ImGuiInputTextFlags_AllowTabInput);
+				ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+				ImGui::DragFloat("Kerning", &component.Kerning, 0.001f);
+				ImGui::DragFloat("Line Spacing", &component.LineSpacing, 0.01f);
+			});
 
 
 		ImGui::Separator();
@@ -565,6 +572,7 @@ namespace Eos {
 			DisplayAddComponentEntry<Rigidbody2DComponent>("Rigidbody 2D");
 			DisplayAddComponentEntry<BoxCollider2DComponent>("Box Collider 2D");
 			DisplayAddComponentEntry<CircleCollider2DComponent>("Circle Collider 2D");
+			DisplayAddComponentEntry<TextComponent>("Text Renderer");
 
 			ImGui::EndPopup();
 		}

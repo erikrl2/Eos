@@ -69,3 +69,15 @@ Entities:
       Friction: 0.5
       Restitution: 0
       RestitutionThreshold: 1
+  - Entity: 5079907425921395258
+    TagComponent:
+      Tag: Text
+    TransformComponent:
+      Translation: [-3.32527471, 1.72525954, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    TextComponent:
+      TextString: "Sandbox\nHello World"
+      Color: [0.847014904, 0.145383134, 0.145383134, 1]
+      Kerning: 0.25
+      LineSpacing: 0.75
